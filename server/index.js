@@ -14,6 +14,11 @@ const io = socketIo(server, {
 });
 
 app.use(cors());
+
+// Route to main server
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
