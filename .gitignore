@@ -1,0 +1,15 @@
+# Environment variables (ESSENTIAL)
+.env
+.env.local
+.env.production
+
+# Dependencies (ESSENTIAL)
+node_modules/
+
+# Logs (RECOMMENDED)
+*.log
+npm-debug.log*
+
+# OS files (RECOMMENDED)
+.DS_Store
+Thumbs.db
