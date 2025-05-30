@@ -1,0 +1,11 @@
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #2c3934;
+    margin: 0;
+    padding: 0;
+}
+
+#root {
+    display: flex;
+    width: 100%; }
