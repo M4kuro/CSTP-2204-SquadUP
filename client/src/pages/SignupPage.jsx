@@ -2,24 +2,30 @@ import React, {useState} from 'react';
 import { 
     Box, 
     Paper, 
-    Typography, 
-    TextField, 
-    Button, 
-    Chip,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    LinearProgress
-  } from '@mui/material';
+} from '@mui/material';
+  
+import Step1WelcomeUser from '../components/signupFlow/Step1WelcomeUser';
+import Step2GetLocation from '../components/signupFlow/Step2GetLocation';
+import Step3Interests from '../components/signupFlow/Step3Interests';
+import Step4InfoAndSignup from '../components/signupFlow/Step4InfoAndSignup';
 
 
 const SignupPage = () => {
 
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    username: '',
+    location: '',
+    interests: [],
+    email: '',
+    password: ''
+  });
+
+  const handleNext = () => setStep (prev => prev+1)
     
   return (
     <>
-        {/* Left Side */}
+        {/* Left Side - Interactive form area */}
         <Box
           sx={{
             width: '50%',
@@ -27,7 +33,8 @@ const SignupPage = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-          }}> 
+        }}> 
+        
           <Paper
             elevation={0}
             sx={{
@@ -38,8 +45,31 @@ const SignupPage = () => {
               backgroundColor: '#b34725',
               color: 'white'
             }}
-              >
-            
+        >
+          {step === 1 && (
+            <Step1WelcomeUser
+              formData={formData}
+              setFormData={setFormData}
+              onNext={handleNext}
+            />
+          )}
+          {step === 2 && (
+            <Step2GetLocation
+              formData={formData }
+              setFormData={ setFormData}
+              onNext={handleNext}
+            />)}
+          {step === 3 && (
+            <Step3Interests
+              formData={formData }
+              setFormData={ setFormData}
+              onNext={handleNext}
+            />)}
+          {step === 4 ? (
+            <Step4InfoAndSignup
+              formData={formData }
+              setFormData={ setFormData}
+          />): null }
           </Paper>
         </Box>
       
