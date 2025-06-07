@@ -13,6 +13,8 @@ const io = socketIo(server, {
   }
 });
 
+// *** This is Middleware Setup 
+
 app.use(cors());
 app.use(express.json());
 
@@ -21,6 +23,10 @@ const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
+
+// *** Adding userRoutes (this is for discover, nearby etc)
+const userRoutes = require('./routes/users');
+app.use('/api/users', userRoutes);
 
 
 // ***** Connect to MongoDB
