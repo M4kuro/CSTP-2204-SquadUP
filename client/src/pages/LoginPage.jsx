@@ -1,16 +1,42 @@
 import React, {useState} from 'react';
-import { Grid, Box, TextField, Button, Typography, Paper, Checkbox, FormControlLabel } from '@mui/material';
+import {  Box, TextField, Button, Typography, Paper, Checkbox, FormControlLabel } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 
 const LoginPage = () => {
-  const [input, setInput] = useState("");
-  const [password, setPassword] = useState("");
-    
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const validateInput = (input) => {
-    const emailRegex = /\S+@\S+\.\S+/;
-    return emailRegex.test(input) || input.length >= 3;
+  const navigate = useNavigate();
+    
+  const handleLogin = async () => {
+    console.log('Login button clicked');
+    try {
+      setLoading(true)
+
+      const res = await fetch('https://squad-up-mbi7.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      setLoading(false)
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+  
+      localStorage.setItem('token', data.token); // Store JWT
+      alert('Login successful!');
+      navigate('/home'); // Redirect
+    } catch (err) {
+      console.error(err);
+      alert(`Error: ${err.message}`);
+    }
   };
+  
 
   return (
     
@@ -51,15 +77,51 @@ const LoginPage = () => {
       >
         {/* Your existing Paper content stays exactly the same */}
         <Typography variant="h5" gutterBottom>Login</Typography>
-        <TextField fullWidth label="Username/Email" margin="normal"  />
-        <TextField fullWidth type="password" label="Password" margin="normal" variant="filled" />
-        <FormControlLabel control={<Checkbox />} label="Remember me" />
-        <Button fullWidth variant="contained" sx={{ mt: 2, backgroundColor: 'white', color: '#b34725' }}>Login</Button>
-        <Box my={2}><hr /></Box>
-        <Button fullWidth variant="contained" sx={{ backgroundColor: '#4285F4', color: 'white' }}>Google</Button>
+          <TextField label="Email"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ backgroundColor: 'white' }}/>
+          
+          <TextField label="Password"
+            fullWidth
+            type="password"
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ backgroundColor: 'white' }}/>
+        
+          <FormControlLabel control={<Checkbox />} label="Remember me" />
+          
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2, backgroundColor: 'white', color: '#b34725' }}
+            onClick={handleLogin}
+            disabled={loading || !email || !password}
+
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          
+          </Button>
+          
+          <Box my={2}><hr /></Box> {/* Line between login and google button */}
+          
+          <Button fullWidth
+            variant="contained"
+            sx={{ backgroundColor: '#4285F4', color: 'white' }}
+            
+          >
+            Google
+          
+          </Button>
+
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-          Don't have an account? <a href="/signup" style={{ color: '#90caf9' }}>Sign up</a>
+            Don't have an account?
+            <a href="/signup" style={{ color: '#90caf9' }}>Sign up</a>
         </Typography>
+          
       </Paper>
     </Box>
   </>

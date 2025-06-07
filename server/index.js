@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-require('dotenv').config({path: '../.env'});
+require('dotenv').config(); // Had to move .env inside the folder for deployment
 
 const app = express();
 const server = http.createServer(app);
