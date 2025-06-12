@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography } from '@mui/material';
+import { TextField, Button, Typography, Box } from '@mui/material';
 
-const Step4InfoAndSignup = ({ formData, setFormData }) => { 
+const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => { 
 
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -68,7 +68,15 @@ const Step4InfoAndSignup = ({ formData, setFormData }) => {
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            sx={{ backgroundColor: 'white', mb: 2 }}
+            sx={{ backgroundColor: 'white', mb: 2,
+              '& .MuiFilledInput-root': {
+                '&:after': {
+                  borderBottomColor: '#b34725  '  // your focus color here
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#b34725  ', // label color on focus
+              }, }}
           />
     
           <TextField
@@ -78,26 +86,47 @@ const Step4InfoAndSignup = ({ formData, setFormData }) => {
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            sx={{ backgroundColor: 'white', mb: 2 }}
-          />
-    
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{ backgroundColor: 'white', color: '#b34725' }}
-            onClick={handleSignup}
-          disabled={loading ||
-            !formData.email ||
-            !formData.password ||
-            !isValidEmail(formData.email) ||
-            !isPasswordStrong(formData.password)
-          
-          }
-          
-        >
-            
-            {loading ? 'Signing Up...' : 'Sign Up'}
-          </Button>
+            sx={{ backgroundColor: 'white', mb: 2,
+              '& .MuiFilledInput-root': {
+                '&:after': {
+                  borderBottomColor: '#b34725  '  // your focus color here
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#b34725  ', // label color on focus
+              }, }}
+        />
+        
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+            <Button
+              variant="outlined"
+              sx={{ color: 'white', borderColor: 'white' }}
+              onClick={onBack}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: 'white',
+                color: '#b34725',
+                ml: 2,
+                maxWidth: 200
+              }}
+              onClick={handleSignup}
+              disabled={
+                loading ||
+                !formData.email ||
+                !formData.password ||
+                !isPasswordStrong(formData.password) ||
+                !isValidEmail(formData.email)
+              }
+            >
+              {loading ? 'Signing Up...' : 'Sign Up'}
+            </Button>
+          </Box>
+
         </>
       );
 }

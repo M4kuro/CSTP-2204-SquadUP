@@ -21,7 +21,8 @@ const SignupPage = () => {
     password: ''
   });
 
-  const handleNext = () => setStep (prev => prev+1)
+  const handleNext = () => setStep(prev => prev + 1)
+  const handleBack = () => setStep((prev) => prev - 1);
     
   return (
     <>
@@ -51,6 +52,7 @@ const SignupPage = () => {
               formData={formData}
               setFormData={setFormData}
               onNext={handleNext}
+              
             />
           )}
           {step === 2 && (
@@ -58,17 +60,20 @@ const SignupPage = () => {
               formData={formData }
               setFormData={ setFormData}
               onNext={handleNext}
+              onBack={handleBack}
             />)}
           {step === 3 && (
             <Step3Interests
               formData={formData }
               setFormData={ setFormData}
               onNext={handleNext}
+              onBack={handleBack}
             />)}
           {step === 4 ? (
             <Step4InfoAndSignup
               formData={formData }
-              setFormData={ setFormData}
+              setFormData={setFormData}
+              onBack={handleBack}
           />): null }
           </Paper>
         </Box>

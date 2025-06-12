@@ -82,7 +82,16 @@ const LoginPage = () => {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            sx={{ backgroundColor: 'white' }}/>
+            variant='filled'
+            sx={{ backgroundColor: 'white',
+              '& .MuiFilledInput-root': {
+                '&:after': {
+                  borderBottomColor: '#b34725  '  // your focus color here
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#b34725  ', // label color on focus
+              }, }}/>
           
           <TextField label="Password"
             fullWidth
@@ -90,7 +99,16 @@ const LoginPage = () => {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            sx={{ backgroundColor: 'white' }}/>
+            variant='filled'
+            sx={{ backgroundColor: 'white',
+              '& .MuiFilledInput-root': {
+                '&:after': {
+                  borderBottomColor: '#b34725  '  // your focus color here
+                },
+              },
+              '& label.Mui-focused': {
+                color: '#b34725  ', // label color on focus
+              }, }}/>
         
           <FormControlLabel control={<Checkbox />} label="Remember me" />
           
@@ -119,7 +137,7 @@ const LoginPage = () => {
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
             Don't have an account?
-            <a href="/signup" style={{ color: '#90caf9' }}>Sign up</a>
+            <a href="/signup" style={{ color: '#90caf9' }}> Sign up</a>
         </Typography>
           
       </Paper>

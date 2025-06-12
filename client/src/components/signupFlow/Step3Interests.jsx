@@ -3,7 +3,7 @@ import { Typography, Button, Grid, Chip } from '@mui/material';
 
 const options = ['Basketball', 'Hiking', 'Table Tennis', 'Surfing'];
 
-const Step3Interests = ({ formData, setFormData, onNext }) => { 
+const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => { 
     const toggleInterest = (interest) => {
         const interests = formData.interests.includes(interest)
           ? formData.interests.filter((item) => item !== interest)
@@ -32,7 +32,15 @@ const Step3Interests = ({ formData, setFormData, onNext }) => {
                 />
               </Grid>
             ))}
-          </Grid>
+        </Grid>
+        
+        <Button
+          variant="outlined"
+          sx={{ color: 'white', borderColor: 'white', mr: 2 }}
+          onClick={onBack}
+        >
+            Back
+        </Button>
     
           <Button
             variant="contained"
