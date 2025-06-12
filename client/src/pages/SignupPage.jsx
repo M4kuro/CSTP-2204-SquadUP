@@ -30,7 +30,7 @@ const SignupPage = () => {
         <Box
           sx={{
             width: '50%',
-            backgroundColor: '#2c3934',
+            backgroundColor: '# ',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

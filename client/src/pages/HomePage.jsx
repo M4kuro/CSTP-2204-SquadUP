@@ -105,7 +105,7 @@ const HomePage = () => {
       <Box
         sx={{
           flexGrow: 1,
-          backgroundColor: '#1E1E1E',
+          backgroundColor: '#2D3932',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -116,21 +116,18 @@ const HomePage = () => {
           sx={{
             backgroundColor: '#1E1E1E',
             width: '100%',
+            height: 70,
           }}
         >
           <Toolbar sx={{ position: 'relative' }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 'bold',
-                letterSpacing: 1,
+
+          <img src="/SquadUP.png" alt=""
+              style={{
                 position: 'absolute',
                 left: '50%',
                 transform: 'translateX(-50%)',
-              }}
-            >
-              SQUAD <span style={{ color: '#FF5722' }}>UP</span>
-            </Typography>
+                width: 170 }} />
+            
             <Box sx={{ marginLeft: 'auto' }}>
               <Avatar sx={{ bgcolor: '#FF5722' }}>U</Avatar>
             </Box>
@@ -148,7 +145,7 @@ const HomePage = () => {
                 color: '#fff',
               },
               '& .Mui-selected': {
-                color: '#FF5722',
+                color: '#D5501A',
                 fontWeight: 'bold',
               },
               '& .MuiTabs-indicator': {
@@ -194,7 +191,7 @@ const HomePage = () => {
                         </li>
                       ))}
                     </ul>
-                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                       <Button variant="contained" color="warning">S+UP</Button>
                       <Button variant="outlined" color="warning">More</Button>
                     </Box>
