@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       setLoading(true)
 
-      const res = await fetch('https://squad-up-mbi7.onrender.com/api/auth/login', {
+      const res = await fetch('https://cstp-2204-squadup-backend.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
