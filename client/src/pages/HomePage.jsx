@@ -166,7 +166,7 @@ const HomePage = () => {
                 fontWeight: 'bold',
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: '#FF5722',
+                backgroundColor: '#FF5721',
               },
             }}
           >
