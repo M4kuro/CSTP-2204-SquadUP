@@ -11,12 +11,18 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
 
-const drawerWidth = 200;
+const drawerWidth = 170;
+
+
 
 const HomePage = () => {
   const [tabValue, setTabValue] = useState(1); // Default to "Discover"
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+
+
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -35,6 +41,17 @@ const HomePage = () => {
 
     fetchUsers();
   }, []);
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear the JWT
+    navigate('/'); // Redirect to login
+  };
+
+
+
+
+
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
@@ -93,7 +110,7 @@ const HomePage = () => {
               <HelpIcon />
               <ListItemText primary="Help" sx={{ ml: 1 }} />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={ handleLogout }>
               <LogoutIcon />
               <ListItemText primary="Logout" sx={{ ml: 1 }} />
             </ListItem>
@@ -145,7 +162,7 @@ const HomePage = () => {
                 color: '#fff',
               },
               '& .Mui-selected': {
-                color: '#D5501A',
+                color: '#D5501E',
                 fontWeight: 'bold',
               },
               '& .MuiTabs-indicator': {
