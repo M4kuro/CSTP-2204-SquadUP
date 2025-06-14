@@ -110,7 +110,7 @@ const LoginPage = () => {
                 color: '#b34725  ', // label color on focus
               }, }}/>
         
-          <FormControlLabel control={<Checkbox />} label="Remember me" />
+          
           
           <Button
             fullWidth
