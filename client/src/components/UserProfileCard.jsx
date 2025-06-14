@@ -10,6 +10,8 @@ const UserProfileCard = ({ user, onBack }) => {
     return Math.floor(ageDiffMs / (1000 * 60 * 60 * 24 * 365.25));
   };
 
+
+  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
   return (
     <Box
       sx={{

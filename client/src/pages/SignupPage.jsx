@@ -23,6 +23,10 @@ const SignupPage = () => {
 
   const handleNext = () => setStep(prev => prev + 1)
   const handleBack = () => setStep((prev) => prev - 1);
+
+
+
+  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     
   return (
     <>

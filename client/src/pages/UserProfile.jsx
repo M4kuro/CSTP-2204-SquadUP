@@ -76,10 +76,6 @@ const calculateAge = (dob) => {
   return age;
 };
   
-
-
-  
-
   if (!user) return <Typography>Loading profile...</Typography>;
 
   const sectionStyle = {
@@ -97,6 +93,10 @@ const calculateAge = (dob) => {
     gap: '16px',
   };
 
+
+
+
+  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
   return (
     <Box
       sx={{

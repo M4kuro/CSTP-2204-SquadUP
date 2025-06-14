@@ -10,7 +10,11 @@ const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => {
           : [...formData.interests, interest];
     
         setFormData({ ...formData, interests });
-    };
+  };
+  
+
+
+  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <>
           <Typography variant="h6" gutterBottom>

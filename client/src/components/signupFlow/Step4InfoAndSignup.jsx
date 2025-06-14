@@ -31,7 +31,7 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => {
       setLoading(true);
   
       try {
-        const res = await fetch('${import.meta.env.VITE_API_URL}/api/auth/signup', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -54,7 +54,10 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => {
       } finally {
         setLoading(false);
       }
-    };
+  };
+  
+  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
+
     return (
         <>
           <Typography variant="h6" gutterBottom>

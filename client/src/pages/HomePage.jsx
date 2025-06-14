@@ -83,6 +83,10 @@ const HomePage = () => {
         navigate('/');
     };
 
+
+
+
+    // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
             {/* Sidebar */}

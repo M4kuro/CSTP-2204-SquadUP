@@ -12,6 +12,9 @@ const Step1WelcomeUser = ({ formData, setFormData, onNext }) => {
     }
   };
 
+
+
+// --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
       <>
       

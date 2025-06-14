@@ -25,7 +25,7 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack  }) => {
   };
   
 
-
+// --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
       return (
         <>
           <Typography variant="h6" gutterBottom>
