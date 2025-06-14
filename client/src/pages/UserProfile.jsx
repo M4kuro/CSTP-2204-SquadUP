@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
-const baseUrl = 'http://localhost:5000/api/users';
+const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
+
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -43,7 +44,7 @@ const UserProfile = () => {
   const handleSave = async () => {
   try {
     const userId = localStorage.getItem('userId'); // Or get from route
-    const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+    const res = await fetch(`${baseUrl}/${userId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

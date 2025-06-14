@@ -24,7 +24,8 @@ import UserProfileCard from '../components/UserProfileCard';
 
 const drawerWidth = 170;
 
-const baseUrl = 'http://localhost:5000/api/users';
+const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
+
 
 const HomePage = () => {
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage

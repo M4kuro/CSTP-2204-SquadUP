@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Button, Grid, Chip } from '@mui/material';
 
-const options = ['Basketball', 'Hiking', 'Table Tennis', 'Surfing'];
+const options = ['Video Games', 'Sports', 'Board Games'];
 
 const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => { 
     const toggleInterest = (interest) => {
