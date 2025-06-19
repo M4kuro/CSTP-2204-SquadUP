@@ -50,7 +50,7 @@ const LoginPage = () => {
         alignItems: 'center',
         justifyContent: 'center',
       }}> 
-      <img src="/TranspLogo.png" alt="Logo" style={{ maxWidth: '80%' }} />
+      <img src="/TranspLogo.png" alt="Logo" style={{ maxWidth: '70%' }} />
     </Box>
   
     {/* Right Side */}
@@ -75,7 +75,7 @@ const LoginPage = () => {
           color: 'white'
         }}
       >
-        {/* Your existing Paper content stays exactly the same */}
+        
         <Typography variant="h5" gutterBottom>Login</Typography>
           <TextField label="Email"
             fullWidth
