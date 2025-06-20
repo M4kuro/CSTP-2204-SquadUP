@@ -34,8 +34,16 @@ const UserProfileCard = ({ user, onBack }) => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Avatar sx={{ width: 70, height: 70, bgcolor: '#FF5722' }}>
-            {user.username[0]?.toUpperCase()}
+          <Avatar
+            src={
+              user.profileImageUrl
+                ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
+                : undefined
+            }
+            alt={user.username}
+            sx={{ width: 120, height: 120 }}
+          >
+            {!user.profileImageUrl && user.username[0]?.toUpperCase()}
           </Avatar>
           <Box>
             <Typography variant="h5">{user.username}</Typography>
