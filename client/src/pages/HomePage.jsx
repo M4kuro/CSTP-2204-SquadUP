@@ -13,6 +13,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
+import { ListItemButton } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -27,7 +29,13 @@ const drawerWidth = 170;
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 
+
+
 const HomePage = () => {
+    const location = useLocation();
+    const userId = localStorage.getItem('userId');
+    const isViewingOwnProfilePage = location.pathname.startsWith('/profile/');
+    const isOnUserProfile = location.pathname.startsWith('/profile/');
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage
     const [users, setUsers] = useState([]);
     const [view, setView] = useState('discover'); // this tracks the current section
@@ -43,11 +51,15 @@ const HomePage = () => {
 
     const handleViewUser = async (userId) => {
         try {
-            const res = await fetch(`${baseUrl}/${userId}`);
+            const fullUrl = `${baseUrl}/${userId}`;
+            console.log("👉 Fetching profile for user ID:", userId);
+            console.log("🌐 Full URL being fetched:", fullUrl);
+
+            const res = await fetch(fullUrl);
             const data = await res.json();
-            setSelectedUser(data); // This will trigger the "profile view"
+            setSelectedUser(data);
         } catch (err) {
-            console.error('Error loading user profile:', err);
+            console.error('❌ Error loading user profile:', err);
         }
     };
 
@@ -118,41 +130,59 @@ const HomePage = () => {
 
                     {/* Main nav buttons */}
                     <List>
-                        <ListItem button onClick={() => setView('discover')}>
-                            <SportsTennisIcon />
-                            <ListItemText primary="Pickleball" sx={{ ml: 1 }} />
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => setView('discover')}>
+                                <SportsTennisIcon />
+                                <ListItemText primary="Pickleball" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
-                        <ListItem button onClick={() => {
-                            setTabValue(null);      // disables tab highlight if needed
-                            setView('requests');
-                        }}>
-                            <GroupAddIcon />
-                            <ListItemText primary="SquadUP Requests" sx={{ ml: 1 }} />
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => {
+                                setTabValue(null);
+                                setView('requests');
+                            }}>
+                                <GroupAddIcon />
+                                <ListItemText primary="SquadUP Requests" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
-                        <ListItem button onClick={() => setView('matches')}>
-                            <VisibilityIcon />
-                            <ListItemText primary="Matches" sx={{ ml: 1 }} />
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => setView('matches')}>
+                                <VisibilityIcon />
+                                <ListItemText primary="Matches" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
                     </List>
+
                 </Box>
 
                 {/* Footer */}
                 <Box>
                     <List>
-                        <ListItem button>
-                            <SettingsIcon />
-                            <ListItemText primary="Settings" sx={{ ml: 1 }} />
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <SettingsIcon />
+                                <ListItemText primary="Settings" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
-                        <ListItem button>
-                            <HelpIcon />
-                            <ListItemText primary="Help" sx={{ ml: 1 }} />
+
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <HelpIcon />
+                                <ListItemText primary="Help" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
-                        <ListItem button onClick={handleLogout}>
-                            <LogoutIcon />
-                            <ListItemText primary="Logout" sx={{ ml: 1 }} />
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={handleLogout}>
+                                <LogoutIcon />
+                                <ListItemText primary="Logout" sx={{ ml: 1 }} />
+                            </ListItemButton>
                         </ListItem>
                     </List>
                 </Box>
+
             </Drawer>
 
             {/* Main content area */}
@@ -184,17 +214,17 @@ const HomePage = () => {
                                 width: 170,
                             }}
                         />
-                        <Box sx={{ marginLeft: 'auto' }}>
-                            <Avatar
-                                sx={{ bgcolor: '#FF5722', cursor: 'pointer' }}
-                                onClick={() => {
-                                    const userId = localStorage.getItem('userId');
-                                    navigate(`/profile/${userId}`);
-                                }}
-                            >
-                                U
-                            </Avatar>
-                        </Box>
+                        {!selectedUser && (
+                            <Box sx={{ marginLeft: 'auto' }}>
+                                <Avatar
+                                    sx={{ bgcolor: '#FF5722', cursor: 'pointer' }}
+                                    onClick={() => navigate(`/profile/${userId}`)}
+                                >
+                                    U
+                                </Avatar>
+                            </Box>
+                        )}
+
                     </Toolbar>
                 </AppBar>
 
@@ -235,17 +265,30 @@ const HomePage = () => {
                             {users.map((user) => (
                                 <Grid item xs={12} sm={6} md={4} key={user._id}>
                                     <Card>
-                                        {/* ...CardMedia + CardContent... */}
+                                        {/* 🖼️ Add main profile image here */}
+                                        <CardMedia
+                                            component="img"
+                                            height="200"
+                                            image={
+                                                user.profileImageUrl
+                                                    ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
+                                                    : '/placeholder-profile.png' // optional fallback
+                                            }
+                                            alt={`${user.username}'s profile`}
+                                            sx={{ objectFit: 'cover' }}
+                                        />
+
                                         <CardContent>
                                             <Typography variant="h6">{user.username}</Typography>
                                             <Typography variant="body2">Interests:</Typography>
                                             <ul style={{ margin: 0, paddingLeft: 16 }}>
-                                                {user.interests.map((interest, i) => (
+                                                {user.interests?.map((interest, i) => (
                                                     <li key={i}>
                                                         <Typography variant="body2">{interest}</Typography>
                                                     </li>
                                                 ))}
                                             </ul>
+
                                             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                                                 <Button variant="contained" color="warning">S+UP</Button>
                                                 <Button
@@ -261,6 +304,7 @@ const HomePage = () => {
                                 </Grid>
                             ))}
                         </Grid>
+
                     )}
                 </Box>
             </Box>

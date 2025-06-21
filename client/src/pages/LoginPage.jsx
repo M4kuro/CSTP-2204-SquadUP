@@ -30,6 +30,10 @@ const LoginPage = () => {
       }
   
       localStorage.setItem('token', data.token); // Store JWT
+      // Store user ID or other info 
+      // TODO:
+      // FIXME: 
+      
       alert('Login successful!');
       navigate('/home'); // Redirect
     } catch (err) {

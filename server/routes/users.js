@@ -1,8 +1,60 @@
 console.log("✅ users.js loaded");
-
+const multer = require('multer');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const mongoose = require('mongoose');
+
+// Storage settings
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
+
+// Upload route (for uploading images)
+router.post('/:id/upload', upload.fields([
+  { name: 'main', maxCount: 1 },
+  { name: 'other0', maxCount: 1 },
+  { name: 'other1', maxCount: 1 },
+  { name: 'other2', maxCount: 1 },
+]), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (req.files['main']) {
+      user.profileImageUrl = req.files['main'][0].filename;
+    }
+
+    const others = [];
+    ['other0', 'other1', 'other2'].forEach((key) => {
+      if (req.files[key]) {
+        others.push(req.files[key][0].filename);
+      } else {
+        others.push(null);
+      }
+    });
+
+    user.otherImages = others;
+    await user.save();
+
+    res.json({
+      profileImageUrl: user.profileImageUrl,
+      otherImages: user.otherImages,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Image upload failed' });
+  }
+});
 
 // GET /api/users/discover
 router.get('/discover', async (req, res) => {
@@ -31,7 +83,6 @@ router.get('/matches/:userId', async (req, res) => {
   }
 });
 
-
 // GET /api/users/requests/:userId
 router.get('/requests/:userId', async (req, res) => {
   try {
@@ -45,11 +96,28 @@ router.get('/requests/:userId', async (req, res) => {
   }
 });
 
+// PUT /api/users/:id - update profile
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ error: 'User not found' });
+
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('Error updating user:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 // POST /api/users/:id/squadup
 router.post('/:id/squadup', async (req, res) => {
   try {
-    const currentUserId = req.body.currentUserId; // You must send this in the body
+    const currentUserId = req.body.currentUserId;
     const targetUserId = req.params.id;
 
     if (currentUserId === targetUserId) {
@@ -63,15 +131,11 @@ router.post('/:id/squadup', async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Check if target already S+UP’ed current user
     const isMutual = targetUser.squadRequests.includes(currentUserId);
 
     if (isMutual) {
-      // Create mutual match
       currentUser.matches.push(targetUserId);
       targetUser.matches.push(currentUserId);
-
-      // Remove request from targetUser's pending list
       targetUser.squadRequests = targetUser.squadRequests.filter(
         (id) => id.toString() !== currentUserId
       );
@@ -81,7 +145,6 @@ router.post('/:id/squadup', async (req, res) => {
 
       return res.status(200).json({ matched: true, message: "🎉 It’s a match!" });
     } else {
-      // Otherwise, just add request to target
       if (!targetUser.squadRequests.includes(currentUserId)) {
         targetUser.squadRequests.push(currentUserId);
         await targetUser.save();
@@ -95,5 +158,42 @@ router.post('/:id/squadup', async (req, res) => {
   }
 });
 
+
+// This section and below should not be moved.
+
+const { authenticateToken } = require('../middleware/auth'); // ⬅️ near the top if not yet imported
+
+// 🔐 Secure route to get current user using JWT
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id); // id from JWT
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json(user);
+  } catch (err) {
+    console.error('Error in /me route:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ✅ MOVED THIS ROUTE TO THE VERY END
+// GET /api/users/:userId - fetch user profile by ID
+router.get('/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user by ID:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 module.exports = router;

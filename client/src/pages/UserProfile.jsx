@@ -7,16 +7,20 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
-
 const UserProfile = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
+  const [mainImage, setMainImage] = useState(null);
+  const [mainImageFile, setMainImageFile] = useState(null);
+  const [otherImages, setOtherImages] = useState([null, null, null]);
+  const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,13 +29,39 @@ const UserProfile = () => {
         const data = await res.json();
         setUser(data);
         setFormData(data);
+        if (data.profileImageUrl) {
+          setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`);
+        }
+        if (data.otherImages && data.otherImages.length > 0) {
+        const imageUrls = data.otherImages.map(filename =>
+          filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+        );
+        setOtherImages(imageUrls);
+      }
       } catch (err) {
         console.error('Error fetching user profile:', err);
       }
     };
-
     fetchProfile();
   }, [userId]);
+
+  const handleImageChange = (index, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsEditing(true);
+      if (index === 'main') {
+        setMainImage(URL.createObjectURL(file));
+        setMainImageFile(file);
+      } else {
+        const updated = [...otherImages];
+        const updatedFiles = [...otherImageFiles];
+        updated[index] = URL.createObjectURL(file);
+        updatedFiles[index] = file;
+        setOtherImages(updated);
+        setOtherImageFiles(updatedFiles);
+      }
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,41 +72,53 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-  try {
-    const userId = localStorage.getItem('userId'); // Or get from route
-    const res = await fetch(`${baseUrl}/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData), // 🧠 sends the updated fields
-    });
+    try {
+      const id = localStorage.getItem('userId');
+      let updatedFields = { ...formData };
 
-    if (!res.ok) throw new Error('Failed to update profile');
-    
-    const updatedUser = await res.json();
-    setUser(updatedUser); // Update local state with latest info
-    setIsEditing(false);
-    alert('Profile updated successfully!');
-  } catch (err) {
-    console.error('Error saving profile:', err);
-    alert('Failed to update profile.');
-  }
-};
+      // Upload images
+      const imageForm = new FormData();
+      if (mainImageFile) imageForm.append('main', mainImageFile);
+      otherImageFiles.forEach((file, i) => {
+        if (file) imageForm.append(`other${i}`, file);
+      });
 
-const calculateAge = (dob) => {
-  if (!dob) return '';
-  const birth = new Date(dob);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  return age;
-};
-  
-  if (!user) return <Typography>Loading profile...</Typography>;
+      if (mainImageFile || otherImageFiles.some(f => f)) {
+        const imgRes = await fetch(`${baseUrl}/${id}/upload`, {
+          method: 'POST',
+          body: imageForm,
+        });
+
+        const imgData = await imgRes.json();
+        if (imgData.profileImageUrl) {
+          updatedFields.profileImageUrl = imgData.profileImageUrl;
+          setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
+        }
+        if (imgData.otherImages) {
+          updatedFields.otherImages = imgData.otherImages;
+          const updatedPreviews = imgData.otherImages.map((filename) =>
+            filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+          );
+          setOtherImages(updatedPreviews);
+        }
+      }
+
+      const res = await fetch(`${baseUrl}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields),
+      });
+
+      if (!res.ok) throw new Error('Failed to update profile');
+      const updatedUser = await res.json();
+      setUser(updatedUser);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      alert('Failed to update profile.');
+    }
+  };
 
   const sectionStyle = {
     backgroundColor: '#b0b0b0',
@@ -86,142 +128,119 @@ const calculateAge = (dob) => {
     marginBottom: '20px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
     width: '100%',
-    maxWidth: '600px',
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
   };
 
+  if (!user) return <Typography>Loading profile...</Typography>;
 
-
-
-  // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
   return (
     <Box
       sx={{
-        display: 'grid',
-        placeItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
         backgroundColor: '#2D3932',
         minHeight: '100vh',
         minWidth: '100vw',
         padding: 4,
+        gap: 4,
+        justifyContent: 'center',
       }}
     >
-      <Box sx={{ width: '100%', maxWidth: 600 }}>
-        {/* Avatar + Email */}
-        <Paper elevation={4} sx={sectionStyle}>
-          <Avatar sx={{ width: 80, height: 80, bgcolor: '#FF5722', mx: 'auto' }}>
-            {user.username[0]?.toUpperCase()}
+      {/* LEFT - IMAGES */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 7 }}>
+        <Paper elevation={4} sx={{ padding: 2, backgroundColor: '#b0b0b0' }}>
+          <Avatar
+            src={mainImage}
+            sx={{ width: 340, height: 340 }}
+          >
+            {!mainImage && user.username[0]?.toUpperCase()}
           </Avatar>
-          <Typography variant="h5">{user.username}</Typography>
+          <Button variant="contained" component="label" sx={{ mt: 1 }}>
+            Upload Main
+            <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange('main', e)} />
+          </Button>
+        </Paper>
+
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {otherImages.map((img, idx) => (
+            <Paper
+              key={idx}
+              elevation={4}
+              sx={{
+                backgroundColor: '#b0b0b0',
+                padding: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                borderRadius: 2,
+              }}
+            >
+              <Avatar
+                src={img}
+                sx={{ width: 160, height: 160 }}
+              />
+              <Button
+                variant="outlined"
+                component="label"
+                sx={{ mt: 1, fontSize: '0.7rem' }}
+              >
+                Upload
+                <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
+              </Button>
+            </Paper>
+          ))}
+        </Box>
+      </Box>
+
+      {/* RIGHT - PROFILE DETAILS */}
+      <Box sx={{ width: '100%', maxWidth: 600 }}>
+        <Button
+          onClick={() => navigate('/')}
+          variant="outlined"
+          sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
+        >
+          ⬅ Back to Homepage
+        </Button>
+
+        <Paper elevation={4} sx={{ ...sectionStyle, mb: 3 }}>
+          <Avatar
+            src={mainImage}
+            sx={{ width: 80, height: 80, bgcolor: '#FF5722', mx: 'auto' }}
+          >
+            {!mainImage && user.username[0]?.toUpperCase()}
+          </Avatar>
+          <Typography variant="h5" sx={{ mt: 1 }}>{user.username}</Typography>
           <Typography variant="body2">{user.email}</Typography>
         </Paper>
 
-        {/* Personal Info */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Personal Info</Typography>
-          <TextField
-            label="Birthdate"
-            name="birthdate"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={formData.birthdate || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            label="Height"
-            name="height"
-            value={formData.height || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }}
-          />
-          <TextField
-            label="Weight"
-            name="weight"
-            value={formData.weight || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }}
-          />
+          <TextField label="Birthdate" name="birthdate" type="date" InputLabelProps={{ shrink: true }} value={formData.birthdate || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField label="Height" name="height" value={formData.height || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
+          <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
         </Paper>
 
-        {/* Bio */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">About Me</Typography>
-          <TextField
-            fullWidth
-            name="bio"
-            label="Your Bio"
-            multiline
-            rows={3}
-            value={formData.bio || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
+          <TextField fullWidth name="bio" label="Your Bio" multiline rows={3} value={formData.bio || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        {/* Interests */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Interests</Typography>
-          <TextField
-            fullWidth
-            name="interests"
-            label="Comma-separated"
-            value={formData.interests?.join(', ') || ''}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                interests: e.target.value.split(',').map((s) => s.trim()),
-              })
-            }
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
+          <TextField fullWidth name="interests" label="Comma-separated" value={formData.interests?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, interests: e.target.value.split(',').map((s) => s.trim()) })} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        {/* Socials */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Social Links</Typography>
-          <TextField
-            name="instagram"
-            label="Instagram"
-            value={formData.instagram || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            name="facebook"
-            label="Facebook"
-            value={formData.facebook || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            name="x"
-            label="X (Twitter)"
-            value={formData.x || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            name="bluesky"
-            label="Bluesky"
-            value={formData.bluesky || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
-          />
+          <TextField name="instagram" label="Instagram" value={formData.instagram || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="facebook" label="Facebook" value={formData.facebook || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="x" label="X (Twitter)" value={formData.x || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="bluesky" label="Bluesky" value={formData.bluesky || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        {/* Button */}
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Button
             variant="contained"
