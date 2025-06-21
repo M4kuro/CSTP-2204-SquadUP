@@ -28,6 +28,9 @@ const PORT = process.env.PORT || 5000;
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 
+// *** Serves uploaded images
+app.use('/uploads', express.static('uploads'));
+
 
 // ***** Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
