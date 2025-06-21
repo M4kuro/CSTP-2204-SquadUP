@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, Paper, Button, Avatar } from '@mui/material';
 
 const UserProfileCard = ({ user, onBack }) => {

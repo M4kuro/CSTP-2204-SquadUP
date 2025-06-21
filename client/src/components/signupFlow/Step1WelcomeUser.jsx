@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import { TextField, Button, Typography } from '@mui/material';
 
 const Step1WelcomeUser = ({ formData, setFormData, onNext }) => {

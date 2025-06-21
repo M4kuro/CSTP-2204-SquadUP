@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography, Button, Box } from '@mui/material';
 
 const Step2GetLocation = ({ formData, setFormData, onNext, onBack  }) => { 

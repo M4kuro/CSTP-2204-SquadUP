@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography, Button, Grid, Chip } from '@mui/material';
 
 const options = ['Video Games', 'Sports', 'Board Games'];

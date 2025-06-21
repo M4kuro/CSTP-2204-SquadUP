@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box, AppBar, Toolbar, Typography, Avatar, Tabs, Tab,
     Grid, Card, CardContent, CardMedia, Button, Drawer,
@@ -34,8 +34,8 @@ const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 const HomePage = () => {
     const location = useLocation();
     const userId = localStorage.getItem('userId');
-    const isViewingOwnProfilePage = location.pathname.startsWith('/profile/');
-    const isOnUserProfile = location.pathname.startsWith('/profile/');
+    const isViewingOwnProfilePage = location.pathname.startsWith('/profile/'); //! if not used, deleted
+    const isOnUserProfile = location.pathname.startsWith('/profile/'); //! if not used, deleted
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage
     const [users, setUsers] = useState([]);
     const [view, setView] = useState('discover'); // this tracks the current section
