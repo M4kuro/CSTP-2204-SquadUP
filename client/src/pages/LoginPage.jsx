@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import {  Box, TextField, Button, Typography, Paper, Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  
   const navigate = useNavigate();
     
   const handleLogin = async () => {
@@ -36,6 +37,36 @@ const LoginPage = () => {
       alert(`Error: ${err.message}`);
     }
   };
+
+
+// Google Login ---------------------------------------------------------------\
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      setLoading(true);
+  
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: credentialResponse.credential }) // 🔥 this is the Google token
+      });
+  
+      setLoading(false);
+  
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Google login failed');
+  
+      // Save JWT and user data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.user._id);
+  
+      alert('Login successful!');
+      navigate('/home');
+    } catch (err) {
+      console.error('Google login error:', err);
+      alert('Google login failed');
+    }
+  };
+  
   
   // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
   return (
@@ -126,14 +157,21 @@ const LoginPage = () => {
           
           <Box my={2}><hr /></Box> {/* Line between login and google button */}
           
-          <Button fullWidth
-            variant="contained"
-            sx={{ backgroundColor: '#4285F4', color: 'white' }}
-            
-          >
-            Google
-          
-          </Button>
+          <GoogleOAuthProvider clientId={clientId} locale="en">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log('Google Login Failed');
+                alert('Google sign-in failed.');
+              }}
+              logo_alignment="center"
+              theme='filled_blue'
+              text='signin_with'
+              
+
+              
+            />
+          </GoogleOAuthProvider>
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
             Don't have an account?
