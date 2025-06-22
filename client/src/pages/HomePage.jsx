@@ -28,14 +28,14 @@ const drawerWidth = 170;
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
-
-
-
 const HomePage = () => {
-    const location = useLocation();
+    // const location = useLocation(); //! if not used, deleted or mark as Wishlist
+    // const isViewingOwnProfilePage = location.pathname.startsWith('/profile/'); //! if not used, deleted or mark as Wishlist
+    // const isOnUserProfile = location.pathname.startsWith('/profile/'); //! if not used, deleted or mark as Wishlist
+
+
+    
     const userId = localStorage.getItem('userId');
-    const isViewingOwnProfilePage = location.pathname.startsWith('/profile/'); //! if not used, deleted
-    const isOnUserProfile = location.pathname.startsWith('/profile/'); //! if not used, deleted
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage
     const [users, setUsers] = useState([]);
     const [view, setView] = useState('discover'); // this tracks the current section
@@ -49,19 +49,30 @@ const HomePage = () => {
         if (newValue === 2) setView('matches');
     };
 
-    const handleViewUser = async (userId) => {
-        try {
-            const fullUrl = `${baseUrl}/${userId}`;
-            console.log("👉 Fetching profile for user ID:", userId);
-            console.log("🌐 Full URL being fetched:", fullUrl);
+    // const handleViewUser = async (userId) => {
+    //     try {
+    //         const fullUrl = `${baseUrl}/${userId}`;
+    //         console.log("👉 Fetching profile for user ID:", userId);
+    //         console.log("🌐 Full URL being fetched:", fullUrl);
 
-            const res = await fetch(fullUrl);
-            const data = await res.json();
-            setSelectedUser(data);
-        } catch (err) {
-            console.error('❌ Error loading user profile:', err);
+    //         const res = await fetch(fullUrl);
+    //         const data = await res.json();
+    //         setSelectedUser(data);
+    //     } catch (err) {
+    //         console.error('❌ Error loading user profile:', err);
+    //     }
+    // };
+
+    const handleViewUser = (userId) => {
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+          navigate(`/profile/${userId}`); // Navigate to profile page
+        } else {
+          console.error('Invalid userId:', userId);
         }
-    };
+      };
+
+
+
 
     useEffect(() => {
         const fetchUsers = async () => {

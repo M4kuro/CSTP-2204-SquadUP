@@ -29,10 +29,8 @@ const LoginPage = () => {
         throw new Error(data.message || 'Login failed');
       }
   
-      localStorage.setItem('token', data.token); // Store JWT
-      // Store user ID or other info 
-      // TODO:
-      // FIXME: 
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.user._id);
       
       alert('Login successful!');
       navigate('/home'); // Redirect

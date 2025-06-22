@@ -12,7 +12,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
-  const { userId } = useParams();
+  const { userId: paramId } = useParams();
+  const userId = paramId || localStorage.getItem('userId');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -134,7 +135,14 @@ const UserProfile = () => {
     gap: '16px',
   };
 
-  if (!user) return <Typography>Loading profile...</Typography>;
+  if (!userId) {
+    console.error("No userId found — can't fetch profile.");
+    return <Typography>Error: Could not load profile.</Typography>;
+  }
+  
+
+
+  // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
     <Box
@@ -156,7 +164,7 @@ const UserProfile = () => {
             src={mainImage}
             sx={{ width: 340, height: 340 }}
           >
-            {!mainImage && user.username[0]?.toUpperCase()}
+            {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
           <Button variant="contained" component="label" sx={{ mt: 1 }}>
             Upload Main
