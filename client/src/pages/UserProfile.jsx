@@ -139,6 +139,10 @@ const UserProfile = () => {
     console.error("No userId found — can't fetch profile.");
     return <Typography>Error: Could not load profile.</Typography>;
   }
+
+  if (!user) {
+    return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
+  }
   
 
 
@@ -218,7 +222,7 @@ const UserProfile = () => {
             src={mainImage}
             sx={{ width: 80, height: 80, bgcolor: '#FF5722', mx: 'auto' }}
           >
-            {!mainImage && user.username[0]?.toUpperCase()}
+            {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
           <Typography variant="h5" sx={{ mt: 1 }}>{user.username}</Typography>
           <Typography variant="body2">{user.email}</Typography>
