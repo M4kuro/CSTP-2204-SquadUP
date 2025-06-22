@@ -34,7 +34,7 @@ const HomePage = () => {
     // const isOnUserProfile = location.pathname.startsWith('/profile/'); //! if not used, deleted or mark as Wishlist
 
 
-    
+
     const userId = localStorage.getItem('userId');
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage
     const [users, setUsers] = useState([]);
@@ -49,27 +49,49 @@ const HomePage = () => {
         if (newValue === 2) setView('matches');
     };
 
-    // const handleViewUser = async (userId) => {
-    //     try {
-    //         const fullUrl = `${baseUrl}/${userId}`;
-    //         console.log("👉 Fetching profile for user ID:", userId);
-    //         console.log("🌐 Full URL being fetched:", fullUrl);
-
-    //         const res = await fetch(fullUrl);
-    //         const data = await res.json();
-    //         setSelectedUser(data);
-    //     } catch (err) {
-    //         console.error('❌ Error loading user profile:', err);
-    //     }
-    // };
-
+    // this is corrently working just fine on local.  The logic for this should be sound. 
+    // you're wanting when clicking "more" to only display the card for the selected user.
     const handleViewUser = (userId) => {
-        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-          navigate(`/profile/${userId}`); // Navigate to profile page
+        const userToShow = users.find((u) => u._id === userId);
+        if (userToShow) {
+            setSelectedUser(userToShow);
         } else {
-          console.error('Invalid userId:', userId);
+            console.warn('User not found for ID:', userId);
         }
-      };
+    };
+
+    // this section is for the S+UP Button.  
+   const handleSquadUp = async (targetUserId) => {
+    try {
+        const token = localStorage.getItem('token');
+
+        console.log('Sending S+UP request to:', targetUserId);
+
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${targetUserId}/squadup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            if (data.matched) {
+                alert('🎉 It’s a match! You both SquadUP’d!');
+            } else {
+                alert('✅ S+UP request sent. Waiting for a match!');
+            }
+        } else {
+            alert(data.message || 'Something went wrong.');
+        }
+    } catch (err) {
+        console.error('S+UP Error:', err);
+        alert('S+UP failed.');
+    }
+};
 
 
 
@@ -229,7 +251,7 @@ const HomePage = () => {
                             <Box sx={{ marginLeft: 'auto' }}>
                                 <Avatar
                                     sx={{ bgcolor: '#FF5722', cursor: 'pointer' }}
-                                    onClick={() => navigate(`/profile/${userId}`)}
+                                    onClick={() => navigate(`/profile`)}  // updated this because we're on longer using params or userID.. this is just decoding via JWT
                                 >
                                     U
                                 </Avatar>
@@ -250,11 +272,11 @@ const HomePage = () => {
                                 color: '#fff',
                             },
                             '& .Mui-selected': {
-                                color: '#D5501E',
+                                color: '#FF5722 !important',  // the color for orange here is #FF5722 if it gets changed again
                                 fontWeight: 'bold',
                             },
                             '& .MuiTabs-indicator': {
-                                backgroundColor: '#FF5721',
+                                backgroundColor: '#FF5722 !important', // the color for orange here is #FF5722 if it gets changed again.
                             },
                         }}
                     >
@@ -301,7 +323,16 @@ const HomePage = () => {
                                             </ul>
 
                                             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                                                <Button variant="contained" color="warning">S+UP</Button>
+                                                <Button
+                                                    variant="contained"
+                                                    color="warning"
+                                                    onClick={() => handleSquadUp(user._id)
+                                                        
+                                                    }
+                                                    
+                                                >
+                                                    S+UP
+                                                </Button>
                                                 <Button
                                                     variant="outlined"
                                                     color="warning"

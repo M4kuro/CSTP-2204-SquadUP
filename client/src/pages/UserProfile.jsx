@@ -7,13 +7,12 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
-  const { userId: paramId } = useParams();
-  const userId = paramId || localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -26,7 +25,11 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${baseUrl}/${userId}`);
+        const res = await fetch(`${baseUrl}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
         setUser(data);
         setFormData(data);
@@ -34,17 +37,17 @@ const UserProfile = () => {
           setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`);
         }
         if (data.otherImages && data.otherImages.length > 0) {
-        const imageUrls = data.otherImages.map(filename =>
-          filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
-        );
-        setOtherImages(imageUrls);
-      }
+          const imageUrls = data.otherImages.map(filename =>
+            filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+          );
+          setOtherImages(imageUrls);
+        }
       } catch (err) {
         console.error('Error fetching user profile:', err);
       }
     };
     fetchProfile();
-  }, [userId]);
+  }, []);
 
   const handleImageChange = (index, e) => {
     const file = e.target.files[0];
@@ -74,10 +77,7 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      const id = localStorage.getItem('userId');
       let updatedFields = { ...formData };
-
-      // Upload images
       const imageForm = new FormData();
       if (mainImageFile) imageForm.append('main', mainImageFile);
       otherImageFiles.forEach((file, i) => {
@@ -85,11 +85,11 @@ const UserProfile = () => {
       });
 
       if (mainImageFile || otherImageFiles.some(f => f)) {
-        const imgRes = await fetch(`${baseUrl}/${id}/upload`, {
+        const imgRes = await fetch(`${baseUrl}/me/upload`, {
           method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
           body: imageForm,
         });
-
         const imgData = await imgRes.json();
         if (imgData.profileImageUrl) {
           updatedFields.profileImageUrl = imgData.profileImageUrl;
@@ -97,16 +97,19 @@ const UserProfile = () => {
         }
         if (imgData.otherImages) {
           updatedFields.otherImages = imgData.otherImages;
-          const updatedPreviews = imgData.otherImages.map((filename) =>
+          const updatedPreviews = imgData.otherImages.map(filename =>
             filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
           );
           setOtherImages(updatedPreviews);
         }
       }
 
-      const res = await fetch(`${baseUrl}/${id}`, {
+      const res = await fetch(`${baseUrl}/me`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedFields),
       });
 
@@ -135,18 +138,11 @@ const UserProfile = () => {
     gap: '16px',
   };
 
-  if (!userId) {
-    console.error("No userId found — can't fetch profile.");
-    return <Typography>Error: Could not load profile.</Typography>;
-  }
-
   if (!user) {
     return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
   }
-  
 
-
-  // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
+   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
     <Box
@@ -210,7 +206,7 @@ const UserProfile = () => {
       {/* RIGHT - PROFILE DETAILS */}
       <Box sx={{ width: '100%', maxWidth: 600 }}>
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}  // fixed this it was set to the login page for some reason.. Just changed it to homepage.
           variant="outlined"
           sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
         >
