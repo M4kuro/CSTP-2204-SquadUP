@@ -42,6 +42,7 @@ const HomePage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const navigate = useNavigate();
 
+    //! TODO:EVENT NOT DEFINED HERE
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
         if (newValue === 0) setView('nearby');
@@ -64,7 +65,7 @@ const HomePage = () => {
     // };
 
     const handleViewUser = (userId) => {
-        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+        if (userId) {
           navigate(`/profile/${userId}`); // Navigate to profile page
         } else {
           console.error('Invalid userId:', userId);
@@ -112,7 +113,7 @@ const HomePage = () => {
     // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-            {/* Sidebar */}
+            {/* Sidebar styling */}
             <Drawer
                 variant="permanent"
                 sx={{
@@ -139,7 +140,7 @@ const HomePage = () => {
                         </Typography>
                     </Box>
 
-                    {/* Main nav buttons */}
+                    {/* SIDE BAR buttons */}
                     <List>
                         <ListItem disablePadding>
                             <ListItemButton onClick={() => setView('discover')}>
@@ -274,7 +275,7 @@ const HomePage = () => {
                     ) : (
                         <Grid container spacing={3}>
                             {users.map((user) => (
-                                <Grid item xs={12} sm={6} md={4} key={user._id}>
+                                <Grid item xs={12} sm={6} md={4} key={user.user}>
                                     <Card>
                                         {/* 🖼️ Add main profile image here */}
                                         <CardMedia
@@ -301,11 +302,19 @@ const HomePage = () => {
                                             </ul>
 
                                             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                                                <Button variant="contained" color="warning">S+UP</Button>
+                                                
+                                                <Button
+                                                    variant="contained"
+                                                    color="warning"
+                                                    // TODO: onClick={} 
+                                                >
+                                                    S+UP
+                                                </Button>
+
                                                 <Button
                                                     variant="outlined"
                                                     color="warning"
-                                                    onClick={() => handleViewUser(user._id)}
+                                                    onClick={() => handleViewUser(user._id)} //! DONT CHANGE THIS { user._id }
                                                 >
                                                     More
                                                 </Button>

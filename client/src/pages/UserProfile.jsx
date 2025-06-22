@@ -85,7 +85,7 @@ const UserProfile = () => {
       });
 
       if (mainImageFile || otherImageFiles.some(f => f)) {
-        const imgRes = await fetch(`${baseUrl}/${id}/upload`, {
+        const imgRes = await fetch(`${baseUrl}/${userId}/upload`, {
           method: 'POST',
           body: imageForm,
         });
@@ -104,7 +104,7 @@ const UserProfile = () => {
         }
       }
 
-      const res = await fetch(`${baseUrl}/${id}`, {
+      const res = await fetch(`${baseUrl}/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
@@ -144,7 +144,9 @@ const UserProfile = () => {
     return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
   }
   
-
+  console.log('paramId:', paramId);
+  console.log('localStorage userId:', localStorage.getItem('userId'));
+  console.log('final userId used:', userId);
 
   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
@@ -210,7 +212,7 @@ const UserProfile = () => {
       {/* RIGHT - PROFILE DETAILS */}
       <Box sx={{ width: '100%', maxWidth: 600 }}>
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')} // ======> NAVIGATE TO HOMEPAGE 
           variant="outlined"
           sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
         >
@@ -227,7 +229,8 @@ const UserProfile = () => {
           <Typography variant="h5" sx={{ mt: 1 }}>{user.username}</Typography>
           <Typography variant="body2">{user.email}</Typography>
         </Paper>
-
+          
+        {/* ========================= PERSONAL INFO SECTION ==================================== */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Personal Info</Typography>
           <TextField label="Birthdate" name="birthdate" type="date" InputLabelProps={{ shrink: true }} value={formData.birthdate || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
@@ -235,16 +238,22 @@ const UserProfile = () => {
           <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
         </Paper>
 
+
+          {/* ========================== ABOUT SECTION ==================================== */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">About Me</Typography>
           <TextField fullWidth name="bio" label="Your Bio" multiline rows={3} value={formData.bio || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
+        
+        {/* ========================== INTERESTS SECTION ==================================== */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Interests</Typography>
           <TextField fullWidth name="interests" label="Comma-separated" value={formData.interests?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, interests: e.target.value.split(',').map((s) => s.trim()) })} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
+        
+        {/* ====================== SOCIAL LINKS SECTION ==================================== */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Social Links</Typography>
           <TextField name="instagram" label="Instagram" value={formData.instagram || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
