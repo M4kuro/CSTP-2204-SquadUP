@@ -14,7 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
 import { ListItemButton } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+// TODO: import { useLocation } from 'react-router-dom';
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -42,7 +42,7 @@ const HomePage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const navigate = useNavigate();
 
-    //! TODO:EVENT NOT DEFINED HERE
+    //! TODO: EVENT NOT DEFINED HERE
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
         if (newValue === 0) setView('nearby');
