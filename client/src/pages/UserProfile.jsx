@@ -7,19 +7,23 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
+
+  const token = localStorage.getItem('token');
+
   
-  const { userId: paramId } = useParams();
-  const userId = paramId || localStorage.getItem('userId');
+  // const { userId: paramId } = useParams();
+  // const userId = paramId || localStorage.getItem('userId');
 
   // User should not be able to edit another user's profile \\
-  const loggedInUserId = localStorage.getItem('userId');
-  const isOwnProfile = userId === loggedInUserId;
+  // const loggedInUserId = localStorage.getItem('userId');
+  // const isOwnProfile = userId === loggedInUserId;
   //======================================================//
+
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -33,7 +37,11 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${baseUrl}/${userId}`);
+        const res = await fetch(`${baseUrl}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
         setUser(data);
         setFormData(data);
@@ -41,17 +49,17 @@ const UserProfile = () => {
           setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`);
         }
         if (data.otherImages && data.otherImages.length > 0) {
-        const imageUrls = data.otherImages.map(filename =>
-          filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
-        );
-        setOtherImages(imageUrls);
-      }
+          const imageUrls = data.otherImages.map(filename =>
+            filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+          );
+          setOtherImages(imageUrls);
+        }
       } catch (err) {
         console.error('Error fetching user profile:', err);
       }
     };
     fetchProfile();
-  }, [userId]);
+  }, []);
 
 
   const handleImageChange = (index, e) => {
@@ -83,10 +91,7 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      const id = localStorage.getItem('userId');
       let updatedFields = { ...formData };
-
-      // Upload images
       const imageForm = new FormData();
       if (mainImageFile) imageForm.append('main', mainImageFile);
       otherImageFiles.forEach((file, i) => {
@@ -94,11 +99,15 @@ const UserProfile = () => {
       });
 
       if (mainImageFile || otherImageFiles.some(f => f)) {
-        const imgRes = await fetch(`${baseUrl}/${userId}/upload`, {
+
+        // const imgRes = await fetch(`${baseUrl}/${userId}/upload`, {
+        
+        const imgRes = await fetch(`${baseUrl}/me/upload`, {
+
           method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
           body: imageForm,
         });
-
         const imgData = await imgRes.json();
         if (imgData.profileImageUrl) {
           updatedFields.profileImageUrl = imgData.profileImageUrl;
@@ -106,16 +115,23 @@ const UserProfile = () => {
         }
         if (imgData.otherImages) {
           updatedFields.otherImages = imgData.otherImages;
-          const updatedPreviews = imgData.otherImages.map((filename) =>
+          const updatedPreviews = imgData.otherImages.map(filename =>
             filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
           );
           setOtherImages(updatedPreviews);
         }
       }
 
-      const res = await fetch(`${baseUrl}/${userId}`, {
+
+ // const res = await fetch(`${baseUrl}/${userId}`, {
+
+
+      const res = await fetch(`${baseUrl}/me`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedFields),
       });
 
@@ -144,6 +160,11 @@ const UserProfile = () => {
     gap: '16px',
   };
 
+
+  if (!user) {
+    return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
+  }
+
   // ================================ VALIDATION STARTS HERE ================================ //
   // Debugging logs
   if (!userId) {
@@ -161,7 +182,8 @@ const UserProfile = () => {
 
 
 
-  // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
+
+   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
     <Box
@@ -230,7 +252,9 @@ const UserProfile = () => {
       {/* RIGHT - PROFILE DETAILS */}
       <Box sx={{ width: '100%', maxWidth: 600 }}>
         <Button
-          onClick={() => navigate('/home')} // ======> NAVIGATE TO HOMEPAGE 
+ 
+     onClick={() => navigate('/home')} // ======> NAVIGATE TO HOMEPAGE 
+
           variant="outlined"
           sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
         >
