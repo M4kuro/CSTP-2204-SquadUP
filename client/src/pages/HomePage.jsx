@@ -14,7 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
 import { ListItemButton } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+// TODO: import { useLocation } from 'react-router-dom';
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -42,6 +42,7 @@ const HomePage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const navigate = useNavigate();
 
+    //! TODO: EVENT NOT DEFINED HERE
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
         if (newValue === 0) setView('nearby');
@@ -68,6 +69,7 @@ const HomePage = () => {
         console.log('Sending S+UP request to:', targetUserId);
 
 
+
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${targetUserId}/squadup`, {
             method: 'POST',
             headers: {
@@ -84,6 +86,11 @@ const HomePage = () => {
             } else {
                 alert('✅ S+UP request sent. Waiting for a match!');
             }
+
+    const handleViewUser = (userId) => {
+        if (userId) {
+          navigate(`/profile/${userId}`); // Navigate to profile page
+
         } else {
             alert(data.message || 'Something went wrong.');
         }
@@ -134,7 +141,7 @@ const HomePage = () => {
     // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-            {/* Sidebar */}
+            {/* Sidebar styling */}
             <Drawer
                 variant="permanent"
                 sx={{
@@ -161,7 +168,7 @@ const HomePage = () => {
                         </Typography>
                     </Box>
 
-                    {/* Main nav buttons */}
+                    {/* SIDE BAR buttons */}
                     <List>
                         <ListItem disablePadding>
                             <ListItemButton onClick={() => setView('discover')}>
@@ -296,7 +303,7 @@ const HomePage = () => {
                     ) : (
                         <Grid container spacing={3}>
                             {users.map((user) => (
-                                <Grid item xs={12} sm={6} md={4} key={user._id}>
+                                <Grid item xs={12} sm={6} md={4} key={user.user}>
                                     <Card>
                                         {/* 🖼️ Add main profile image here */}
                                         <CardMedia
@@ -323,6 +330,7 @@ const HomePage = () => {
                                             </ul>
 
                                             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+
                                                 <Button
                                                     variant="contained"
                                                     color="warning"
@@ -333,10 +341,11 @@ const HomePage = () => {
                                                 >
                                                     S+UP
                                                 </Button>
+
                                                 <Button
                                                     variant="outlined"
                                                     color="warning"
-                                                    onClick={() => handleViewUser(user._id)}
+                                                    onClick={() => handleViewUser(user._id)} //! DONT CHANGE THIS { user._id }
                                                 >
                                                     More
                                                 </Button>

@@ -24,13 +24,14 @@ const LoginPage = () => {
 
       setLoading(false)
       const data = await res.json();
+      console.log('Login response:', data);
   
       if (!res.ok) {
         throw new Error(data.message || 'Login failed');
       }
   
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user._id);
+      localStorage.setItem('userId', data.user.id);
       
       alert('Login successful!');
       navigate('/home'); // Redirect
