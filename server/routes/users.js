@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const { authenticateToken } = require('../middleware/auth'); // Had to move it.
 
 
-// Storage settings
+// Storage settings ==============================================
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Upload route (for uploading images)
+// Upload route (for uploading images) ========================================================
 router.post('/me/upload', authenticateToken, upload.fields([
   { name: 'main', maxCount: 1 },
   { name: 'other0', maxCount: 1 },
@@ -29,7 +29,7 @@ router.post('/me/upload', authenticateToken, upload.fields([
   { name: 'other2', maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     if (req.files['main']) {
@@ -58,7 +58,7 @@ router.post('/me/upload', authenticateToken, upload.fields([
   }
 });
 
-// GET /api/users/discover
+// GET /api/users/discover  =========================================================
 router.get('/discover', async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -71,7 +71,7 @@ router.get('/discover', async (req, res) => {
   }
 });
 
-// GET /api/users/matches/:userId
+// GET /api/users/matches/:userId ========================================================
 router.get('/matches/:userId', async (req, res) => {
   console.log("✅ /matches route triggered", req.params.userId);
   try {
@@ -85,7 +85,7 @@ router.get('/matches/:userId', async (req, res) => {
   }
 });
 
-// GET /api/users/requests/:userId
+// GET /api/users/requests/:userId =======================================================
 router.get('/requests/:userId', async (req, res) => {
   try {
     const currentUser = await User.findById(req.params.userId).populate('squadRequests');
@@ -98,7 +98,7 @@ router.get('/requests/:userId', async (req, res) => {
   }
 });
 
-// PUT /api/users/:id - update profile
+// PUT /api/users/:id - update profile ======================================================
 router.put('/me',authenticateToken, async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -116,7 +116,7 @@ router.put('/me',authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/users/:id/squadup
+// POST /api/users/:id/squadup ===============================================  
 router.post('/:id/squadup', async (req, res) => {
   try {
     const currentUserId = req.body.currentUserId;

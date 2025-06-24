@@ -79,71 +79,7 @@ const UserProfile = () => {
     if (!isEditing) setIsEditing(true);
   };
 
-  // const handleSave = async () => {
-  //   try {
-  //     let updatedFields = { ...formData };
-  //     const imageForm = new FormData();
-  //     if (mainImageFile) imageForm.append('main', mainImageFile);
-  //     otherImageFiles.forEach((file, i) => {
-  //       if (file) imageForm.append(`other${i}`, file);
-  //     });
-
-  //     if (mainImageFile || otherImageFiles.some(f => f)) {
-
-        
-        
-  //       const imgRes = await fetch(`${baseUrl}/me/upload`, {
-
-  //         method: 'POST',
-  //         headers: { Authorization: `Bearer ${token}` },
-  //         body: imageForm,
-  //       });
-  //       const imgData = await imgRes.json();
-  //       if (imgData.profileImageUrl) {
-  //         updatedFields.profileImageUrl = imgData.profileImageUrl;
-  //         setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
-  //       }
-  //       if (imgData.otherImages) {
-  //         updatedFields.otherImages = imgData.otherImages;
-  //         const updatedPreviews = imgData.otherImages.map(filename =>
-  //           filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
-  //         );
-  //         setOtherImages(updatedPreviews);
-  //       }
-  //     }
-
-  //     //Debugging logs ======================\
-
-  //     console.log("PUT URL:", `${baseUrl}/me`);
-  //     console.log("Payload:", updatedFields);
-  //     console.log("Headers:", {
-  //         'Content-Type': 'application/json',
-  //          Authorization: `Bearer ${token}`,
-  //         });
-       
-  //     //Debugging logs ======================/
-
-
-  //     const res = await fetch(`${baseUrl}/me`, {
-  //       method: 'PUT',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       body: JSON.stringify(updatedFields),
-  //     });
-
-  //     if (!res.ok) throw new Error('Failed to update profile');
-  //     const updatedUser = await res.json();
-  //     setUser(updatedUser);
-  //     setIsEditing(false);
-  //     alert('Profile updated successfully!');
-  //   } catch (err) {
-  //     console.error('Error saving profile:', err);
-  //     alert('Failed to update profile.');
-  //   }
-  // };
-
+  
 
   const handleSave = async () => {
     try {
