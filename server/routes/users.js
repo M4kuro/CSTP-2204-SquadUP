@@ -5,6 +5,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const mongoose = require('mongoose');
+const { authenticateToken } = require('../middleware/auth'); // Had to move it.
+
 
 // Storage settings
 const storage = multer.diskStorage({
@@ -20,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Upload route (for uploading images)
-router.post('/:id/upload', upload.fields([
+router.post('/me/upload', authenticateToken, upload.fields([
   { name: 'main', maxCount: 1 },
   { name: 'other0', maxCount: 1 },
   { name: 'other1', maxCount: 1 },
@@ -97,10 +99,10 @@ router.get('/requests/:userId', async (req, res) => {
 });
 
 // PUT /api/users/:id - update profile
-router.put('/:id', async (req, res) => {
+router.put('/me',authenticateToken, async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
+      req.user.id,
       { $set: req.body },
       { new: true }
     );
@@ -161,7 +163,6 @@ router.post('/:id/squadup', async (req, res) => {
 
 // This section and below should not be moved.
 
-const { authenticateToken } = require('../middleware/auth'); // ⬅️ near the top if not yet imported
 
 // 🔐 Secure route to get current user using JWT
 router.get('/me', authenticateToken, async (req, res) => {

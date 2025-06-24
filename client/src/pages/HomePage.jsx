@@ -86,11 +86,6 @@ const HomePage = () => {
             } else {
                 alert('✅ S+UP request sent. Waiting for a match!');
             }
-
-    const handleViewUser = (userId) => {
-        if (userId) {
-          navigate(`/profile/${userId}`); // Navigate to profile page
-
         } else {
             alert(data.message || 'Something went wrong.');
         }

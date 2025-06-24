@@ -7,22 +7,13 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
+import { useNavigate } from 'react-router-dom';  
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
 
   const token = localStorage.getItem('token');
-
-  
-  // const { userId: paramId } = useParams();
-  // const userId = paramId || localStorage.getItem('userId');
-
-  // User should not be able to edit another user's profile \\
-  // const loggedInUserId = localStorage.getItem('userId');
-  // const isOwnProfile = userId === loggedInUserId;
-  //======================================================//
 
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -32,7 +23,6 @@ const UserProfile = () => {
   const [mainImageFile, setMainImageFile] = useState(null);
   const [otherImages, setOtherImages] = useState([null, null, null]);
   const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -89,43 +79,152 @@ const UserProfile = () => {
     if (!isEditing) setIsEditing(true);
   };
 
+  // const handleSave = async () => {
+  //   try {
+  //     let updatedFields = { ...formData };
+  //     const imageForm = new FormData();
+  //     if (mainImageFile) imageForm.append('main', mainImageFile);
+  //     otherImageFiles.forEach((file, i) => {
+  //       if (file) imageForm.append(`other${i}`, file);
+  //     });
+
+  //     if (mainImageFile || otherImageFiles.some(f => f)) {
+
+        
+        
+  //       const imgRes = await fetch(`${baseUrl}/me/upload`, {
+
+  //         method: 'POST',
+  //         headers: { Authorization: `Bearer ${token}` },
+  //         body: imageForm,
+  //       });
+  //       const imgData = await imgRes.json();
+  //       if (imgData.profileImageUrl) {
+  //         updatedFields.profileImageUrl = imgData.profileImageUrl;
+  //         setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
+  //       }
+  //       if (imgData.otherImages) {
+  //         updatedFields.otherImages = imgData.otherImages;
+  //         const updatedPreviews = imgData.otherImages.map(filename =>
+  //           filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+  //         );
+  //         setOtherImages(updatedPreviews);
+  //       }
+  //     }
+
+  //     //Debugging logs ======================\
+
+  //     console.log("PUT URL:", `${baseUrl}/me`);
+  //     console.log("Payload:", updatedFields);
+  //     console.log("Headers:", {
+  //         'Content-Type': 'application/json',
+  //          Authorization: `Bearer ${token}`,
+  //         });
+       
+  //     //Debugging logs ======================/
+
+
+  //     const res = await fetch(`${baseUrl}/me`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(updatedFields),
+  //     });
+
+  //     if (!res.ok) throw new Error('Failed to update profile');
+  //     const updatedUser = await res.json();
+  //     setUser(updatedUser);
+  //     setIsEditing(false);
+  //     alert('Profile updated successfully!');
+  //   } catch (err) {
+  //     console.error('Error saving profile:', err);
+  //     alert('Failed to update profile.');
+  //   }
+  // };
+
+
   const handleSave = async () => {
     try {
-      let updatedFields = { ...formData };
+      const token = localStorage.getItem('token');
       const imageForm = new FormData();
+  
       if (mainImageFile) imageForm.append('main', mainImageFile);
       otherImageFiles.forEach((file, i) => {
         if (file) imageForm.append(`other${i}`, file);
       });
-
+  
+      // Upload images if needed
       if (mainImageFile || otherImageFiles.some(f => f)) {
-
-        // const imgRes = await fetch(`${baseUrl}/${userId}/upload`, {
-        
         const imgRes = await fetch(`${baseUrl}/me/upload`, {
-
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: imageForm,
         });
+  
         const imgData = await imgRes.json();
+  
         if (imgData.profileImageUrl) {
-          updatedFields.profileImageUrl = imgData.profileImageUrl;
           setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
         }
+  
         if (imgData.otherImages) {
-          updatedFields.otherImages = imgData.otherImages;
           const updatedPreviews = imgData.otherImages.map(filename =>
             filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
           );
           setOtherImages(updatedPreviews);
         }
+  
+        // Inject new image filenames into formData for saving later
+        formData.profileImageUrl = imgData.profileImageUrl;
+        formData.otherImages = imgData.otherImages;
       }
-
-
- // const res = await fetch(`${baseUrl}/${userId}`, {
-
-
+  
+      // Only send the fields we want to update
+      const {
+        username,
+        email,
+        height,
+        weight,
+        birthdate,
+        bio,
+        interests,
+        instagram,
+        facebook,
+        x,
+        bluesky,
+        profileImageUrl,
+        otherImages,
+        location,
+      } = formData;
+  
+      const updatedFields = {
+        username,
+        email,
+        height,
+        weight,
+        birthdate,
+        bio,
+        interests,
+        instagram,
+        facebook,
+        x,
+        bluesky,
+        profileImageUrl,
+        otherImages,
+        location,
+      };
+  
+      console.log('PUT URL:', `${baseUrl}/me`);
+      console.log('Payload:', updatedFields);
+      console.log('Headers:', {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
+  
       const res = await fetch(`${baseUrl}/me`, {
         method: 'PUT',
         headers: {
@@ -134,8 +233,9 @@ const UserProfile = () => {
         },
         body: JSON.stringify(updatedFields),
       });
-
+  
       if (!res.ok) throw new Error('Failed to update profile');
+  
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
@@ -145,6 +245,31 @@ const UserProfile = () => {
       alert('Failed to update profile.');
     }
   };
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const sectionStyle = {
     backgroundColor: '#b0b0b0',
@@ -167,7 +292,7 @@ const UserProfile = () => {
 
   // ================================ VALIDATION STARTS HERE ================================ //
   // Debugging logs
-  if (!userId) {
+  if (!user) {
     console.error("No userId found — can't fetch profile.");
     return <Typography>Error: Could not load profile.</Typography>;
   }
@@ -176,9 +301,9 @@ const UserProfile = () => {
     return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
   }
   
-  console.log('paramId:', paramId);
+  //console.log('paramId:', paramId);
   console.log('localStorage userId:', localStorage.getItem('userId'));
-  console.log('final userId used:', userId);
+  //console.log('final userId used:', userId);
 
 
 
@@ -208,12 +333,12 @@ const UserProfile = () => {
             {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
 
-          {isOwnProfile && (
+          
           <Button variant="contained" component="label" sx={{ mt: 1 }}>
             Upload Main
             <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange('main', e)} />
           </Button>
-          )}
+          
         </Paper>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -234,7 +359,7 @@ const UserProfile = () => {
                 src={img}
                 sx={{ width: 160, height: 160 }}
               />
-              {isOwnProfile && (
+              
               <Button
                 variant="outlined"
                 component="label"
@@ -243,7 +368,7 @@ const UserProfile = () => {
                 Upload
                 <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
               </Button>
-              )}
+              
             </Paper>
           ))}
         </Box>
@@ -283,7 +408,7 @@ const UserProfile = () => {
             value={formData.birthdate || ''}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }} disabled={!isOwnProfile}/>
+            InputProps={{ readOnly: !isEditing }} />
 
           <TextField label="Height"
             name="height"
@@ -292,8 +417,8 @@ const UserProfile = () => {
             onFocus={handleFocus}
             InputProps={{
               style: { backgroundColor: '#b0b0b0' },
-              readOnly: !isOwnProfile || !isEditing
-            }} disabled={!isOwnProfile} />
+              readOnly:!isEditing
+            }} />
 
           <TextField label="Weight"
             name="weight"
@@ -302,8 +427,8 @@ const UserProfile = () => {
             onFocus={handleFocus}
             InputProps={{
               style: { backgroundColor: '#b0b0b0' },
-              readOnly: !isOwnProfile || !isEditing
-            }} disabled={!isOwnProfile} />
+              readOnly: !isEditing
+            }} />
         </Paper>
 
 
@@ -317,7 +442,7 @@ const UserProfile = () => {
             value={formData.bio || ''}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }} disabled={!isOwnProfile}/>
+            InputProps={{ readOnly:!isEditing }} />
         </Paper>
 
         
@@ -332,7 +457,7 @@ const UserProfile = () => {
               interests: e.target.value.split(',').map((s) => s.trim())
             })}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }} disabled={!isOwnProfile}/>
+            InputProps={{ readOnly:!isEditing }} />
         </Paper>
 
         
@@ -344,8 +469,8 @@ const UserProfile = () => {
             value={formData.instagram || ''}
             onChange={handleChange} 
             onFocus={handleFocus} 
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }} 
-            disabled={!isOwnProfile}
+            InputProps={{ readOnly:!isEditing }} 
+            
             
           />
           
@@ -354,24 +479,24 @@ const UserProfile = () => {
             value={formData.facebook || ''}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }}disabled={!isOwnProfile} />
+            InputProps={{ readOnly:!isEditing }}/>
           
           <TextField name="x"
             label="X (Twitter)"
             value={formData.x || ''}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }}disabled={!isOwnProfile} />
+            InputProps={{ readOnly:!isEditing }}/>
           
           <TextField name="bluesky"
             label="Bluesky"
             value={formData.bluesky || ''}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isOwnProfile || !isEditing }}disabled={!isOwnProfile} />
+            InputProps={{ readOnly:!isEditing }}/>
         </Paper>
 
-        {isOwnProfile && (
+        
         <Box sx={{ textAlign: 'center', mb: 4 }}>
 
           <Button
@@ -383,7 +508,7 @@ const UserProfile = () => {
             {isEditing ? 'Save My Profile' : 'Edit My Profile'}
           </Button>
         </Box>
-        )}
+      
       </Box>
     </Box>
   );
