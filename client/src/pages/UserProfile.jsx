@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
 import {
   Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   Typography,
   Paper,
   Avatar,
   Button,
   TextField,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';  
+import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
-
   const token = localStorage.getItem('token');
-
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -51,7 +52,6 @@ const UserProfile = () => {
     fetchProfile();
   }, []);
 
-
   const handleImageChange = (index, e) => {
     const file = e.target.files[0];
     if (file) {
@@ -70,7 +70,6 @@ const UserProfile = () => {
     }
   };
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -79,88 +78,35 @@ const UserProfile = () => {
     if (!isEditing) setIsEditing(true);
   };
 
-  
-
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('token');
+      let updatedFields = { ...formData };
       const imageForm = new FormData();
-  
       if (mainImageFile) imageForm.append('main', mainImageFile);
       otherImageFiles.forEach((file, i) => {
         if (file) imageForm.append(`other${i}`, file);
       });
-  
-      // Upload images if needed
+
       if (mainImageFile || otherImageFiles.some(f => f)) {
         const imgRes = await fetch(`${baseUrl}/me/upload`, {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           body: imageForm,
         });
-  
         const imgData = await imgRes.json();
-  
         if (imgData.profileImageUrl) {
+          updatedFields.profileImageUrl = imgData.profileImageUrl;
           setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
         }
-  
         if (imgData.otherImages) {
+          updatedFields.otherImages = imgData.otherImages;
           const updatedPreviews = imgData.otherImages.map(filename =>
             filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
           );
           setOtherImages(updatedPreviews);
         }
-  
-        // Inject new image filenames into formData for saving later
-        formData.profileImageUrl = imgData.profileImageUrl;
-        formData.otherImages = imgData.otherImages;
       }
-  
-      // Only send the fields we want to update
-      const {
-        username,
-        email,
-        height,
-        weight,
-        birthdate,
-        bio,
-        interests,
-        instagram,
-        facebook,
-        x,
-        bluesky,
-        profileImageUrl,
-        otherImages,
-        location,
-      } = formData;
-  
-      const updatedFields = {
-        username,
-        email,
-        height,
-        weight,
-        birthdate,
-        bio,
-        interests,
-        instagram,
-        facebook,
-        x,
-        bluesky,
-        profileImageUrl,
-        otherImages,
-        location,
-      };
-  
-      console.log('PUT URL:', `${baseUrl}/me`);
-      console.log('Payload:', updatedFields);
-      console.log('Headers:', {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      });
-  
+
       const res = await fetch(`${baseUrl}/me`, {
         method: 'PUT',
         headers: {
@@ -169,9 +115,8 @@ const UserProfile = () => {
         },
         body: JSON.stringify(updatedFields),
       });
-  
+
       if (!res.ok) throw new Error('Failed to update profile');
-  
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
@@ -181,31 +126,6 @@ const UserProfile = () => {
       alert('Failed to update profile.');
     }
   };
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const sectionStyle = {
     backgroundColor: '#b0b0b0',
@@ -221,30 +141,11 @@ const UserProfile = () => {
     gap: '16px',
   };
 
-
   if (!user) {
     return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
   }
 
-  // ================================ VALIDATION STARTS HERE ================================ //
-  // Debugging logs
-  if (!user) {
-    console.error("No userId found — can't fetch profile.");
-    return <Typography>Error: Could not load profile.</Typography>;
-  }
-
-  if (!user) {
-    return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
-  }
-  
-  //console.log('paramId:', paramId);
-  console.log('localStorage userId:', localStorage.getItem('userId'));
-  //console.log('final userId used:', userId);
-
-
-
-
-   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
+  // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
     <Box
@@ -268,13 +169,10 @@ const UserProfile = () => {
           >
             {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
-
-          
           <Button variant="contained" component="label" sx={{ mt: 1 }}>
             Upload Main
             <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange('main', e)} />
           </Button>
-          
         </Paper>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -295,7 +193,6 @@ const UserProfile = () => {
                 src={img}
                 sx={{ width: 160, height: 160 }}
               />
-              
               <Button
                 variant="outlined"
                 component="label"
@@ -304,7 +201,6 @@ const UserProfile = () => {
                 Upload
                 <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
               </Button>
-              
             </Paper>
           ))}
         </Box>
@@ -313,9 +209,7 @@ const UserProfile = () => {
       {/* RIGHT - PROFILE DETAILS */}
       <Box sx={{ width: '100%', maxWidth: 600 }}>
         <Button
- 
-     onClick={() => navigate('/home')} // ======> NAVIGATE TO HOMEPAGE 
-
+          onClick={() => navigate('/home')}  // fixed this it was set to the login page for some reason.. Just changed it to homepage.
           variant="outlined"
           sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
         >
@@ -332,109 +226,99 @@ const UserProfile = () => {
           <Typography variant="h5" sx={{ mt: 1 }}>{user.username}</Typography>
           <Typography variant="body2">{user.email}</Typography>
         </Paper>
-          
-        {/* ========================= PERSONAL INFO SECTION ==================================== */}
+
+        {/* Personal info section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Personal Info</Typography>
-
-          <TextField label="Birthdate"
-            name="birthdate"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={formData.birthdate || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }} />
-
-          <TextField label="Height"
-            name="height"
-            value={formData.height || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{
-              style: { backgroundColor: '#b0b0b0' },
-              readOnly:!isEditing
-            }} />
-
-          <TextField label="Weight"
-            name="weight"
-            value={formData.weight || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{
-              style: { backgroundColor: '#b0b0b0' },
-              readOnly: !isEditing
-            }} />
+          <TextField label="Birthdate" name="birthdate" type="date" InputLabelProps={{ shrink: true }} value={formData.birthdate || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField label="Height" name="height" value={formData.height || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
+          <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
         </Paper>
 
-
-          {/* ========================== ABOUT SECTION ==================================== */}
+        {/* Bio Section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">About Me</Typography>
-          <TextField
-            fullWidth name="bio"
-            label="Your Bio"
-            multiline rows={3}
-            value={formData.bio || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly:!isEditing }} />
+          <TextField fullWidth name="bio" label="Your Bio" multiline rows={3} value={formData.bio || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        
-        {/* ========================== INTERESTS SECTION ==================================== */}
+        {/* Interests section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Interests</Typography>
-          <TextField fullWidth name="interests"
-            label="Comma-separated"
-            value={formData.interests?.join(', ') || ''}
-            onChange={(e) => setFormData({
-              ...formData,
-              interests: e.target.value.split(',').map((s) => s.trim())
-            })}
-            onFocus={handleFocus}
-            InputProps={{ readOnly:!isEditing }} />
+          <TextField fullWidth name="interests" label="Comma-separated" value={formData.interests?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, interests: e.target.value.split(',').map((s) => s.trim()) })} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+        </Paper>
+        
+        {/* Payment and rating section */}
+        <Paper elevation={4} sx={sectionStyle}>
+          <Typography variant="h6">Pro Coaching</Typography>
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.isPro || false}
+                onChange={(e) =>
+                  setFormData({ ...formData, isPro: e.target.checked })
+                }
+                onFocus={handleFocus}
+              />
+            }
+            label="I'm a Pro who can teach or coach"
+          />
+
+          {formData.isPro && (
+            <>
+              <TextField
+                label="Hourly Rate ($)"
+                name="hourlyRate"
+                type="number"
+                value={formData.hourlyRate || ''}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                InputProps={{ readOnly: !isEditing }}
+                sx={{ mt: 2 }}
+              />
+
+              <FormGroup row sx={{ mt: 2 }}>
+                {[
+                  'Monday',
+                  'Tuesday',
+                  'Wednesday',
+                  'Thursday',
+                  'Friday',
+                  'Saturday',
+                  'Sunday',
+                ].map((day) => (
+                  <FormControlLabel
+                    key={day}
+                    control={
+                      <Checkbox
+                        checked={formData.availableDays?.includes(day) || false}
+                        onChange={(e) => {
+                          const days = formData.availableDays || [];
+                          const updated = e.target.checked
+                            ? [...days, day]
+                            : days.filter((d) => d !== day);
+                          setFormData({ ...formData, availableDays: updated });
+                        }}
+                      />
+                    }
+                    label={day}
+                  />
+                ))}
+              </FormGroup>
+            </>
+          )}
         </Paper>
 
-        
-        {/* ====================== SOCIAL LINKS SECTION ==================================== */}
+        {/* Socials section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Social Links</Typography>
-          <TextField name="instagram"
-            label="Instagram"
-            value={formData.instagram || ''}
-            onChange={handleChange} 
-            onFocus={handleFocus} 
-            InputProps={{ readOnly:!isEditing }} 
-            
-            
-          />
-          
-          <TextField name="facebook"
-            label="Facebook"
-            value={formData.facebook || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly:!isEditing }}/>
-          
-          <TextField name="x"
-            label="X (Twitter)"
-            value={formData.x || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly:!isEditing }}/>
-          
-          <TextField name="bluesky"
-            label="Bluesky"
-            value={formData.bluesky || ''}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            InputProps={{ readOnly:!isEditing }}/>
+          <TextField name="instagram" label="Instagram" value={formData.instagram || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="facebook" label="Facebook" value={formData.facebook || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="x" label="X (Twitter)" value={formData.x || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField name="bluesky" label="Bluesky" value={formData.bluesky || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-
           <Button
             variant="contained"
             color="warning"
@@ -444,7 +328,6 @@ const UserProfile = () => {
             {isEditing ? 'Save My Profile' : 'Edit My Profile'}
           </Button>
         </Box>
-      
       </Box>
     </Box>
   );

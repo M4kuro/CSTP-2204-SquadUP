@@ -116,6 +116,31 @@ router.put('/me',authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/users/:id/rate  this is for giving a rating to someone
+
+router.post('/:id/rate', authenticateToken, async (req, res) => {
+  try {
+    const { stars, comment } = req.body;
+    const userId = req.user.id;
+    const targetUser = await User.findById(req.params.id);
+
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+
+    const alreadyRated = targetUser.ratings.find(r => r.userId === userId);
+    if (alreadyRated) {
+      return res.status(400).json({ message: 'You already rated this user.' });
+    }
+
+    targetUser.ratings.push({ userId, stars, comment });
+    await targetUser.save();
+
+    res.status(200).json({ message: 'Rating submitted!' });
+  } catch (err) {
+    console.error('Rating error:', err);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
 // POST /api/users/:id/squadup ===============================================  
 router.post('/:id/squadup', async (req, res) => {
   try {

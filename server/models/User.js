@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
   birthdate: { type: Date },
   height: { type: String },
   weight: { type: String },
+  isPro: { type: Boolean, default: false },
+  hourlyRate: { type: Number },
+  ratings: [{
+    userId: String,
+    stars: Number, // from 1 to 5
+    comment: String
+  }],
+  availableDays: [{ type: String }],
   instagram: { type: String },
   facebook: { type: String },
   x: { type: String },
