@@ -159,14 +159,13 @@ const HomePage = () => {
 
             {/* User card Information and Control ================================================================= */}
             <Box sx={{
-                width: '580px',
+                width: '300px',
                 backgroundColor: '#9B331C',
                 borderRadius: ' 20px',
                 m: 5,
                 boxShadow: '10',
-                display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
+                
             }}>
                  {/* Avatar */}
                 <Box sx={{ p: 3, textAlign: 'center' }}>
@@ -208,9 +207,13 @@ const HomePage = () => {
                 </Box>
 
 
-                <List sx={{
+                <Box sx={{
                     display: 'flex',
-                    alignItems: 'center'
+                    mt: 35,
+                    p: 2,
+                    justifyContent: 'center',
+                    gap: 3
+                    
                 }}>
                     <ListItem disablePadding>
                     <ListItemButton>
@@ -230,7 +233,7 @@ const HomePage = () => {
                         <ListItemText primary="" sx={{ ml: 1 }} />
                     </ListItemButton>
                     </ListItem>
-                </List>
+                </Box>
             </Box>
           {/* =========================================================================== */}  
 
@@ -306,7 +309,7 @@ const HomePage = () => {
                                         <Card
                                             key={user._id}
                                             sx={{
-                                                height: 480, // full height within the Grid item
+                                                height: 450, // full height within the Grid item
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 justifyContent: 'space-between',
@@ -315,13 +318,8 @@ const HomePage = () => {
                                                 overflow: 'hidden'
                                             }}>
                                             <CardMedia
-                                                component="img"
-                                                sx={{
-                                                    height: "180",
-                                                    objectFit: 'cover',
-                                                    flexShrink: 0 // Prevent image of shrinking
-                                                    
-                                                }}
+                                                component="div"
+                                                sx={{ height: 200  }}
                                                 image={
                                                 user.profileImageUrl
                                                     ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
@@ -329,25 +327,18 @@ const HomePage = () => {
                                                 }
                                                 alt={`${user.username}'s profile`}
                                             />
-                                            <CardContent sx={{  p: 2 }}>
-                                                <Typography
-                                                    variant="h6"
-                                                    sx={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        mb: '1',
-                                                    }}
-                                                >
-                                                    {user.username}
 
-                                                </Typography>
-                                                
-                                                <Typography
-                                                    variant="body2"
-                                                    color="text.secondary"
-                                                >
-                                                    Interests: 
-                                                </Typography>
+                                            <CardContent sx={{ flexGrow: 1 }}>
+                                                <Box sx={{
+                                                    justifyContent: 'space-evenly'
+                                                }}>
+                                                    <Typography variant="h5">
+                                                        {user.username}
+                                                    </Typography>
+
+                                                    <Typography variant="body2">
+                                                        Interests: 
+                                                    </Typography>
 
                                                 <ul style={{ margin: 10 }}>
 
@@ -358,14 +349,15 @@ const HomePage = () => {
                                                     
                                                 ))}
                                                 </ul>
-                                                
+                                                </Box>
+
+                                            </CardContent>
+
                                                 {/*Buttom box =============================================== */}
                                                 <Box sx={{
-                                                    mt: 2,
-                                                    display: 'flex',
-                                                    gap: 6,
-                                                    pt: 1
-                                                    
+                                                    display:'flex',      
+                                                    justifyContent: 'space-evenly',
+                                                    mb: 2
                                                 }}>
                                                 <Button
                                                     variant="contained"
@@ -382,7 +374,6 @@ const HomePage = () => {
                                                     More
                                                 </Button>
                                                 </Box>
-                                            </CardContent>
                                         </Card>
                                     </Grid>
                         ))
