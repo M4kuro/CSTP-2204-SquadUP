@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
 import {
-    Box, AppBar, Toolbar, Typography, Avatar, Tabs, Tab,
-    Grid, Card, CardContent, CardMedia, Button, Drawer,
-    IconButton, List, ListItem, ListItemText
+    Box, Typography, Avatar, Tabs, Tab,
+    Card, CardContent, CardMedia, Button, 
+    List, ListItem, ListItemText,
+    Grid
 } from '@mui/material';
-import SportsTennisIcon from '@mui/icons-material/SportsTennis';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
 import { ListItemButton } from '@mui/material';
@@ -24,23 +22,21 @@ import { ListItemButton } from '@mui/material';
 // I'm just trying to connect the dots to make things work.
 // once they work i will catagorize and make things smaller and easier.
 
-const drawerWidth = 170;
+
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const HomePage = () => {
-    // const location = useLocation(); //! if not used, deleted or mark as Wishlist
-    // const isViewingOwnProfilePage = location.pathname.startsWith('/profile/'); //! if not used, deleted or mark as Wishlist
-    // const isOnUserProfile = location.pathname.startsWith('/profile/'); //! if not used, deleted or mark as Wishlist
-
-
-
     const userId = localStorage.getItem('userId');
     const [tabValue, setTabValue] = useState(1); // default to "Discover" when a user hits the homepage
     const [users, setUsers] = useState([]);
     const [view, setView] = useState('discover'); // this tracks the current section
     const [selectedUser, setSelectedUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
+    
+
+
 
     //! TODO: EVENT NOT DEFINED HERE
     const handleTabChange = (event, newValue) => {
@@ -96,8 +92,6 @@ const HomePage = () => {
 };
 
 
-
-
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -131,140 +125,132 @@ const HomePage = () => {
     };
 
 
+    // Fetch logged user =====================================\
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${baseUrl}/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                if (!res.ok) {
+                    throw new Error('Failed to fetch current user');
+                }
+    
+                const data = await res.json();
+                setCurrentUser(data);
+            } catch (err) {
+                console.error('Error fetching current user:', err);
+            }
+        };
+    
+        fetchCurrentUser();
+    }, []);
+    
+
 
 
     // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-            {/* Sidebar styling */}
-            <Drawer
-                variant="permanent"
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        backgroundColor: '#8B2F1C',
-                        color: '#fff',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                    },
-                }}
-            >
-                <Box>
-                    {/* Hamburger icon + label */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
-                        <IconButton color="inherit">
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant="h6" sx={{ ml: 1 }}>
-                            Menu
-                        </Typography>
-                    </Box>
 
-                    {/* SIDE BAR buttons */}
-                    <List>
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={() => setView('discover')}>
-                                <SportsTennisIcon />
-                                <ListItemText primary="Pickleball" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
+            {/* User card Information and Control ================================================================= */}
+            <Box sx={{
+                width: '580px',
+                backgroundColor: '#9B331C',
+                borderRadius: ' 20px',
+                m: 5,
+                boxShadow: '10',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+            }}>
+                 {/* Avatar */}
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                    <Avatar
+                        src={
+                            currentUser?.profileImageUrl
+                                ? `${import.meta.env.VITE_API_URL}/uploads/${currentUser.profileImageUrl}`
+                                : '/placeholder-profile.png'
+                        }
+                        alt={ currentUser?.username || 'User'}
+                        sx={{
+                            width: 200,
+                            height: 200,
+                            mx: 'auto',
+                            mb: 2
 
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={() => {
-                                setTabValue(null);
-                                setView('requests');
-                            }}>
-                                <GroupAddIcon />
-                                <ListItemText primary="SquadUP Requests" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={() => setView('matches')}>
-                                <VisibilityIcon />
-                                <ListItemText primary="Matches" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
-                    </List>
-
+                        }}
+                    />
+                    <Typography
+                        variant="h4">
+                        {currentUser?.username || 'Unknown'}
+                    </Typography>                        
                 </Box>
 
-                {/* Footer */}
-                <Box>
-                    <List>
-                        <ListItem disablePadding>
-                            <ListItemButton>
-                                <SettingsIcon />
-                                <ListItemText primary="Settings" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton>
-                                <HelpIcon />
-                                <ListItemText primary="Help" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={handleLogout}>
-                                <LogoutIcon />
-                                <ListItemText primary="Logout" sx={{ ml: 1 }} />
-                            </ListItemButton>
-                        </ListItem>
-                    </List>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 3
+                }}>
+                    <Button variant="contained" color="warning" onClick={() => navigate(`/profile`)}>
+                        My Profile
+                    </Button>
+                    <Button variant="contained" color="warning" onClick={() => setView('requests')}>
+                        Requests
+                    </Button>
+                    <Button variant="contained" color="warning" onClick={() => setTabValue(2)}>
+                        Squad
+                    </Button>
                 </Box>
 
-            </Drawer>
 
+                <List sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                }}>
+                    <ListItem disablePadding>
+                    <ListItemButton>
+                        <SettingsIcon />
+                        <ListItemText primary="" sx={{ ml: 1, alignContent:'center' }} />
+                    </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                    <ListItemButton>
+                        <HelpIcon />
+                        <ListItemText primary="" sx={{ ml: 1 }} />
+                    </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                    <ListItemButton onClick={handleLogout}>
+                        <LogoutIcon />
+                        <ListItemText primary="" sx={{ ml: 1 }} />
+                    </ListItemButton>
+                    </ListItem>
+                </List>
+            </Box>
+          {/* =========================================================================== */}  
+
+            
             {/* Main content area */}
             <Box
                 sx={{
                     flexGrow: 1,
-                    backgroundColor: '#2D3932',
                     display: 'flex',
                     flexDirection: 'column',
                 }}
             >
-                {/* Top AppBar */}
-                <AppBar
-                    position="static"
-                    sx={{
-                        backgroundColor: '#1E1E1E',
-                        width: '100%',
-                        height: 70,
-                    }}
-                >
-                    <Toolbar sx={{ position: 'relative' }}>
-                        <img
-                            src="/SquadUP.png"
-                            alt=""
-                            style={{
-                                position: 'absolute',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                width: 170,
-                            }}
-                        />
-                        {!selectedUser && (
-                            <Box sx={{ marginLeft: 'auto' }}>
-                                <Avatar
-                                    sx={{ bgcolor: '#FF5722', cursor: 'pointer' }}
-                                    onClick={() => navigate(`/profile`)}  // updated this because we're on longer using params or userID.. this is just decoding via JWT
-                                >
-                                    U
-                                </Avatar>
-                            </Box>
-                        )}
+                
+                {/* Tabs =================================================================================== */}
+                <Box sx={{ textAlign: 'center',}}>
+                    <img src="SquadUP.png" alt="" style={{
+                        width: '150px',
+                        height: 'auto',
 
-                    </Toolbar>
-                </AppBar>
-
-                {/* Tabs */}
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
+                    }}  />
                     <Tabs
                         value={tabValue}
                         onChange={handleTabChange}
@@ -287,72 +273,121 @@ const HomePage = () => {
                         <Tab label="Matches" />
                     </Tabs>
                 </Box>
-
-                {/* User Grid */}
-                <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3 }}>
+                {/* =================================================================================== */}
+                
+                {/* Main Grid ========================================================================== */}
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto',
+                        p: 3,
+                        display: 'grid',
+                        gridTemplateColumns: {
+                            xs: '1fr',
+                            sm: 'repeat(2, 1fr)',
+                            md: 'repeat(3, 1fr)',
+                            lg: 'repeat(4, 1fr)',
+                            xl: 'repeat(5, 1fr)'
+                        },
+                        gap: 3,
+                        
+                    }}>
+                    {/* Button MORE functionality */}
                     {selectedUser ? (
                         <UserProfileCard
                             user={selectedUser}
                             onBack={() => setSelectedUser(null)}
                         />
                     ) : (
-                        <Grid container spacing={3}>
-                            {users.map((user) => (
-                                <Grid item xs={12} sm={6} md={4} key={user.user}>
-                                    <Card>
-                                        {/* 🖼️ Add main profile image here */}
-                                        <CardMedia
-                                            component="img"
-                                            height="200"
-                                            image={
+                            users
+                                .filter((user) => user._id !== currentUser?._id) // Removing logged user from the grid; Removed myself since we have a separate card for it
+                                .map((user) => (
+                                <Grid xs={12} sm={6} md={4}>
+                                        <Card
+                                            key={user._id}
+                                            sx={{
+                                                height: 480, // full height within the Grid item
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'space-between',
+                                                borderRadius: 3,
+                                                boxShadow: 3,
+                                                overflow: 'hidden'
+                                            }}>
+                                            <CardMedia
+                                                component="img"
+                                                sx={{
+                                                    height: "180",
+                                                    objectFit: 'cover',
+                                                    flexShrink: 0 // Prevent image of shrinking
+                                                    
+                                                }}
+                                                image={
                                                 user.profileImageUrl
                                                     ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
-                                                    : '/placeholder-profile.png' // optional fallback
-                                            }
-                                            alt={`${user.username}'s profile`}
-                                            sx={{ objectFit: 'cover' }}
-                                        />
+                                                    : '/placeholder-profile.png'
+                                                }
+                                                alt={`${user.username}'s profile`}
+                                            />
+                                            <CardContent sx={{  p: 2 }}>
+                                                <Typography
+                                                    variant="h6"
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        mb: '1',
+                                                    }}
+                                                >
+                                                    {user.username}
 
-                                        <CardContent>
-                                            <Typography variant="h6">{user.username}</Typography>
-                                            <Typography variant="body2">Interests:</Typography>
-                                            <ul style={{ margin: 0, paddingLeft: 16 }}>
+                                                </Typography>
+                                                
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                >
+                                                    Interests: 
+                                                </Typography>
+
+                                                <ul style={{ margin: 10 }}>
+
                                                 {user.interests?.map((interest, i) => (
                                                     <li key={i}>
-                                                        <Typography variant="body2">{interest}</Typography>
+                                                    <Typography variant="body2">{interest}</Typography>
                                                     </li>
+                                                    
                                                 ))}
-                                            </ul>
-
-                                            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-
+                                                </ul>
+                                                
+                                                {/*Buttom box =============================================== */}
+                                                <Box sx={{
+                                                    mt: 2,
+                                                    display: 'flex',
+                                                    gap: 6,
+                                                    pt: 1
+                                                    
+                                                }}>
                                                 <Button
                                                     variant="contained"
                                                     color="warning"
-                                                    onClick={() => handleSquadUp(user._id)
-                                                        
-                                                    }
-                                                    
+                                                    onClick={() => handleSquadUp(user._id)}
                                                 >
                                                     S+UP
                                                 </Button>
-
                                                 <Button
                                                     variant="outlined"
                                                     color="warning"
-                                                    onClick={() => handleViewUser(user._id)} //! DONT CHANGE THIS { user._id }
+                                                    onClick={() => handleViewUser(user._id)}
                                                 >
                                                     More
                                                 </Button>
-                                            </Box>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                        ))
                     )}
-                </Box>
+                    </Box>
             </Box>
         </Box>
     );
