@@ -389,16 +389,41 @@ const HomePage = () => {
                                             overflow: 'hidden',
                                         }}
                                     >
-                                        <CardMedia
-                                            component="div"
-                                            sx={{ height: 200 }}
-                                            image={
-                                                user.profileImageUrl
-                                                    ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
-                                                    : '/placeholder-profile.png'
-                                            }
-                                            alt={`${user.username}'s profile`}
-                                        />
+                                        {/* adding a pro-banner near top right of pro users image */}
+                                        <Box sx={{ position: 'relative' }}>
+                                            {/* User Image */}
+                                            <CardMedia
+                                                component="div"
+                                                sx={{ height: 200 }}
+                                                image={
+                                                    user.profileImageUrl
+                                                        ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
+                                                        : '/placeholder-profile.png'
+                                                }
+                                                alt={`${user.username}'s profile`}
+                                            />
+
+                                            {/* Pro Ribbon CSS */}
+                                            {user.isPro && (
+                                                <Box
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 7,
+                                                        right: -4,
+                                                        backgroundColor: '#FF5722',
+                                                        color: '#fff',
+                                                        padding: '2px 10px',
+                                                        transform: 'rotate(35deg)',
+                                                        fontWeight: 'bold',
+                                                        fontSize: '0.75rem',
+                                                        zIndex: 2,
+                                                        boxShadow: 2,
+                                                    }}
+                                                >
+                                                    PRO
+                                                </Box>
+                                            )}
+                                        </Box>
                                         <CardContent sx={{ flexGrow: 1 }}>
                                             <Box sx={{ justifyContent: 'space-evenly' }}>
                                                 <Typography variant="h5">{user.username}</Typography>
