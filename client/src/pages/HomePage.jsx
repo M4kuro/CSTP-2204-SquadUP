@@ -228,8 +228,15 @@ const HomePage = () => {
                 m: 5,
                 boxShadow: '10',
                 flexDirection: 'column',
-
+                
             }}>
+                <Box
+                    sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                    }}
+                >
                 {/* Avatar */}
                 <Box sx={{ p: 3, textAlign: 'center' }}>
                     <Avatar
@@ -253,6 +260,7 @@ const HomePage = () => {
                     </Typography>
                 </Box>
 
+                 {/*BUTTONS BOX =============================== */}       
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -272,7 +280,7 @@ const HomePage = () => {
 
                 <Box sx={{
                     display: 'flex',
-                    mt: 80,
+                    mt: 'auto',
                     p: 3,
                     justifyContent: 'center',
                     gap: 3
@@ -284,18 +292,21 @@ const HomePage = () => {
                             <ListItemText primary="" sx={{ ml: 1, alignContent: 'center' }} />
                         </ListItemButton>
                     </ListItem>
+                    
                     <ListItem disablePadding>
                         <ListItemButton>
                             <HelpIcon />
                             <ListItemText primary="" sx={{ ml: 1 }} />
                         </ListItemButton>
                     </ListItem>
+
                     <ListItem disablePadding>
                         <ListItemButton onClick={handleLogout}>
                             <LogoutIcon />
                             <ListItemText primary="" sx={{ ml: 1 }} />
                         </ListItemButton>
                     </ListItem>
+                </Box>
                 </Box>
             </Box>
             {/* =========================================================================== */}
