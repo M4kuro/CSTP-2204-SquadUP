@@ -52,25 +52,25 @@ const UserProfileCard = ({ user, onBack }) => {
 
   return (
     <Box
-      sx={{
-        display: 'grid',
-        placeItems: 'center',
-        backgroundColor: '#2D3932',
-        minHeight: '100vh',
-        minWidth: '100vw',
-        padding: 4,
-      }}
-    >
-      <Paper
-        elevation={4}
-        sx={{
-          backgroundColor: '#b0b0b0',
-          color: '#000',
-          padding: 4,
-          width: '100%',
-          maxWidth: 600,
-        }}
-      >
+  sx={{
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    width: '100%',
+    padding: 4,
+}}
+>
+  <Paper
+    elevation={4}
+    sx={{
+      backgroundColor: '#b0b0b0',
+      color: '#000',
+      padding: 4,
+      width: '100%',
+      maxWidth: '1500px', // or try '1000px' or remove it for full stretch
+      flexGrow: 1,
+    }}
+  >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Avatar
             src={
@@ -85,7 +85,10 @@ const UserProfileCard = ({ user, onBack }) => {
           </Avatar>
           <Box>
             <Typography variant="h5">{user.username}</Typography>
-            <Typography variant="body2">{user.email}</Typography>
+
+            {/* -- <Typography variant="body2">{user.email}</Typography> -- removing the display for user email we dont want 
+            everyone to see eachothers email for spam/security reasons --  */}
+
             <Typography variant="body2">Age: {calculateAge(user.birthdate)}</Typography>
           </Box>
         </Box>
