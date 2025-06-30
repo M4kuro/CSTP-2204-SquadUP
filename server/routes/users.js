@@ -72,9 +72,12 @@ router.get('/discover', async (req, res) => {
 });
 
 // GET /api/users/matches/:userId ========================================================
-router.get('/matches/:userId', async (req, res) => {
-  console.log("✅ /matches route triggered", req.params.userId);
+router.get('/matches/:userId', authenticateToken, async (req, res) => {
   try {
+    if (req.user.id !== req.params.userId) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const currentUser = await User.findById(req.params.userId).populate('matches');
     if (!currentUser) return res.status(404).json({ error: 'User not found' });
 
@@ -86,7 +89,10 @@ router.get('/matches/:userId', async (req, res) => {
 });
 
 // GET /api/users/requests/:userId =======================================================
-router.get('/requests/:userId', async (req, res) => {
+router.get('/requests/:userId', authenticateToken, async (req, res) => {
+  if (req.user.id !== req.params.userId) {
+    return res.status(403).json({ error: 'Unauthorized request' });
+  }
   try {
     const currentUser = await User.findById(req.params.userId).populate('squadRequests');
     if (!currentUser) return res.status(404).json({ error: 'User not found' });
@@ -141,10 +147,10 @@ router.post('/:id/rate', authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/users/:id/squadup ===============================================  
-router.post('/:id/squadup', async (req, res) => {
+// POST /api/users/:id/squadup (ACCEPT REQUEST) ===============================================  
+router.post('/:id/squadup', authenticateToken, async (req, res) => {
   try {
-    const currentUserId = req.body.currentUserId;
+    const currentUserId = req.user.id; // updated this because JWT after authentication middleware
     const targetUserId = req.params.id;
 
     if (currentUserId === targetUserId) {
@@ -184,6 +190,39 @@ router.post('/:id/squadup', async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 });
+
+// POST /api/users/:id/decline (DECLINE REQUEST )===============================================
+router.post('/:id/decline', authenticateToken, async (req, res) => {
+  try {
+    const currentUserId = req.params.id;
+    const { requesterId } = req.body;
+
+    if (req.user.id !== currentUserId) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    if (!requesterId) {
+      return res.status(400).json({ error: 'Missing requester ID' });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    if (!currentUser) return res.status(404).json({ error: 'User not found' });
+
+    currentUser.squadRequests = currentUser.squadRequests.filter(
+      (id) => id.toString() !== requesterId
+    );
+
+    await currentUser.save();
+
+    res.status(200).json({ message: 'Request declined.' });
+  } catch (err) {
+    console.error('Decline error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 
 
 // This section and below should not be moved.

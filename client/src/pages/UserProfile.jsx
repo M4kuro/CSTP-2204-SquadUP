@@ -196,9 +196,9 @@ const UserProfile = () => {
               <Button
                 variant="outlined"
                 component="label"
-                sx={{ mt: 1, fontSize: '0.7rem' }}
+                sx={{ mt: 1, fontSize: '1.7rem' }}
               >
-                Upload
+                +
                 <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
               </Button>
             </Paper>
@@ -246,7 +246,7 @@ const UserProfile = () => {
           <Typography variant="h6">Interests</Typography>
           <TextField fullWidth name="interests" label="Comma-separated" value={formData.interests?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, interests: e.target.value.split(',').map((s) => s.trim()) })} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
         </Paper>
-        
+
         {/* Payment and rating section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Pro Coaching</Typography>
@@ -276,35 +276,30 @@ const UserProfile = () => {
                 InputProps={{ readOnly: !isEditing }}
                 sx={{ mt: 2 }}
               />
+              <Box
+                sx={{
+                  borderLeft: '4px solid #FF5722',
+                  pl: 1.5,
+                  mt: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ color: 'black' }}>
+                  What I'm Offering
+                </Typography>
+              </Box>
 
-              <FormGroup row sx={{ mt: 2 }}>
-                {[
-                  'Monday',
-                  'Tuesday',
-                  'Wednesday',
-                  'Thursday',
-                  'Friday',
-                  'Saturday',
-                  'Sunday',
-                ].map((day) => (
-                  <FormControlLabel
-                    key={day}
-                    control={
-                      <Checkbox
-                        checked={formData.availableDays?.includes(day) || false}
-                        onChange={(e) => {
-                          const days = formData.availableDays || [];
-                          const updated = e.target.checked
-                            ? [...days, day]
-                            : days.filter((d) => d !== day);
-                          setFormData({ ...formData, availableDays: updated });
-                        }}
-                      />
-                    }
-                    label={day}
-                  />
-                ))}
-              </FormGroup>
+
+              <TextField
+                label="Service Details"
+                name="proDescription"
+                multiline
+                rows={3}
+                value={formData.proDescription || ''}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                InputProps={{ readOnly: !isEditing }}
+                sx={{ mt: 2 }}
+              />
             </>
           )}
         </Paper>
