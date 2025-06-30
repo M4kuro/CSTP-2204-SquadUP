@@ -61,6 +61,7 @@ const HomePage = () => {
     const handleSquadUp = async (targetUserId) => {
         try {
             const token = localStorage.getItem('token');
+            const currentUserId = localStorage.getItem('userId');
 
             console.log('Sending S+UP request to:', targetUserId);
 
@@ -72,6 +73,7 @@ const HomePage = () => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
+                body: JSON.stringify({ currentUserId }),
             });
 
             const data = await res.json();
@@ -155,6 +157,62 @@ const HomePage = () => {
         fetchCurrentUser();
     }, []);
 
+    // MATCHING CONTROL ====================================================\
+    //ACCEPT
+    const handleAccept = async (requestingUserId) => {
+        try {
+            const token = localStorage.getItem('token');
+    
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${requestingUserId}/squadup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ currentUserId: localStorage.getItem('userId') }), // required for backend match logic
+            });
+    
+            const data = await res.json();
+    
+            if (res.ok && data.matched) {
+                alert("Squaded!");
+            } else {
+                alert(data.message || 'Something went wrong.');
+            }
+        } catch (err) {
+            console.error('Accept Error:', err);
+            alert('Failed to accept request.');
+        }
+    };
+    
+    // DECLINE
+    const handleDecline = async (requesterId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const currentUserId = localStorage.getItem('userId');
+    
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${currentUserId}/decline`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ requesterId }),
+            });
+    
+            const data = await res.json();
+    
+            
+            if (!res.ok) throw new Error(data.message || 'Decline failed');
+    
+            console.log('✅ Declined request from:', requesterId);
+        } catch (err) {
+            console.error('Decline error:', err);
+            alert('Error declining request.');
+        }
+    };
+    // ========================================================================================/
+    
 
 
 
@@ -214,7 +272,7 @@ const HomePage = () => {
 
                 <Box sx={{
                     display: 'flex',
-                    mt: 75,
+                    mt: 80,
                     p: 3,
                     justifyContent: 'center',
                     gap: 3
@@ -361,20 +419,41 @@ const HomePage = () => {
                                                 mb: 2,
                                             }}
                                         >
-                                            <Button
-                                                variant="contained"
-                                                color="warning"
-                                                onClick={() => handleSquadUp(user._id)}
-                                            >
-                                                S+UP
-                                            </Button>
-                                            <Button
-                                                variant="outlined"
-                                                color="warning"
-                                                onClick={() => handleViewUser(user._id)}
-                                            >
-                                                More
-                                            </Button>
+                                            {view === 'requests' ? (
+                                                <>
+                                                <Button
+                                                    variant="contained"
+                                                    color="success"
+                                                    onClick={() => handleAccept(user._id)}
+                                                >
+                                                    Accept
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    onClick={() => handleDecline(user._id)} // we'll create this next
+                                                >
+                                                    Decline
+                                                </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                <Button
+                                                    variant="contained"
+                                                    color="warning"
+                                                    onClick={() => handleSquadUp(user._id)}
+                                                >
+                                                    S+UP
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="warning"
+                                                    onClick={() => handleViewUser(user._id)}
+                                                >
+                                                    More
+                                                </Button>
+                                                </>
+                                            )}
                                         </Box>
                                     </Card>
                                 </Grid>
