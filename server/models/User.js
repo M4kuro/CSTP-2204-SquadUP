@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     stars: Number, // from 1 to 5
     comment: String
   }],
-  availableDays: [{ type: String }],
+  proDescription: { type: String },
   instagram: { type: String },
   facebook: { type: String },
   x: { type: String },
