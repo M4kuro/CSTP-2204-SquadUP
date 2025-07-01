@@ -1,4 +1,3 @@
-import React from 'react';
 import GooglePlacesAutocomplete from 'react-google-autocomplete';
 
 const LocationInput = ({ onPlaceSelected }) => {
