@@ -87,101 +87,133 @@ const HomePage = () => {
     navigate('/');
   };
 
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${baseUrl}/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error('Failed to fetch current user');
-        const data = await res.json();
-        setCurrentUser(data);
-      } catch (err) {
-        console.error('Error fetching current user:', err);
+  // fetch the current user function
+
+  const fetchCurrentUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${baseUrl}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch current user');
+      const data = await res.json();
+      setCurrentUser(data);
+    } catch (err) {
+      console.error('Error fetching current user:', err);
+    }
+  };
+
+  // fetch users function
+
+  const fetchUsers = async () => {
+    try {
+      const currentUserId = localStorage.getItem('userId');
+      let endpoint = '';
+      if (view === "requests") {
+        endpoint = `${baseUrl}/requests/${currentUserId}`;
+      } else if (tabValue === 2) {
+        endpoint = `${baseUrl}/matches/${currentUserId}`;
+      } else {
+        endpoint = `${baseUrl}/discover`;
       }
-    };
+
+      const token = localStorage.getItem('token');
+      const res = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
+  // fetch the squadup requests function
+
+  const fetchRequests = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${baseUrl}/requests/${currentUser?._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const filtered = data.filter(
+          (u) => !currentUser?.matches?.includes(u._id)
+        );
+        setIncomingRequests(filtered);
+      }
+    } catch (err) {
+      console.error('❌ Error fetching squad requests:', err);
+    }
+  };
+
+  // updating the useeffects and taking out the functions
+
+  useEffect(() => {
     fetchCurrentUser();
   }, []);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const currentUserId = localStorage.getItem('userId');
-        let endpoint = '';
-        if (view === "requests") {
-          endpoint = `${baseUrl}/requests/${currentUserId}`;
-        } else if (tabValue === 2) {
-          endpoint = `${baseUrl}/matches/${currentUserId}`;
-        } else {
-          endpoint = `${baseUrl}/discover`;
-        }
-
-        const token = localStorage.getItem('token');
-        const res = await fetch(endpoint, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await res.json();
-        setUsers(data);
-      } catch (err) {
-        console.error('Error fetching users:', err);
-      }
-    };
     fetchUsers();
   }, [tabValue, view]);
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${baseUrl}/requests/${currentUser?._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          const filtered = data.filter(
-            (u) => !currentUser?.matches?.includes(u._id)
-          );
-          setIncomingRequests(filtered);
-        }
-      } catch (err) {
-        console.error('❌ Error fetching squad requests:', err);
-      }
-    };
-
     if (currentUser?._id) fetchRequests();
   }, [currentUser]);
 
-  const handleAccept = async (requestingUserId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${baseUrl}/${requestingUserId}/squadup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentUserId: localStorage.getItem('userId') }),
-      });
 
-      const data = await res.json();
-      if (res.ok && data.matched) {
-        alert("Squaded!");
+  // updating the handleAccept 
+
+  const handleAccept = async (requestingUserId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const currentUserId = localStorage.getItem('userId');
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${requestingUserId}/squadup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ currentUserId }), // not actually used server-side now, but ok to leave
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Always a match if this user is accepting a request
+      if (data.matched) {
+        alert("🎉 It’s a match! You both SquadUP’d!");
       } else {
-        alert(data.message || 'Something went wrong.');
+        // This should technically never happen in 'requests' tab
+        alert("🤔 S+UP request sent. Waiting for a match.");
       }
-    } catch (err) {
-      console.error('Accept Error:', err);
-      alert('Failed to accept request.');
+
+      // Refresh views
+      await fetchCurrentUser();
+      await fetchUsers();
+      await fetchRequests();
+    } else {
+      alert(data.message || 'Something went wrong.');
     }
-  };
+  } catch (err) {
+    console.error('Accept Error:', err);
+    alert('Failed to accept request.');
+  }
+};
+
+
+
+  // updating the decline as well 
 
   const handleDecline = async (requesterId) => {
     try {
       const token = localStorage.getItem('token');
       const currentUserId = localStorage.getItem('userId');
+
       const res = await fetch(`${baseUrl}/${currentUserId}/decline`, {
         method: 'POST',
         headers: {
@@ -193,11 +225,18 @@ const HomePage = () => {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Decline failed');
+
+      console.log('✅ Declined request from:', requesterId);
+
+      // 🔁 Refresh the UI to reflect the updated requests list
+      fetchRequests();
+      fetchUsers();
     } catch (err) {
       console.error('Decline error:', err);
       alert('Error declining request.');
     }
   };
+
 
   // --------------------------------- RENDER ----------------------------------------------
   return (
@@ -287,13 +326,22 @@ const HomePage = () => {
 
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ textAlign: 'center' }}>
-          <img src="SquadUP.png" alt="" style={{ width: '150px', height: 'auto' }} />
+        {/* Logo + Tabs (always centered) */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mt: 3,
+          }}
+        >
+          <img src="SquadUP.png" alt="SquadUP Logo" style={{ width: '150px', height: 'auto' }} />
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
             centered
             sx={{
+              mt: 2,
               '& .MuiTab-root': { color: '#fff' },
               '& .Mui-selected': { color: '#FF5722 !important', fontWeight: 'bold' },
               '& .MuiTabs-indicator': { backgroundColor: '#FF5722 !important' },
@@ -303,6 +351,55 @@ const HomePage = () => {
             <Tab label="Discover" />
             <Tab label="Matches" />
           </Tabs>
+
+          {/* 🔄 DEV-ONLY REFRESH BUTTON */}
+
+          <Button
+  onClick={async () => {
+    const token = localStorage.getItem('token');
+    try {
+      // 1. Get current user
+      const res = await fetch(`${baseUrl}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setCurrentUser(data); // Updates state
+
+      // 2. Now that we have currentUser, fetch requests
+      const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const requestsData = await requestsRes.json();
+      const filtered = requestsData.filter(
+        (u) => !data.matches?.includes(u._id)
+      );
+      setIncomingRequests(filtered);
+
+      // 3. Fetch users based on view/tabValue
+      let endpoint = '';
+      if (view === 'requests') {
+        endpoint = `${baseUrl}/requests/${data._id}`;
+      } else if (tabValue === 2) {
+        endpoint = `${baseUrl}/matches/${data._id}`;
+      } else {
+        endpoint = `${baseUrl}/discover`;
+      }
+      const usersRes = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const usersData = await usersRes.json();
+      setUsers(usersData);
+    } catch (err) {
+      console.error('Dev refresh error:', err);
+    }
+  }}
+>
+  🔄 Dev Refresh
+</Button>
+
+          {/* 🔄 DEV-ONLY REFRESH BUTTON */}
+
+
         </Box>
 
         {selectedUser ? (

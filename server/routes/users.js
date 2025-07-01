@@ -163,14 +163,15 @@ router.post('/:id/squadup', authenticateToken, async (req, res) => {
     if (!currentUser || !targetUser) {
       return res.status(404).json({ message: "User not found." });
     }
-
-    const isMutual = targetUser.squadRequests.includes(currentUserId);
+    // flipping this part around from targetuser to current user
+    const isMutual = currentUser.squadRequests.includes(targetUserId);
 
     if (isMutual) {
+      // removes request, add both to matches
       currentUser.matches.push(targetUserId);
       targetUser.matches.push(currentUserId);
-      targetUser.squadRequests = targetUser.squadRequests.filter(
-        (id) => id.toString() !== currentUserId
+      currentUser.squadRequests = currentUser.squadRequests.filter(
+    (id) => id.toString() !== targetUserId
       );
 
       await currentUser.save();
@@ -178,6 +179,7 @@ router.post('/:id/squadup', authenticateToken, async (req, res) => {
 
       return res.status(200).json({ matched: true, message: "🎉 It’s a match!" });
     } else {
+      // no mutual match yet — just send request
       if (!targetUser.squadRequests.includes(currentUserId)) {
         targetUser.squadRequests.push(currentUserId);
         await targetUser.save();
