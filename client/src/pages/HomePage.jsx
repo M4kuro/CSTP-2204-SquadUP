@@ -29,6 +29,7 @@ const HomePage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [incomingRequests, setIncomingRequests] = useState([]);
   const navigate = useNavigate();
+  const [sentRequests, setSentRequests] = useState([]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -59,6 +60,7 @@ const HomePage = () => {
           alert('🎉 It’s a match! You both SquadUP’d!');
         } else {
           alert('✅ S+UP request sent. Waiting for a match!');
+          setSentRequests((prev) => [...prev, targetUserId]); // trying to prevent sup from being reclicked.
         }
 
         const requestsRes = await fetch(`${baseUrl}/requests/${currentUserId}`, {
@@ -93,7 +95,7 @@ const HomePage = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("🚫 Unsquaded successfully.");
+        alert("Unsquaded successfully.");
         await fetchCurrentUser(); // to update your match list
         await fetchUsers();       // to re-render grid
       } else {
@@ -510,33 +512,38 @@ const HomePage = () => {
                     </CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mb: 2 }}>
                       {view === 'requests' ? (
-  <>
-    <Button variant="contained" color="success" onClick={() => handleAccept(user._id)}>
-      Accept
-    </Button>
-    <Button variant="outlined" color="error" onClick={() => handleDecline(user._id)}>
-      Decline
-    </Button>
-  </>
-) : view === 'matches' ? (
-  <>
-    <Button variant="contained" color="error" onClick={() => handleUnsquad(user._id)}>
-      Unsquad
-    </Button>
-    <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
-      More
-    </Button>
-  </>
-) : (
-  <>
-    <Button variant="contained" color="warning" onClick={() => handleSquadUp(user._id)}>
-      S+UP
-    </Button>
-    <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
-      More
-    </Button>
-  </>
-)}
+                        <>
+                          <Button variant="contained" color="success" onClick={() => handleAccept(user._id)}>
+                            Accept
+                          </Button>
+                          <Button variant="outlined" color="error" onClick={() => handleDecline(user._id)}>
+                            Decline
+                          </Button>
+                        </>
+                      ) : view === 'matches' ? (
+                        <>
+                          <Button variant="contained" color="error" onClick={() => handleUnsquad(user._id)}>
+                            Unsquad
+                          </Button>
+                          <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
+                            More
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="contained"
+                            color="warning"
+                            disabled={sentRequests.includes(user._id)}
+                            onClick={() => handleSquadUp(user._id)}
+                          >
+                            {sentRequests.includes(user._id) ? 'Requested' : 'S+UP'}
+                          </Button>
+                          <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
+                            More
+                          </Button>
+                        </>
+                      )}
                     </Box>
                   </Card>
                 </Grid>
