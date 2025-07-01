@@ -1,27 +1,32 @@
-import { Typography, Button, Box, IconButton, Tooltip } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import LocationInput from '../LocationInput'; // Ensure correct path
+
+import { Typography, Button, Box, TextField, IconButton } from '@mui/material';
+import PlaceIcon from '@mui/icons-material/Place';
+import Autocomplete from 'react-google-autocomplete';
+import { useState } from 'react';
 
 const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
+  const [manualLocationText, setManualLocationText] = useState('');
+
   const handlePlaceSelected = (place) => {
-    const components = place.address_components;
+    const address = place.address_components;
 
-    const getComponent = (types) =>
-      components.find((comp) => types.some((type) => comp.types.includes(type)))?.long_name || '';
+    const getPart = (type) => {
+      const part = address.find((comp) => comp.types.includes(type));
+      return part ? part.long_name : '';
+    };
 
-    const city = getComponent(['locality', 'administrative_area_level_2']);
-    const state = getComponent(['administrative_area_level_1']);
-    const country = getComponent(['country']);
+    const city = getPart('locality') || getPart('sublocality') || '';
+    const state = getPart('administrative_area_level_1') || '';
+    const country = getPart('country') || '';
+
+    setManualLocationText(`${city}, ${state}, ${country}`);
 
     setFormData({
       ...formData,
       city,
       state,
       country,
-      location: {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-      },
+      location: null,
     });
   };
 
@@ -50,6 +55,9 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
           const state = components.state || '';
           const country = components.country || '';
 
+
+          setManualLocationText(`${city}, ${state}, ${country}`);
+
           setFormData({
             ...formData,
             city,
@@ -77,13 +85,44 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
         Where are you located?
       </Typography>
 
-      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Tooltip title="Use My Current Location">
-          <IconButton onClick={handleUseMyLocation} sx={{ mr: 1, color: '#FF5722' }}>
-            <LocationOnIcon />
-          </IconButton>
-        </Tooltip>
-        <LocationInput onPlaceSelected={handlePlaceSelected} />
+
+      {/* Location Input Section with Pin on Left */}
+      {/* added a component for location input.  Also updated the index.css for the Google Places input override */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+        <IconButton onClick={handleGetLocation} sx={{ color: '#FF5722' }}>
+          <PlaceIcon />
+        </IconButton>
+
+        <Autocomplete
+          apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+          onPlaceSelected={handlePlaceSelected}
+          types={['(cities)']}
+          options={{
+            fields: ['address_components', 'geometry'],
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Start typing your city"
+              variant="outlined"
+              value={manualLocationText}
+              onChange={(e) => setManualLocationText(e.target.value)}
+              fullWidth
+              sx={{ flexGrow: 1, fontSize: '1.2rem', height: '60px' }}
+              InputProps={{
+                ...params.InputProps,
+                style: {
+                  height: '65px',
+                  fontSize: '1.2rem',
+                  paddingLeft: '12px',
+                },
+                '& input': {
+                  padding: '20px 14px',
+                }   // More inner spacing
+              }}
+            />
+          )}
+        />
       </Box>
 
       {formData.city && (

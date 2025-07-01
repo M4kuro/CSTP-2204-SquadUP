@@ -10,10 +10,11 @@ body {
     display: flex;
     width: 100%; }
 
- /* this is what's talking to the Step2GetLocation.jsx but also what's in the locationinput.jsx  */
-.pac-container {
-  z-index: 9999 !important;
-  background-color: white;
-  font-family: 'Roboto', sans-serif;
-  border-radius: 8px;
-}
+
+    /* Google Places input override */
+    /* This is talking to Step2GetLocation.jsx and Locationinput.jsx */
+.pac-target-input {
+  font-size: 1.1rem !important;
+  height: 50px !important;
+  padding: 16px 12px !important;
+  box-sizing: border-box;
