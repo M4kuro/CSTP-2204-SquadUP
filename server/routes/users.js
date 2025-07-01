@@ -224,6 +224,34 @@ router.post('/:id/decline', authenticateToken, async (req, res) => {
 });
 
 
+// POST /api/users/:id/unsquad   --- the unsquadup (after matching)
+router.post('/:id/unsquad', authenticateToken, async (req, res) => {
+  try {
+    const currentUserId = req.user.id;
+    const targetUserId = req.params.id;
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // remove each other from matches
+    currentUser.matches = currentUser.matches.filter(id => id.toString() !== targetUserId);
+    targetUser.matches = targetUser.matches.filter(id => id.toString() !== currentUserId);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return res.status(200).json({ message: "You have unsquaded." });
+  } catch (err) {
+    console.error("❌ Unsquad error:", err);
+    res.status(500).json({ error: "Failed to unsquad." });
+  }
+});
+
+
 
 
 

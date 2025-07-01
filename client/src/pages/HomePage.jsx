@@ -77,6 +77,35 @@ const HomePage = () => {
     }
   };
 
+  // Unsquad Button logic
+  const handleUnsquad = async (targetUserId) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const res = await fetch(`${baseUrl}/${targetUserId}/unsquad`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("🚫 Unsquaded successfully.");
+        await fetchCurrentUser(); // to update your match list
+        await fetchUsers();       // to re-render grid
+      } else {
+        alert(data.message || "Failed to unsquad.");
+      }
+    } catch (err) {
+      console.error("Unsquad error:", err);
+      alert("Something went wrong.");
+    }
+  };
+
+
   const handleViewUser = (userId) => {
     const userToShow = users.find((u) => u._id === userId);
     if (userToShow) setSelectedUser(userToShow);
@@ -168,42 +197,42 @@ const HomePage = () => {
   // updating the handleAccept 
 
   const handleAccept = async (requestingUserId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const currentUserId = localStorage.getItem('userId');
+    try {
+      const token = localStorage.getItem('token');
+      const currentUserId = localStorage.getItem('userId');
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${requestingUserId}/squadup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ currentUserId }), // not actually used server-side now, but ok to leave
-    });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${requestingUserId}/squadup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentUserId }), // not actually used server-side now, but ok to leave
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      // Always a match if this user is accepting a request
-      if (data.matched) {
-        alert("🎉 It’s a match! You both SquadUP’d!");
+      if (res.ok) {
+        // Always a match if this user is accepting a request
+        if (data.matched) {
+          alert("🎉 It’s a match! You both SquadUP’d!");
+        } else {
+          // This should technically never happen in 'requests' tab
+          alert("🤔 S+UP request sent. Waiting for a match.");
+        }
+
+        // Refresh views
+        await fetchCurrentUser();
+        await fetchUsers();
+        await fetchRequests();
       } else {
-        // This should technically never happen in 'requests' tab
-        alert("🤔 S+UP request sent. Waiting for a match.");
+        alert(data.message || 'Something went wrong.');
       }
-
-      // Refresh views
-      await fetchCurrentUser();
-      await fetchUsers();
-      await fetchRequests();
-    } else {
-      alert(data.message || 'Something went wrong.');
+    } catch (err) {
+      console.error('Accept Error:', err);
+      alert('Failed to accept request.');
     }
-  } catch (err) {
-    console.error('Accept Error:', err);
-    alert('Failed to accept request.');
-  }
-};
+  };
 
 
 
@@ -355,47 +384,47 @@ const HomePage = () => {
           {/* 🔄 DEV-ONLY REFRESH BUTTON */}
 
           <Button
-  onClick={async () => {
-    const token = localStorage.getItem('token');
-    try {
-      // 1. Get current user
-      const res = await fetch(`${baseUrl}/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setCurrentUser(data); // Updates state
+            onClick={async () => {
+              const token = localStorage.getItem('token');
+              try {
+                // 1. Get current user
+                const res = await fetch(`${baseUrl}/me`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                setCurrentUser(data); // Updates state
 
-      // 2. Now that we have currentUser, fetch requests
-      const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const requestsData = await requestsRes.json();
-      const filtered = requestsData.filter(
-        (u) => !data.matches?.includes(u._id)
-      );
-      setIncomingRequests(filtered);
+                // 2. Now that we have currentUser, fetch requests
+                const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                const requestsData = await requestsRes.json();
+                const filtered = requestsData.filter(
+                  (u) => !data.matches?.includes(u._id)
+                );
+                setIncomingRequests(filtered);
 
-      // 3. Fetch users based on view/tabValue
-      let endpoint = '';
-      if (view === 'requests') {
-        endpoint = `${baseUrl}/requests/${data._id}`;
-      } else if (tabValue === 2) {
-        endpoint = `${baseUrl}/matches/${data._id}`;
-      } else {
-        endpoint = `${baseUrl}/discover`;
-      }
-      const usersRes = await fetch(endpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const usersData = await usersRes.json();
-      setUsers(usersData);
-    } catch (err) {
-      console.error('Dev refresh error:', err);
-    }
-  }}
->
-  🔄 Dev Refresh
-</Button>
+                // 3. Fetch users based on view/tabValue
+                let endpoint = '';
+                if (view === 'requests') {
+                  endpoint = `${baseUrl}/requests/${data._id}`;
+                } else if (tabValue === 2) {
+                  endpoint = `${baseUrl}/matches/${data._id}`;
+                } else {
+                  endpoint = `${baseUrl}/discover`;
+                }
+                const usersRes = await fetch(endpoint, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                const usersData = await usersRes.json();
+                setUsers(usersData);
+              } catch (err) {
+                console.error('Dev refresh error:', err);
+              }
+            }}
+          >
+            🔄 Dev Refresh
+          </Button>
 
           {/* 🔄 DEV-ONLY REFRESH BUTTON */}
 
@@ -481,16 +510,33 @@ const HomePage = () => {
                     </CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mb: 2 }}>
                       {view === 'requests' ? (
-                        <>
-                          <Button variant="contained" color="success" onClick={() => handleAccept(user._id)}>Accept</Button>
-                          <Button variant="outlined" color="error" onClick={() => handleDecline(user._id)}>Decline</Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button variant="contained" color="warning" onClick={() => handleSquadUp(user._id)}>S+UP</Button>
-                          <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>More</Button>
-                        </>
-                      )}
+  <>
+    <Button variant="contained" color="success" onClick={() => handleAccept(user._id)}>
+      Accept
+    </Button>
+    <Button variant="outlined" color="error" onClick={() => handleDecline(user._id)}>
+      Decline
+    </Button>
+  </>
+) : view === 'matches' ? (
+  <>
+    <Button variant="contained" color="error" onClick={() => handleUnsquad(user._id)}>
+      Unsquad
+    </Button>
+    <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
+      More
+    </Button>
+  </>
+) : (
+  <>
+    <Button variant="contained" color="warning" onClick={() => handleSquadUp(user._id)}>
+      S+UP
+    </Button>
+    <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
+      More
+    </Button>
+  </>
+)}
                     </Box>
                   </Card>
                 </Grid>
