@@ -24,6 +24,7 @@ const UserProfile = () => {
   const [mainImageFile, setMainImageFile] = useState(null);
   const [otherImages, setOtherImages] = useState([null, null, null]);
   const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
+  const allInterests = ['Video Games', 'Board Games', 'Sports', 'Music', 'Fitness'];
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -145,6 +146,22 @@ const UserProfile = () => {
     return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
   }
 
+
+  const handleInterestToggle = (interest) => {
+    setFormData((prev) => {
+      const interests = prev.interests.includes(interest)
+        ? prev.interests.filter((i) => i !== interest)
+        : [...prev.interests, interest];
+      return { ...prev, interests };
+    });
+  };
+
+  const interestOptions = [
+    'Sports',
+    'Board Games',
+    'Video Games',
+  ];
+
   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
@@ -230,9 +247,19 @@ const UserProfile = () => {
         {/* Personal info section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Personal Info</Typography>
-          <TextField label="Birthdate" name="birthdate" type="date" InputLabelProps={{ shrink: true }} value={formData.birthdate || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+          <TextField
+            label="Birthdate"
+            name="birthdate"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={formData.birthdate ? formData.birthdate.split('T')[0] : ''}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }}
+          />
+          {/* Commenting this out for now because we *MAY* use this in the future.  Some trainers/Pros may want to know before hand what client stats are like
           <TextField label="Height" name="height" value={formData.height || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
-          <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
+          <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} /> */}
         </Paper>
 
         {/* Bio Section */}
@@ -242,10 +269,52 @@ const UserProfile = () => {
         </Paper>
 
         {/* Interests section */}
-        <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6">Interests</Typography>
-          <TextField fullWidth name="interests" label="Comma-separated" value={formData.interests?.join(', ') || ''} onChange={(e) => setFormData({ ...formData, interests: e.target.value.split(',').map((s) => s.trim()) })} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+        <Paper elevation={4} sx={sectionStyle} onClick={() => {
+          if (!isEditing) setIsEditing(true);
+        }}>
+          <Typography variant="h6" gutterBottom>Interests</Typography>
+
+          {isEditing ? (
+            interestOptions.map((interest) => (
+              <FormControlLabel
+                key={interest}
+                control={
+                  <Checkbox
+                    checked={formData.interests.includes(interest)}
+                    onChange={() => handleInterestToggle(interest)}
+                  />
+                }
+                label={interest}
+              />
+            ))
+          ) : (
+            <Box sx={{ ml: 1 }}>
+              {formData.interests.length ? (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {formData.interests.map((interest) => (
+                    <Box
+                      key={interest}
+                      sx={{
+                        px: 2,
+                        py: 0.5,
+                        backgroundColor: '#FF5722',
+                        color: 'white',
+                        borderRadius: '16px',
+                        fontSize: '0.85rem',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {interest}
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant="body2" color="textSecondary">No interests selected.</Typography>
+              )}
+            </Box>
+          )}
         </Paper>
+
 
         {/* Payment and rating section */}
         <Paper elevation={4} sx={sectionStyle}>
