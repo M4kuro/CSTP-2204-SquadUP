@@ -1,3 +1,4 @@
+
 import { Typography, Button, Box, TextField, IconButton } from '@mui/material';
 import PlaceIcon from '@mui/icons-material/Place';
 import Autocomplete from 'react-google-autocomplete';
@@ -29,7 +30,7 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
     });
   };
 
-  const handleGetLocation = () => {
+  const handleUseMyLocation = () => {
     const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY;
 
     if (!navigator.geolocation) {
@@ -54,14 +55,15 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
           const state = components.state || '';
           const country = components.country || '';
 
+
           setManualLocationText(`${city}, ${state}, ${country}`);
 
           setFormData({
             ...formData,
-            location: { lat: latitude, lng: longitude },
             city,
             state,
             country,
+            location: { lat: latitude, lng: longitude },
           });
         } catch (err) {
           console.error('OpenCage error:', err);
@@ -82,6 +84,7 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
       <Typography variant="h6" gutterBottom>
         Where are you located?
       </Typography>
+
 
       {/* Location Input Section with Pin on Left */}
       {/* added a component for location input.  Also updated the index.css for the Google Places input override */}
