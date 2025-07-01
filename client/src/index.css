@@ -9,3 +9,12 @@ body {
 #root {
     display: flex;
     width: 100%; }
+
+    /* Google Places input override */
+    /* This is talking to Step2GetLocation.jsx and Locationinput.jsx */
+.pac-target-input {
+  font-size: 1.1rem !important;
+  height: 50px !important;
+  padding: 16px 12px !important;
+  box-sizing: border-box;
+}
