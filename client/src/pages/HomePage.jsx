@@ -34,36 +34,6 @@ const HomePage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
-    const [incomingRequests, setIncomingRequests] = useState([]);
-
-
-    // this is to handle the squadup fectching the requests:
-
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/requests/${currentUser?._id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    // Filter out users you've already matched with before setting state
-                    const filteredRequests = data.filter(
-                        (user) => !currentUser?.matches?.includes(user._id)
-                    );
-                    setIncomingRequests(filteredRequests); // Updates the badge
-                } else {
-                    console.error('❌ Failed to fetch requests');
-                }
-            } catch (err) {
-                console.error('❌ Error fetching squad requests:', err);
-            }
-        };
-
-        if (currentUser?._id) fetchRequests(); // Ensure `user` is defined first
-    }, [currentUser]);
 
 
 
@@ -95,6 +65,8 @@ const HomePage = () => {
 
             console.log('Sending S+UP request to:', targetUserId);
 
+
+
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${targetUserId}/squadup`, {
                 method: 'POST',
                 headers: {
@@ -107,25 +79,10 @@ const HomePage = () => {
             const data = await res.json();
 
             if (res.ok) {
-                // Show appropriate alert
                 if (data.matched) {
                     alert('🎉 It’s a match! You both SquadUP’d!');
                 } else {
                     alert('✅ S+UP request sent. Waiting for a match!');
-                }
-
-                // Refresh incomingRequests to reflect any removal
-                const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/requests/${currentUserId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (requestsRes.ok) {
-                    const updatedRequests = await requestsRes.json();
-                    setIncomingRequests(updatedRequests);
-                } else {
-                    console.warn('⚠️ Could not refresh requests after S+UP');
                 }
             } else {
                 alert(data.message || 'Something went wrong.');
@@ -135,7 +92,6 @@ const HomePage = () => {
             alert('S+UP failed.');
         }
     };
-
 
 
     useEffect(() => {
@@ -314,7 +270,7 @@ const HomePage = () => {
                         My Profile
                     </Button>
                     <Button variant="contained" color="warning" onClick={() => setView('requests')}>
-                        Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
+                        Requests
                     </Button>
                     <Button variant="contained" color="warning" onClick={() => setTabValue(2)}>
                         Squad
@@ -430,15 +386,7 @@ const HomePage = () => {
                         }}
                     >
                         {users
-                            .filter((user) => {
-                                // Always exclude current user
-                                if (user._id === currentUser?._id) return false;
-
-                                // 🔥 NEW: Exclude matched users from the Requests view
-                                if (view === 'requests' && currentUser?.matches?.includes(user._id)) return false;
-
-                                return true;
-                            })
+                            .filter((user) => user._id !== currentUser?._id)
                             .map((user) => (
                                 <Grid xs={12} sm={6} md={4} key={user._id}>
                                     <Card

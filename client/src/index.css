@@ -9,11 +9,3 @@ body {
 #root {
     display: flex;
     width: 100%; }
-
- /* this is what's talking to the Step2GetLocation.jsx but also what's in the locationinput.jsx  */
-.pac-container {
-  z-index: 9999 !important;
-  background-color: white;
-  font-family: 'Roboto', sans-serif;
-  border-radius: 8px;
-}
