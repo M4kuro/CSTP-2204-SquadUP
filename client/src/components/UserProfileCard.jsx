@@ -52,25 +52,25 @@ const UserProfileCard = ({ user, onBack }) => {
 
   return (
     <Box
-  sx={{
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    width: '100%',
-    padding: 4,
-}}
->
-  <Paper
-    elevation={4}
-    sx={{
-      backgroundColor: '#b0b0b0',
-      color: '#000',
-      padding: 4,
-      width: '100%',
-      maxWidth: '1500px', // or try '1000px' or remove it for full stretch
-      flexGrow: 1,
-    }}
-  >
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        width: '100%',
+        padding: 4,
+      }}
+    >
+      <Paper
+        elevation={4}
+        sx={{
+          backgroundColor: '#b0b0b0',
+          color: '#000',
+          padding: 4,
+          width: '100%',
+          maxWidth: '1500px', // or try '1000px' or remove it for full stretch
+          flexGrow: 1,
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Avatar
             src={
@@ -99,9 +99,9 @@ const UserProfileCard = ({ user, onBack }) => {
         {/* Pro section */}
         {user.isPro && (
           <Box sx={{ mt: 2, p: 2, border: '1px solid #FF5722', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ color: '#FF5722' }}>🌟 Pro Coach Available!</Typography>
-            <Typography>Hourly Rate: ${user.hourlyRate}/hr</Typography>
-            <Typography>Available Days: {user.availableDays?.join(', ')}</Typography>
+            <Typography variant="h6" sx={{ color: '#FF5722' }}>🌟 <strong>Pro Coach Available!</strong></Typography>
+            <Typography><strong>Hourly Rate:</strong> ${user.hourlyRate}/hr</Typography>
+            <Typography><strong>What I'm Offering:</strong> {user.proDescription || 'No description provided.'}</Typography>
             {user.ratings?.length > 0 ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <Rating
