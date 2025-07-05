@@ -89,7 +89,7 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
       {/* Location Input Section with Pin on Left */}
       {/* added a component for location input.  Also updated the index.css for the Google Places input override */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-        <IconButton onClick={handleGetLocation} sx={{ color: '#FF5722' }}>
+        <IconButton onClick={handleUseMyLocation} sx={{ color: '#FF5722' }}>
           <PlaceIcon />
         </IconButton>
 
