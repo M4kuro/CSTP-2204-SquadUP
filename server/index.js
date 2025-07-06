@@ -28,15 +28,6 @@ const PORT = process.env.PORT || 5000;
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 
-// *** Adding bookingRoutes (For the booking API)
-const bookingRoutes = require('./routes/booking');
-app.use('/api/bookings', bookingRoutes);
-
-// *** pass io to chat routes that need it
-const chatRoutes = require('./routes/chat')(io);
-app.use('/api/chat', chatRoutes);
-
-
 // *** Serves uploaded images
 app.use('/uploads', express.static('uploads'));
 
@@ -51,34 +42,12 @@ app.get('/', (req, res) => {
   res.send('Hello from SquadUP backend!');
 });
 
-// ***** UPDATED socket logic
-let onlineUsers = {};
-
+// ***** Sample socket logic
 io.on('connection', (socket) => {
   console.log('🧠 New client connected:', socket.id);
 
-  socket.on('join', (userId) => {
-    onlineUsers[userId] = socket.id;
-    console.log(`👤 User ${userId} joined with socket ID ${socket.id}`);
-  });
-
-  socket.on('sendMessage', ({ threadId, senderId, text }) => {
-    console.log(`📨 Message from ${senderId}:`, text);
-
-    // emit to all for now; in the future we can emit to specific socket IDs
-    io.emit('receiveMessage', { threadId, senderId, text });
-  });
-
   socket.on('disconnect', () => {
     console.log('💨 Client disconnected:', socket.id);
-
-    // clean up from onlineUsers
-    for (let userId in onlineUsers) {
-      if (onlineUsers[userId] === socket.id) {
-        delete onlineUsers[userId];
-        break;
-      }
-    }
   });
 });
 

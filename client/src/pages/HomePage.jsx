@@ -9,7 +9,6 @@ import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
-import axios from 'axios';  // this is for chat and messages feature
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -39,12 +38,12 @@ const HomePage = () => {
     if (newValue === 2) setView('matches');
   };
 
-  const currentUserId = localStorage.getItem('userId');
-  const token = localStorage.getItem('token');
-
   // S+UP Button logic
   const handleSquadUp = async (targetUserId) => {
     try {
+      const token = localStorage.getItem('token');
+      const currentUserId = localStorage.getItem('userId');
+
       const res = await fetch(`${baseUrl}/${targetUserId}/squadup`, {
         method: 'POST',
         headers: {
@@ -61,13 +60,12 @@ const HomePage = () => {
           alert('🎉 It’s a match! You both SquadUP’d!');
         } else {
           alert('✅ S+UP request sent. Waiting for a match!');
-          setSentRequests((prev) => [...prev, targetUserId]);
+          setSentRequests((prev) => [...prev, targetUserId]); // trying to prevent sup from being reclicked.
         }
 
         const requestsRes = await fetch(`${baseUrl}/requests/${currentUserId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (requestsRes.ok) {
           const updated = await requestsRes.json();
           setIncomingRequests(updated);
@@ -78,20 +76,6 @@ const HomePage = () => {
     } catch (err) {
       console.error('S+UP Error:', err);
       alert('S+UP failed.');
-    }
-  };
-
-  // Chat Button logic
-  const handleStartChat = async (recipientId) => {
-    try {
-      const res = await axios.post('/api/chat/get-or-create-thread', {
-        senderId: currentUserId,
-        recipientId,
-      });
-
-      navigate(`/messages/${res.data.threadId}`);
-    } catch (err) {
-      console.error('Error starting chat:', err);
     }
   };
 
@@ -324,9 +308,6 @@ const HomePage = () => {
           <Button variant="contained" color="warning" onClick={() => setTabValue(2)}>
             Squad
           </Button>
-          <Button variant="contained" color="warning" onClick={() => navigate('/messages')}>
-            Messages
-          </Button>
         </Box>
 
         {/* Bottom Buttons */}
@@ -550,7 +531,6 @@ const HomePage = () => {
                         </>
                       ) : (
                         <>
-                          {/* S+UP Button */}
                           <Button
                             variant="contained"
                             color="warning"
@@ -559,22 +539,7 @@ const HomePage = () => {
                           >
                             {sentRequests.includes(user._id) ? 'Requested' : 'S+UP'}
                           </Button>
-
-                          {/* Chat Button */}
-                          <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => handleStartChat(user._id)} // 👈 pass in the other user's ID
-                          >
-                            Chat
-                          </Button>
-
-                          {/* More Button */}
-                          <Button
-                            variant="outlined"
-                            color="warning"
-                            onClick={() => handleViewUser(user._id)}
-                          >
+                          <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
                             More
                           </Button>
                         </>
