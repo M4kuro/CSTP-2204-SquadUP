@@ -11,6 +11,9 @@ import {
   TextField,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
+import MonthlyCalendar from '../components/calendar/MonthlyCalendar'; // importing the calendar components (this is for monthly)
+import WeeklyCalendar from '../components/calendar/WeeklyCalendar';  // this is the weekly component import
+import DailyCalendar from '../components/calendar/DailyCalendar'; // this is the daily component import
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
@@ -25,6 +28,8 @@ const UserProfile = () => {
   const [otherImages, setOtherImages] = useState([null, null, null]);
   const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
   const allInterests = ['Video Games', 'Board Games', 'Sports', 'Music', 'Fitness'];
+  const [showCalendar, setShowCalendar] = useState(false); // for the calendar
+  const [calendarView, setCalendarView] = useState('month'); // for the calendar view.. or 'week', 'day' 
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -221,9 +226,51 @@ const UserProfile = () => {
             </Paper>
           ))}
         </Box>
+
+        {/* Calendar for Pro Users */}
+        {showCalendar && (
+          <Box
+            sx={{
+              mt: 4,
+              backgroundColor: '#f5f5f5',
+              p: 2,
+              borderRadius: 2,
+              maxWidth: '860px',    // 👈 Match width of your 3-image layout
+              width: '95%',
+              margin: '0 auto',     // 👈 Center it horizontally
+            }}
+          >
+            <Box sx={{ display: 'flex', gap: 2, mb: 2, justifyContent: 'center' }}>
+              <Button
+                variant={calendarView === 'month' ? 'contained' : 'outlined'}
+                onClick={() => setCalendarView('month')}
+              >
+                Monthly
+              </Button>
+              <Button
+                variant={calendarView === 'week' ? 'contained' : 'outlined'}
+                onClick={() => setCalendarView('week')}
+              >
+                Weekly
+              </Button>
+              <Button
+                variant={calendarView === 'day' ? 'contained' : 'outlined'}
+                onClick={() => setCalendarView('day')}
+              >
+                Daily
+              </Button>
+            </Box>
+
+            {/* Stub views for when you click on month/week/day (we might replace these later) */}
+            {calendarView === 'month' && <MonthlyCalendar />}
+            {calendarView === 'week' && <WeeklyCalendar />}
+            {calendarView === 'day' && <DailyCalendar />}
+          </Box>
+        )}
       </Box>
 
       {/* RIGHT - PROFILE DETAILS */}
+
       <Box sx={{ width: '100%', maxWidth: 600 }}>
         <Button
           onClick={() => navigate('/home')}  // fixed this it was set to the login page for some reason.. Just changed it to homepage.
@@ -335,6 +382,13 @@ const UserProfile = () => {
 
           {formData.isPro && (
             <>
+              <Button
+                variant="outlined"
+                onClick={() => setShowCalendar(prev => !prev)}
+                sx={{ mt: 2 }}
+              >
+                {showCalendar ? 'Hide Calendar' : 'My Calendar / Schedule'}
+              </Button>
               <TextField
                 label="Hourly Rate ($)"
                 name="hourlyRate"

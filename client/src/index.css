@@ -19,3 +19,102 @@ body {
   padding: 16px 12px !important;
   box-sizing: border-box;
 }
+
+/* adding css for the MessagesPage.jsx*/
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+  background-color: #2c3934;
+  min-height: 100vh;
+}
+
+.messages-wrapper-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.messages-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+  width: 100%;
+}
+.message-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.message-wrapper {
+  background-color: #f2f2f2;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* responsive grid */
+  gap: 20px;
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.message-card {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  min-width: 0; /* 🔥 ensures flex/grid doesn’t overflow */
+  width: 100%;   /* 🔥 card takes up full cell width */
+  box-sizing: border-box;
+}
+
+.message-card:hover {
+  background-color: #f0f0f0;
+}
+
+.message-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-username {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+}
+
+.message-subtext {
+  font-size: 14px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .message-wrapper {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    padding: 20px;
+  }
+}
