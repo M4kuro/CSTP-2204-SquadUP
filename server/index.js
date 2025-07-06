@@ -28,6 +28,10 @@ const PORT = process.env.PORT || 5000;
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 
+// *** Adding bookingRoutes (For the booking API)
+const bookingRoutes = require('./routes/booking');
+app.use('/api/bookings', bookingRoutes);
+
 // *** Serves uploaded images
 app.use('/uploads', express.static('uploads'));
 
