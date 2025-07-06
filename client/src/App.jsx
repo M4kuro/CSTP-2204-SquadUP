@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage'
 import UserProfile from './pages/UserProfile';
 import BookingPage from './pages/BookingPage';
 import BookingDayCalendar from './components/calendar/BookingDayCalendar';
+import MessagesPage from './pages/MessagesPage';
+import ChatRoomPage from './pages/ChatRoomPage';
 
 function App() {
 
@@ -17,6 +19,10 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
+
+          {/* messages and chat routes all handled in MessagesPage */}
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/messages/:threadId" element={<ChatRoomPage />} />
 
           {/* Booking routes all handled in BookingPage */}
           <Route path="/booking/:proId" element={<BookingPage />} />
