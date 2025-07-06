@@ -8,8 +8,11 @@ import {
   Rating
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const UserProfileCard = ({ user, onBack }) => {
+  const navigate = useNavigate();
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
   const currentUserId = localStorage.getItem('userId'); // or decode from JWT later
@@ -156,14 +159,25 @@ const UserProfileCard = ({ user, onBack }) => {
         <Typography variant="h6">Location</Typography>
         <Typography variant="body1">{user.location?.city || 'N/A'}</Typography>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onBack}
-          sx={{ mt: 3 }}
-        >
-          Back to Grid
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={onBack}
+  >
+    Back to Grid
+  </Button>
+
+  {user.isPro && (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => navigate(`/booking/${user._id}`)}
+    >
+      Book with Pro
+    </Button>
+  )}
+</Box>
       </Paper>
     </Box>
   );
