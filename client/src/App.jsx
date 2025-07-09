@@ -7,6 +7,7 @@ import BookingPage from './pages/BookingPage';
 import BookingDayCalendar from './components/calendar/BookingDayCalendar';
 import MessagesPage from './pages/MessagesPage';
 import ChatRoomPage from './pages/ChatRoomPage';
+import BookingSuccess from './pages/BookingSuccess';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           {/* Booking routes all handled in BookingPage */}
           <Route path="/booking/:proId" element={<BookingPage />} />
           <Route path="/booking/:proId/:yearMonth/:day" element={<BookingPage />} />
+          <Route path="/booking-success" element={<BookingSuccess />} />
         </Routes>
       </Router>
 
