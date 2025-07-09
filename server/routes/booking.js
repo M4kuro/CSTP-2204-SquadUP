@@ -26,15 +26,18 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // GET /api/bookings/:proId/:day - fetches the booked slots for a pro on a given day
-router.get('/:proId/:day', async (req, res) => {
+router.get('/:proId/:date', async (req, res) => {
   try {
-    const { proId, day } = req.params;
-    const bookings = await Booking.find({ proId, day });
+    const { proId, date } = req.params;
+
+    console.log('📅 Fetching bookings for:', proId, date);
+
+    const bookings = await Booking.find({ proId, date }); // ✅ match full date
     const bookedHours = bookings.map((b) => b.hour);
 
     res.json({ bookedHours });
   } catch (err) {
-    console.error('Error fetching booked slots:', err);
+    console.error('❌ Error fetching booked slots:', err);
     res.status(500).json({ message: 'Error fetching booked times.' });
   }
 });

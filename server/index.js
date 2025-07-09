@@ -12,9 +12,10 @@ const io = socketIo(server, {
     origin: '*',
   }
 });
+// Webhook route
+app.use('/api/webhook', require('./routes/webhook'));
 
 // *** This is Middleware Setup 
-
 app.use(cors());
 app.use(express.json());
 
@@ -31,6 +32,10 @@ app.use('/api/users', userRoutes);
 // *** Adding bookingRoutes (For the booking API)
 const bookingRoutes = require('./routes/booking');
 app.use('/api/bookings', bookingRoutes);
+
+// *** Stripe payment routes (create-checkout-session)
+const paymentRoutes = require('./routes/payments');
+app.use('/api', paymentRoutes); // enables /api/create-checkout-session
 
 // *** pass io to chat routes that need it
 const chatRoutes = require('./routes/chat')(io);

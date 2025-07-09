@@ -1,44 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Button } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { useLocation } from 'react-router-dom';
 
 const hours = ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'];
 
 const BookingDayCalendar = () => {
-  const { proId, day } = useParams();
+  const { proId, day, yearMonth } = useParams();
   const navigate = useNavigate();
   const [bookedSlots, setBookedSlots] = useState([]);
   const [bookingStatus, setBookingStatus] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
-    const fetchBookedSlots = async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings/${proId}/${day}`);
-      const data = await res.json();
-      setBookedSlots(data.bookedHours || []);
-    };
+  if (!proId || !day || !yearMonth) return;
 
-    fetchBookedSlots();
-  }, [proId, day]);
+  const fullDate = `${yearMonth}-${day}`;
+  console.log('📅 Fetching bookings for:', fullDate);
+
+  const fetchBookedSlots = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings/${proId}/${fullDate}`);
+      const data = await res.json();
+      console.log('✅ Received booked hours from server:', data.bookedHours);
+      setBookedSlots(data.bookedHours || []);
+    } catch (err) {
+      console.error('❌ Error fetching booked slots:', err);
+    }
+  };
+
+  fetchBookedSlots();
+}, [proId, day, yearMonth, location.key]); // trying to get this to trigger when returning from success page.. but it's not WORKING!
+
+
+  // updated handlebook to include the payments embedded code for stripe
 
   const handleBook = async (hour) => {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
+  const token = localStorage.getItem('token');
+  setBookingStatus(`🔄 Processing payment for ${hour} on ${day}...`);
+  console.log('🧾 Sending to backend:', {
+    proId,
+    day,
+    hour,
+    yearMonth
+  });
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/create-checkout-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ proId, day, hour }),
+      body: JSON.stringify({ proId, day, hour, yearMonth }),
     });
 
-    const result = await res.json();
-    if (res.ok) {
-      setBookedSlots([...bookedSlots, hour]);
-      setBookingStatus(`✅ Booked ${hour} on ${day}`);
+    const { sessionId } = await res.json();
+
+    if (res.ok && sessionId) {
+      // This is temporary mark the slot as booked in local state.. I just found out that stripe can't access our local so we can't send data to mongodb after usccessfull booking.
+      // will need to talk to prabh about this because now we have another hurdle.
+      setBookedSlots((prev) => [...prev, hour]);
+
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        console.error('Stripe redirect error:', error);
+        setBookingStatus('!! Failed to redirect to Stripe. Please try again.');
+      }
     } else {
-      setBookingStatus(result.message || 'Booking failed');
+      setBookingStatus('!! Failed to initiate booking session.');
     }
-  };
+  } catch (err) {
+    console.error('Booking error:', err);
+    setBookingStatus('!! Something went wrong. Please try again.');
+  }
+};
 
   return (
     <Box
@@ -92,7 +131,11 @@ const BookingDayCalendar = () => {
 
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
         {hours.map((hour) => {
-          const isBooked = bookedSlots.includes(hour);
+          console.log('🔍 Comparing:', hour, 'against booked slots:', bookedSlots);
+          const normalize = (h) => h.toLowerCase().replace(/\s/g, '');
+          const isBooked = bookedSlots.some(
+            (booked) => normalize(booked) === normalize(hour)
+          );
           return (
             <Paper
               key={hour}
