@@ -24,8 +24,8 @@ router.post('/signup', async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({ token, user: { id: newUser._id, username: newUser.username } });
+    const token = jwt.sign({ id: newUser._id, email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '7d' });  // updated this to add email: newUser.email (need this for payments)
+    res.status(201).json({ token, user: { id: newUser._id, username: newUser.username, email: newUser.email } });  // updated this to add email: newUser.email (need this for payments)
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Something went wrong during signup' });
@@ -43,13 +43,14 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, username: user.username } });
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });  // updated this as well to add email:user.email (need this for payments as well)
+    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });  // updated this to add email:user.email (need this for payments)
   } catch (err) {
     res.status(500).json({ error: 'Something went wrong during login' });
   }
 });
 
+// === GOOGLE LOGIN ===
 router.post('/google-login', async (req, res) => {
   const { token } = req.body;
 
@@ -69,14 +70,13 @@ router.post('/google-login', async (req, res) => {
     }
 
     // Generate your own JWT
-    const yourToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    const yourToken = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET);  // updated this to add email:user.email (need this for payments)
 
-    res.json({ token: yourToken, user });
+    res.json({ token: yourToken, user: { id: user._id, username: user.username, email: user.email } });  // updated this to add email:user.email (need this for payments)
   } catch (err) {
     console.error('Google login failed:', err);
     res.status(401).json({ message: 'Invalid Google token' });
   }
 });
-
 
 module.exports = router;
