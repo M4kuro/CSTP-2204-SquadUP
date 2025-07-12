@@ -30,6 +30,9 @@ const UserProfile = () => {
   const allInterests = ['Video Games', 'Board Games', 'Sports', 'Music', 'Fitness'];
   const [showCalendar, setShowCalendar] = useState(false); // for the calendar
   const [calendarView, setCalendarView] = useState('month'); // for the calendar view.. or 'week', 'day' 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [bookingMap, setBookingMap] = useState({});
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -42,21 +45,58 @@ const UserProfile = () => {
         const data = await res.json();
         setUser(data);
         setFormData(data);
+
         if (data.profileImageUrl) {
           setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`);
         }
+
         if (data.otherImages && data.otherImages.length > 0) {
           const imageUrls = data.otherImages.map(filename =>
             filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
           );
           setOtherImages(imageUrls);
         }
+
+        // !!!NEW: If user is a pro, fetch their bookings
+        if (data.isPro) {
+          try {
+            const bookingsRes = await fetch(
+              `${import.meta.env.VITE_API_URL}/api/bookings/pro/${data._id}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            const bookingsData = await bookingsRes.json();
+
+            if (!Array.isArray(bookingsData)) {
+              console.error('Unexpected bookings data:', bookingsData);
+              return;
+            }
+
+            const map = {};
+            bookingsData.forEach(booking => {
+              if (!map[booking.date]) map[booking.date] = {};
+              map[booking.date][booking.hour] = {
+                email: booking.clientEmail,
+                username: booking.clientUsername,
+                image: booking.clientProfilePic,
+              };
+            });
+
+            setBookingMap(map);
+          } catch (bookingErr) {
+            console.error('Error fetching pro bookings:', bookingErr);
+          }
+        }
+
       } catch (err) {
         console.error('Error fetching user profile:', err);
       }
     };
+
     fetchProfile();
   }, []);
+
 
   const handleImageChange = (index, e) => {
     const file = e.target.files[0];
@@ -167,6 +207,13 @@ const UserProfile = () => {
     'Video Games',
   ];
 
+
+  const handleDrillToDay = (date) => {
+  setSelectedDate(new Date(date));   // updates which day DailyCalendar shows
+  setCalendarView('day');            // switches to Daily view
+};
+
+
   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
@@ -262,9 +309,15 @@ const UserProfile = () => {
             </Box>
 
             {/* Stub views for when you click on month/week/day (we might replace these later) */}
-            {calendarView === 'month' && <MonthlyCalendar />}
-            {calendarView === 'week' && <WeeklyCalendar />}
-            {calendarView === 'day' && <DailyCalendar />}
+           {calendarView === 'month' && (
+              <MonthlyCalendar bookingsByDate={bookingMap} onSelectDay={handleDrillToDay} />
+            )}
+            {calendarView === 'week' && (
+              <WeeklyCalendar bookingsByDate={bookingMap} onSelectDay={handleDrillToDay} />
+            )}
+            {calendarView === 'day' && (
+              <DailyCalendar bookingsByDate={bookingMap} selectedDate={selectedDate} />
+            )}
           </Box>
         )}
       </Box>

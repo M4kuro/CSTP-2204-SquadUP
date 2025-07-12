@@ -16,7 +16,7 @@ const generateMonthDays = (year, month) => {
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const MonthlyCalendar = () => {
+const MonthlyCalendar = ({ onSelectDay }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
 
@@ -77,13 +77,20 @@ const MonthlyCalendar = () => {
       >
         {paddedDays.map((day, idx) => {
           const isWeekday = day && day.getDay() >= 1 && day.getDay() <= 5; // M–F
+          const isClickable = Boolean(day);
+
           return (
             <Box
               key={idx}
+              onClick={() => {
+                if (isClickable && onSelectDay) {
+                  onSelectDay(day); // 🔥 Drill-down to day view
+                }
+              }}
               sx={{
                 border: '1px solid #ccc',
                 minHeight: 80,
-                backgroundColor: day
+                backgroundColor: isClickable
                   ? isWeekday
                     ? '#c8f7c5'
                     : '#eee'
@@ -93,6 +100,10 @@ const MonthlyCalendar = () => {
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
                 p: 1,
+                cursor: isClickable ? 'pointer' : 'default',
+                '&:hover': {
+                  backgroundColor: isClickable ? '#d5fbe1' : 'transparent',
+                },
               }}
             >
               <Typography variant="caption">
