@@ -87,6 +87,16 @@ io.on('connection', (socket) => {
   });
 });
 
+// This is the redirect after completing payment in stripe.
+const path = require('path');
+
+// Serve static frontend files from the dist folder
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Catch-all: serve index.html for any unknown route (for React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 // ***** Start server
 server.listen(PORT, () => {
   console.log(`🚀 Server listening on port ${PORT}`);
