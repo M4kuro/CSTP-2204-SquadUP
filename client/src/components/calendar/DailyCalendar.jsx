@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Button } from '@mui/material';
 
 const hours = ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'];
 
 // setting the calendar so that the date will show "todays date" when you click on day
-const DailyCalendar = () => {
+const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    if (selectedDate) {
+      setCurrentDate(new Date(selectedDate));
+    }
+  }, [selectedDate]);
 
   const handlePrevDay = () => {
     const prev = new Date(currentDate);
@@ -25,6 +31,8 @@ const DailyCalendar = () => {
     day: 'numeric',
     year: 'numeric',
   });
+  const dateKey = currentDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+  const dayBookings = bookingsByDate[dateKey] || {};
 
   return (
     <Box
@@ -60,27 +68,51 @@ const DailyCalendar = () => {
           overflow: 'hidden',
         }}
       >
-        {hours.map((hour) => (
-          <React.Fragment key={hour}>
-            <Typography align="right" pr={1} fontWeight={500}>
-              {hour}
-            </Typography>
-            <Paper
-              sx={{
-                height: 48,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#e0e0e0',
-                fontSize: '0.85rem',
-                borderRadius: 1,
-              }}
-              elevation={1}
-            >
-              Available
-            </Paper>
-          </React.Fragment>
-        ))}
+        {hours.map((hour) => {
+          const isBooked = dayBookings[hour];
+
+          return (
+            <React.Fragment key={hour}>
+              <Typography align="right" pr={1} fontWeight={500}>
+                {hour}
+              </Typography>
+
+              <Paper
+                sx={{
+                  height: 48,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: isBooked ? 'flex-start' : 'center',
+                  backgroundColor: isBooked ? '#ffcc80' : '#e0e0e0',
+                  fontSize: '0.85rem',
+                  borderRadius: 1,
+                  px: isBooked ? 1 : 0,
+                  gap: 1,
+                }}
+                elevation={1}
+              >
+                {isBooked ? (
+                  <>
+                    <img
+                      src={
+                        isBooked.image
+                          ? `${import.meta.env.VITE_API_URL}/uploads/${isBooked.image}`
+                          : '/default-avatar.png'
+                      }
+                      alt="client"
+                      style={{ width: 24, height: 24, borderRadius: '50%' }}
+                    />
+                    <span>
+                      {isBooked.username} &nbsp; <strong>Email:</strong> {isBooked.email}
+                    </span>
+                  </>
+                ) : (
+                  'Available'
+                )}
+              </Paper>
+            </React.Fragment>
+          );
+        })}
       </Box>
     </Box>
   );

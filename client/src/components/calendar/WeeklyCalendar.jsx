@@ -4,7 +4,7 @@ import { Box, Typography, Paper, Button } from '@mui/material';
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const hours = ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'];
 
-const WeeklyCalendar = () => {
+const WeeklyCalendar = ({ bookingsByDate = {}, onSelectDay }) => {
   const [referenceDate, setReferenceDate] = useState(new Date());
 
   // Get Monday of the current week
@@ -87,23 +87,48 @@ const WeeklyCalendar = () => {
             <Typography align="right" pr={1} sx={{ fontWeight: 500 }}>
               {hour}
             </Typography>
-            {weekDates.map((_, idx) => (
-              <Paper
-                key={`${hour}-${idx}`}
-                sx={{
-                  height: 36,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#e0e0e0',
-                  fontSize: '0.8rem',
-                  borderRadius: 1,
-                }}
-                elevation={1}
-              >
-                Available
-              </Paper>
-            ))}
+            {weekDates.map((dateObj, idx) => {
+              const dateKey = dateObj.toISOString().split('T')[0];
+              const booking = bookingsByDate[dateKey]?.[hour];
+
+              return (
+                <Paper
+                  key={`${hour}-${idx}`}
+                  onClick={() => booking && onSelectDay && onSelectDay(dateObj)}
+                  sx={{
+                    height: 36,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: booking ? 'flex-start' : 'center',
+                    backgroundColor: booking ? '#ffcc80' : '#e0e0e0',
+                    fontSize: '0.8rem',
+                    borderRadius: 1,
+                    px: booking ? 1 : 0,
+                    gap: 1,
+                    cursor: booking ? 'pointer' : 'default',
+                  }}
+                  elevation={1}
+                >
+                  {booking ? (
+                    <>
+                      <img
+                        src={
+                          booking.image
+                            ? `${import.meta.env.VITE_API_URL}/uploads/${booking.image}`
+                            : '/default-avatar.png'
+                        }
+                        alt="client"
+                        style={{ width: 20, height: 20, borderRadius: '50%' }}
+                      />
+                      <span>{booking.username}</span>
+                    </>
+                  ) : (
+                    'Available'
+                  )}
+                </Paper>
+              );
+            })}
+
           </React.Fragment>
         ))}
       </Box>

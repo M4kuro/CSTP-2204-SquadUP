@@ -25,6 +25,30 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
+// GET /api/bookings/pro/:proId - get all bookings for a given pro
+router.get('/pro/:proId', async (req, res) => {
+  try {
+    const { proId } = req.params;
+
+    const bookings = await Booking.find({ proId }).populate('userId', 'username email profileImageUrl');
+
+    // Format bookings to include client info
+    const formatted = bookings.map(b => ({
+      _id: b._id,
+      date: b.date,
+      hour: b.hour,
+      clientUsername: b.userId.username,
+      clientEmail: b.userId.email,
+      clientProfilePic: b.userId.profileImageUrl,
+    }));
+
+    res.json(formatted); // ✅ returns an array
+  } catch (err) {
+    console.error('Error fetching pro bookings:', err);
+    res.status(500).json({ message: 'Error fetching pro bookings.' });
+  }
+});
+
 // GET /api/bookings/:proId/:day - fetches the booked slots for a pro on a given day
 router.get('/:proId/:date', async (req, res) => {
   try {

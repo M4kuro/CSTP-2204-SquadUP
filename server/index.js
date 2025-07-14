@@ -13,7 +13,7 @@ const io = socketIo(server, {
   }
 });
 // Webhook route
-app.use('/api/webhook', require('./routes/webhook'));
+app.use('/api', require('./routes/webhook'));
 
 // *** This is Middleware Setup 
 app.use(cors());
@@ -94,7 +94,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // Catch-all: serve index.html for any unknown route (for React Router)
-app.get('*', (req, res) => {
+app.get(/^\/(?!api\/|uploads\/).*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 // ***** Start server

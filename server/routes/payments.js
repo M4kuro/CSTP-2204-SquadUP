@@ -48,6 +48,15 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
       }],
       success_url: `${process.env.CLIENT_URL}/booking-success?proId=${proId}&yearMonth=${yearMonth}&day=${justDay}`,
       cancel_url: `${process.env.CLIENT_URL}/booking-cancel`,
+      // this is for the checkout.session.completed event
+      metadata: {
+        clientId,
+        clientEmail,
+        proId,
+        day: fullDate,
+        hour,
+      },
+      // this is still good for deeper payment_intent tracking
       payment_intent_data: {
         metadata: {
           clientId,
