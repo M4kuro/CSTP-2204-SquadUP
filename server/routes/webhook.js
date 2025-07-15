@@ -4,7 +4,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/Booking'); // mongodb booking model
 
 // raw body for Stripe signature verification section
-router.post('/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
     console.log('📡 Stripe webhook received!'); // ✅ moved inside the POST route
 
     const sig = req.headers['stripe-signature'];

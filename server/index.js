@@ -13,7 +13,8 @@ const io = socketIo(server, {
   }
 });
 // Webhook route
-app.use('/api', require('./routes/webhook'));
+const webhookRoutes = require('./routes/webhook');
+app.use('/api/stripe/webhook', webhookRoutes);
 
 // *** This is Middleware Setup 
 app.use(cors());
