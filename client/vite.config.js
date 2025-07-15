@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+
+  // adding this line below for a failsafe for static webs 
+  // (redirect after stripe wasn't working for some reason)
+   publicDir: 'public',
   
   //adding  this section to route /api calls to backend
   server: {
