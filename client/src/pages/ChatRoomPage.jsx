@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { io } from 'socket.io-client';
+import socket from '../socket';  // client/src/socket.js
 
-const socket = io('http://localhost:5000'); // 🔥 Use your backend URL here
 
 const ChatRoomPage = () => {
   const { threadId } = useParams();
