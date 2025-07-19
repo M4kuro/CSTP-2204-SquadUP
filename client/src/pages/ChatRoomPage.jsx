@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import socket from '../socket';  // client/src/socket.js
 
 
@@ -35,7 +35,7 @@ const currentUserId = getUserIdFromToken();
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`/api/chat/message/${threadId}`);
+        const res = await api.get(`/chat/message/${threadId}`);
         setMessages(res.data);
       } catch (err) {
         console.error('Error fetching messages:', err);
@@ -75,7 +75,7 @@ const currentUserId = getUserIdFromToken();
   };
 
   try {
-    await axios.post(`/api/chat/message`, newMsg);
+    await api.post(`/chat/message`, newMsg);
     socket.emit('sendMessage', newMsg); // let the socket handle display
     setNewMessage('');  // clears input after sending.
    
