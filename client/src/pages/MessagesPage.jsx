@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../api';
 import { getUserIdFromToken } from '../utils/auth';
 
 const MessagesPage = () => {
@@ -9,10 +10,14 @@ const MessagesPage = () => {
 
     const userId = getUserIdFromToken();
 
+    const backendBase = import.meta.env.PROD
+    ? 'https://cstp-2204-squadup-production.up.railway.app'
+    : 'http://localhost:5000';
+
     useEffect(() => {
         const fetchThreads = async () => {
             try {
-                const res = await axios.get(`/api/chat/threads/${userId}`);
+                const res = await api.get(`/chat/threads/${userId}`);
                 console.log('🧵 Thread response:', res.data);
                 setThreads(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
@@ -58,7 +63,7 @@ const MessagesPage = () => {
                                     <img
                                         src={
                                             otherUser?.profileImageUrl
-                                                ? `http://localhost:5000/uploads/${otherUser.profileImageUrl}`
+                                                ? `${backendBase}/uploads/${otherUser.profileImageUrl}`
                                                 : '/default-avatar.png'
                                         }
                                         alt="avatar"
