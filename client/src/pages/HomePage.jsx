@@ -10,6 +10,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
 import axios from 'axios';  // this is for chat and messages feature
+import api from '../api';
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -84,7 +85,7 @@ const HomePage = () => {
   // Chat Button logic
   const handleStartChat = async (recipientId) => {
     try {
-      const res = await axios.post('/api/chat/get-or-create-thread', {
+      const res = await api.post('/chat/get-or-create-thread', {
         senderId: currentUserId,
         recipientId,
       });
