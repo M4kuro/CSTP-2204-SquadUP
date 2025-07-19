@@ -10,6 +10,8 @@ const MessagesPage = () => {
 
     const userId = getUserIdFromToken();
 
+    // to help load the images in both developement and production environment.
+    
     const backendBase = import.meta.env.PROD
     ? 'https://cstp-2204-squadup-production.up.railway.app'
     : 'http://localhost:5000';
