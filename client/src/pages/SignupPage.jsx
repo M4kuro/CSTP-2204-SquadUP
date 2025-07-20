@@ -3,6 +3,8 @@ import {
     Box, 
     Paper, 
 } from '@mui/material';
+
+import Typography from '@mui/material/Typography';
   
 import Step1WelcomeUser from '../components/signupFlow/Step1WelcomeUser';
 import Step2GetLocation from '../components/signupFlow/Step2GetLocation';
@@ -47,7 +49,7 @@ const SignupPage = () => {
               borderRadius: 2,
               width: '80%',
               maxWidth: 400,
-              backgroundColor: '#b34725',
+              backgroundColor: '#000000ff',
               color: 'white'
             }}
         >
@@ -86,15 +88,26 @@ const SignupPage = () => {
         <Box
           sx={{
             width: '50%',
-            backgroundColor: '#2c3934',
+            backgroundColor: '#000000ff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'white'
           }}
           >
-              <img src="/TranspLogo.png" alt="Logo" style={{ maxWidth: '80%' }} />
-          
+          <Typography
+            
+            gutterBottom
+            sx={{
+              color: '#ffffffff',
+              fontFamily: 'Michroma, sans-serif',
+              textAlign: 'center',
+              fontSize: '80px'
+
+            }}>
+            SquadUP
+          </Typography>
+            
         </Box>
       </>
 

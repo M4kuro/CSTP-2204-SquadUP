@@ -9,6 +9,8 @@ import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
+import UserSidebar from '../components/UserMainSideBarControl'; 
+import TabControl from '../components/TabControl'; 
 import axios from 'axios';  // this is for chat and messages feature
 import api from '../api';
 
@@ -33,12 +35,53 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [sentRequests, setSentRequests] = useState([]);
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = async (event, newValue) => {
     setTabValue(newValue);
+
     if (newValue === 0) setView('nearby');
     if (newValue === 1) setView('discover');
     if (newValue === 2) setView('matches');
-  };
+
+    const token = localStorage.getItem('token');
+
+  try {
+    // 1. Get current user
+    const res = await fetch(`${baseUrl}/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setCurrentUser(data);
+
+    // 2. Fetch requests
+    const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const requestsData = await requestsRes.json();
+    const filtered = requestsData.filter(
+      (u) => !data.matches?.includes(u._id)
+    );
+    setIncomingRequests(filtered);
+
+    // 3. Fetch users based on selected tab
+    let endpoint = '';
+    if (newValue === 0) {
+      endpoint = `${baseUrl}/requests/${data._id}`;
+    } else if (newValue === 2) {
+      endpoint = `${baseUrl}/matches/${data._id}`;
+    } else {
+      endpoint = `${baseUrl}/discover`;
+    }
+
+    const usersRes = await fetch(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const usersData = await usersRes.json();
+    setUsers(usersData);
+
+  } catch (err) {
+    console.error('Tab refresh error:', err);
+  }
+};
 
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -198,7 +241,7 @@ const HomePage = () => {
     }
   };
 
-  // updating the useeffects and taking out the functions
+  // updating the useffects and taking out the functions
 
   useEffect(() => {
     fetchCurrentUser();
@@ -288,93 +331,18 @@ const HomePage = () => {
 
   // --------------------------------- RENDER ----------------------------------------------
   return (
-    <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      {/* Sidebar */}
-      <Box sx={{
-        width: '300px',
-        backgroundColor: '#9B331C',
-        borderRadius: '20px',
-        m: 5,
-        boxShadow: 10,
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        <Box sx={{ p: 3, textAlign: 'center' }}>
-          <Avatar
-            src={
-              currentUser?.profileImageUrl
-                ? `${import.meta.env.VITE_API_URL}/uploads/${currentUser.profileImageUrl}`
-                : '/placeholder-profile.png'
-            }
-            alt={currentUser?.username || 'User'}
-            sx={{ width: 200, height: 200, mx: 'auto', mb: 2 }}
-          />
-          <Typography variant="h4">
-            {currentUser?.username || 'Unknown'}
-          </Typography>
-        </Box>
+    <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}> {/* Main Container / Whole screen content Container ===========================\  */}
+      
+      <UserSidebar
+        currentUser={currentUser}
+        incomingRequests={incomingRequests}
+        setView={setView}
+        setTabValue={setTabValue}
+        handleLogout={handleLogout}
+        navigate={navigate}
+      />
 
-        {/* Sidebar Buttons */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, px: 3 }}>
-          <Button variant="contained" color="warning" onClick={() => navigate(`/profile`)}>
-            My Profile
-          </Button>
-          <Button variant="contained" color="warning" onClick={() => setView('requests')}>
-            Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
-          </Button>
-          <Button variant="contained" color="warning" onClick={() => setTabValue(2)}>
-            Squad
-          </Button>
-          <Button variant="contained" color="warning" onClick={() => navigate('/messages')}>
-            Messages
-          </Button>
-        </Box>
-
-        {/* Bottom Buttons */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 'auto', p: 3 }}>
-          <Button
-            variant="outlined"
-            startIcon={<SettingsIcon />}
-            sx={{
-              justifyContent: 'flex-start',
-              color: 'white',
-              borderColor: 'white',
-              textTransform: 'none',
-            }}
-            fullWidth
-          >
-            Settings
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<HelpIcon />}
-            sx={{
-              justifyContent: 'flex-start',
-              color: 'white',
-              borderColor: 'white',
-              textTransform: 'none',
-            }}
-            fullWidth
-          >
-            Help
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<LogoutIcon />}
-            onClick={handleLogout}
-            sx={{
-              justifyContent: 'flex-start',
-              color: 'white',
-              borderColor: 'white',
-              textTransform: 'none',
-            }}
-            fullWidth
-          >
-            Sign Out
-          </Button>
-        </Box>
-      </Box>
-
+      
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Logo + Tabs (always centered) */}
@@ -383,78 +351,34 @@ const HomePage = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            mt: 3,
+            mt: 1,
           }}
         >
-          <img src="SquadUP.png" alt="SquadUP Logo" style={{ width: '150px', height: 'auto' }} />
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            centered
+          <Typography
             sx={{
-              mt: 2,
-              '& .MuiTab-root': { color: '#fff' },
-              '& .Mui-selected': { color: '#FF5722 !important', fontWeight: 'bold' },
-              '& .MuiTabs-indicator': { backgroundColor: '#FF5722 !important' },
+              fontFamily: 'Michroma, sans-serif',
+              color: '#000000ff',
+              textAlign: 'center',
+              fontSize: '25px',
             }}
           >
-            <Tab label="Nearby" />
-            <Tab label="Discover" />
-            <Tab label="Matches" />
-          </Tabs>
+            SquadUP
+          </Typography>
 
-          {/* 🔄 DEV-ONLY REFRESH BUTTON */}
-
-          <Button
-            onClick={async () => {
-              const token = localStorage.getItem('token');
-              try {
-                // 1. Get current user
-                const res = await fetch(`${baseUrl}/me`, {
-                  headers: { Authorization: `Bearer ${token}` },
-                });
-                const data = await res.json();
-                setCurrentUser(data); // Updates state
-
-                // 2. Now that we have currentUser, fetch requests
-                const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
-                  headers: { Authorization: `Bearer ${token}` },
-                });
-                const requestsData = await requestsRes.json();
-                const filtered = requestsData.filter(
-                  (u) => !data.matches?.includes(u._id)
-                );
-                setIncomingRequests(filtered);
-
-                // 3. Fetch users based on view/tabValue
-                let endpoint = '';
-                if (view === 'requests') {
-                  endpoint = `${baseUrl}/requests/${data._id}`;
-                } else if (tabValue === 2) {
-                  endpoint = `${baseUrl}/matches/${data._id}`;
-                } else {
-                  endpoint = `${baseUrl}/discover`;
-                }
-                const usersRes = await fetch(endpoint, {
-                  headers: { Authorization: `Bearer ${token}` },
-                });
-                const usersData = await usersRes.json();
-                setUsers(usersData);
-              } catch (err) {
-                console.error('Dev refresh error:', err);
-              }
-            }}
-          >
-            🔄 Dev Refresh
-          </Button>
-
-          {/* 🔄 DEV-ONLY REFRESH BUTTON */}
-
+          <TabControl
+            tabValue={tabValue}
+            setTabValue={setTabValue}
+            setView={setView}
+            setCurrentUser={setCurrentUser}
+            setIncomingRequests={setIncomingRequests}
+            setUsers={setUsers}
+            baseUrl={baseUrl}
+          />
 
         </Box>
 
         {selectedUser ? (
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3 }}>
+          <Box sx={{ flexGrow: 1, overflowY: 'auto'}}>
             <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
           </Box>
         ) : (
@@ -462,7 +386,7 @@ const HomePage = () => {
             sx={{
               flexGrow: 1,
               overflowY: 'auto',
-              p: 3,
+              p: 2,
               display: 'grid',
               gridTemplateColumns: {
                 xs: '1fr',
@@ -471,7 +395,7 @@ const HomePage = () => {
                 lg: 'repeat(4, 1fr)',
                 xl: 'repeat(5, 1fr)',
               },
-              gap: 3,
+              gap: 2,
             }}
           >
             {users
@@ -483,7 +407,7 @@ const HomePage = () => {
               .map((user) => (
                 <Grid item key={user._id}>
                   <Card sx={{
-                    height: 450,
+                    height: 420,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -494,7 +418,7 @@ const HomePage = () => {
                     <Box sx={{ position: 'relative' }}>
                       <CardMedia
                         component="div"
-                        sx={{ height: 200 }}
+                        sx={{ height: 300 }}
                         image={
                           user.profileImageUrl
                             ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
@@ -505,32 +429,27 @@ const HomePage = () => {
                         <Box sx={{
                           position: 'absolute',
                           top: 7,
-                          right: -4,
-                          backgroundColor: '#FF5722',
-                          color: '#fff',
-                          padding: '2px 10px',
-                          transform: 'rotate(35deg)',
+                          right: 8,
+                          backgroundColor: '#ffbf00',
+                          color: '#000000ff',
+                          padding: '2px 10px',                          
                           fontWeight: 'bold',
-                          fontSize: '0.75rem',
-                          zIndex: 2,
+                          fontSize: '11px', 
+                          fontFamily: 'Michroma, sans-serif',
                           boxShadow: 2,
                         }}>
                           PRO
                         </Box>
                       )}
                     </Box>
+
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h5">{user.username}</Typography>
-                      <Typography variant="body2">Interests:</Typography>
-                      <ul style={{ margin: 10 }}>
-                        {user.interests?.map((interest, i) => (
-                          <li key={i}>
-                            <Typography variant="body2">{interest}</Typography>
-                          </li>
-                        ))}
-                      </ul>
+                      <Typography sx={{ fontFamily: 'Michroma, sans-serif', fontSize: '23px',}}>
+                        {user.username}                      
+                      </Typography>
                     </CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mb: 2 }}>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mb: 1 }}>
                       {view === 'requests' ? (
                         <>
                           <Button variant="contained" color="success" onClick={() => handleAccept(user._id)}>
@@ -554,7 +473,12 @@ const HomePage = () => {
                           {/* S+UP Button */}
                           <Button
                             variant="contained"
-                            color="warning"
+                            sx={{
+                              backgroundColor: '#000000ff',
+                              color: 'white',
+                              '&:hover': { backgroundColor: '#1a5700ff' },
+                              fontFamily: 'Michroma, sans-serif', fontSize: '12px',
+                            }}
                             disabled={sentRequests.includes(user._id)}
                             onClick={() => handleSquadUp(user._id)}
                           >
@@ -563,8 +487,14 @@ const HomePage = () => {
 
                           {/* Chat Button */}
                           <Button
-                            variant="outlined"
-                            color="primary"
+                                variant="outlined"
+                                sx={{
+                                  color: '#000000ff', '&:hover': { backgroundColor: '#1a5700ff' },
+                                  borderColor: '#000000ff',
+
+                                  fontFamily: 'Michroma, sans-serif',
+                                  fontSize: '12px',
+                                }}
                             onClick={() => handleStartChat(user._id)} // 👈 pass in the other user's ID
                           >
                             Chat
@@ -572,8 +502,13 @@ const HomePage = () => {
 
                           {/* More Button */}
                           <Button
-                            variant="outlined"
-                            color="warning"
+                            variant="contained"
+                            sx={{
+                              backgroundColor: '#000000ff',
+                              color: 'white',
+                              '&:hover': { backgroundColor: '#1a5700ff' },
+                              fontFamily: 'Michroma, sans-serif', fontSize: '12px',
+                            }}
                             onClick={() => handleViewUser(user._id)}
                           >
                             More
@@ -587,7 +522,7 @@ const HomePage = () => {
           </Box>
         )}
       </Box>
-    </Box>
+    </Box> // Main Container End =========================================================================================================================//
   );
 };
 

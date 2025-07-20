@@ -20,15 +20,35 @@ const Step1WelcomeUser = ({ formData, setFormData, onNext }) => {
       
         {!showNameInput ? (
           <>
-            <Typography variant="h5" gutterBottom>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                color: '#ffffffff',
+                fontFamily: 'Michroma, sans-serif',
+                textAlign: 'center'
+              }}>
+              
               Welcome to SquadUp!
+
             </Typography>
-            <Typography variant="body1" gutterBottom>
+
+            <Typography
+              variant="body1"
+              gutterBottom
+              sx={{
+                color: '#ffffffff',
+                fontFamily: 'Michroma, sans-serif',
+                textAlign: 'center',
+                mb: 3
+              }}
+            >
+              
               Connect with people who love the same games and activities as you. We’ll walk you through a few quick steps to get started.
             </Typography>
             <Button
               variant="contained"
-              sx={{ backgroundColor: 'white', color: '#b34725', mt: 3 }}
+              sx={{ backgroundColor: 'white', color: '#000000ff', mt: 3 }}
               onClick={handleNextClick}
             >
               Let’s Get Started
@@ -36,7 +56,16 @@ const Step1WelcomeUser = ({ formData, setFormData, onNext }) => {
           </>
         ) : (
           <>
-            <Typography variant="h6" gutterBottom>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  color: '#ffffffff',
+                  fontFamily: 'Michroma, sans-serif',
+                  textAlign: 'center',
+                  mb: 2
+                }}
+              >
               What’s your name?
             </Typography>
             <TextField
@@ -48,17 +77,17 @@ const Step1WelcomeUser = ({ formData, setFormData, onNext }) => {
               sx={{ backgroundColor: 'white', mb: 2,
                 '& .MuiFilledInput-root': {
                   '&:after': {
-                    borderBottomColor: '#b34725  '  // your focus color here
+                    borderBottomColor: '#000000ff  '  // your focus color here
                   },
                 },
                 '& label.Mui-focused': {
-                  color: '#b34725  ', // label color on focus
+                  color: '#000000ff  ', // label color on focus
                 }, }}
               />
               
             <Button
-              variant="contained"
-              sx={{ backgroundColor: 'white', color: '#b34725' }}
+              variant="outlined"
+              sx={{ backgroundColor: 'white', color: '#000000ff' }}
               onClick={handleNextClick}
               disabled={!formData.username?.trim()}
             >

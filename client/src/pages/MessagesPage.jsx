@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import api from '../api';
 import { getUserIdFromToken } from '../utils/auth';
+import UserSidebar from '../components/UserMainSideBarControl'; 
 
 const MessagesPage = () => {
     const [threads, setThreads] = useState([]);
@@ -32,6 +33,9 @@ const MessagesPage = () => {
     }, []);
 
     return (
+
+        
+
 
         <div className="messages-container">
             <button

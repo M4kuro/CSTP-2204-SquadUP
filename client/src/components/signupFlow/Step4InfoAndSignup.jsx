@@ -74,11 +74,11 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => {
             sx={{ backgroundColor: 'white', mb: 2,
               '& .MuiFilledInput-root': {
                 '&:after': {
-                  borderBottomColor: '#b34725  '  // your focus color here
+                  borderBottomColor: '#000000ff  '  // your focus color here
                 },
               },
               '& label.Mui-focused': {
-                color: '#b34725  ', // label color on focus
+                color: '#000000ff  ', // label color on focus
               }, }}
           />
     
@@ -92,11 +92,11 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => {
             sx={{ backgroundColor: 'white', mb: 2,
               '& .MuiFilledInput-root': {
                 '&:after': {
-                  borderBottomColor: '#b34725  '  // your focus color here
+                  borderBottomColor: '#000000ff  '  // your focus color here
                 },
               },
               '& label.Mui-focused': {
-                color: '#b34725  ', // label color on focus
+                color: '#000000ff  ', // label color on focus
               }, }}
         />
         
@@ -109,11 +109,11 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack  }) => {
               Back
             </Button>
             <Button
-              variant="contained"
+              variant="Outlined"
               fullWidth
               sx={{
                 backgroundColor: 'white',
-                color: '#b34725',
+                color: '#000000ff',
                 ml: 2,
                 maxWidth: 200
               }}

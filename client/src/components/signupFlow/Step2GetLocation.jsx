@@ -81,7 +81,16 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
+      <Typography
+        gutterBottom
+        sx={{
+          color: '#ffffffff',
+          fontFamily: 'Michroma, sans-serif',
+          textAlign: 'center',
+          mb: 2,
+          fontSize: '1.5rem'
+        }}
+      >
         Where are you located?
       </Typography>
 
@@ -89,7 +98,7 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
       {/* Location Input Section with Pin on Left */}
       {/* added a component for location input.  Also updated the index.css for the Google Places input override */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-        <IconButton onClick={handleUseMyLocation} sx={{ color: '#FF5722' }}>
+        <IconButton onClick={handleUseMyLocation} sx={{ color: '#fc0b0bff' }}>
           <PlaceIcon />
         </IconButton>
 
@@ -140,8 +149,8 @@ const Step2GetLocation = ({ formData, setFormData, onNext, onBack }) => {
           Back
         </Button>
         <Button
-          variant="contained"
-          sx={{ backgroundColor: 'white', color: '#b34725', ml: 1 }}
+          variant="outlined"
+          sx={{ backgroundColor: 'white', color: '#000000ff', ml: 1 }}
           onClick={onNext}
           disabled={!isLocationReady}
         >

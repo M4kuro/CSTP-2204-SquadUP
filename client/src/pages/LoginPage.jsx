@@ -79,19 +79,30 @@ const LoginPage = () => {
     <Box
       sx={{
         width: '50%',
-        backgroundColor: '#2c3934',
+        backgroundColor: '#ffffffff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-      }}> 
-      <img src="/TranspLogo.png" alt="Logo" style={{ maxWidth: '70%' }} />
+        }}> 
+        
+
+        <Typography 
+          sx={{
+            color: 'Black',
+            fontFamily: 'Michroma, sans-serif',
+            fontSize: '80px'
+          }}>
+          SquadUP
+        </Typography>
+        
+
     </Box>
   
     {/* Right Side */}
     <Box
       sx={{
         width: '50%',
-        backgroundColor: '#2c3934',
+        backgroundColor: '#000000ff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -105,12 +116,22 @@ const LoginPage = () => {
           borderRadius: 2,
           width: '80%',
           maxWidth: 400,
-          backgroundColor: '#b34725',
+          backgroundColor: '#ffffffff',
           color: 'white'
         }}
       >
         
-        <Typography variant="h5" gutterBottom>Login</Typography>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              color: '#000000ff',
+              fontFamily: 'Michroma, sans-serif',
+              
+            }}>
+            Login
+          </Typography>
+
           <TextField label="Email"
             fullWidth
             margin="normal"
@@ -120,11 +141,11 @@ const LoginPage = () => {
             sx={{ backgroundColor: 'white',
               '& .MuiFilledInput-root': {
                 '&:after': {
-                  borderBottomColor: '#b34725  '  // your focus color here
+                  borderBottomColor: '#000000ff  '  // your focus color here
                 },
               },
               '& label.Mui-focused': {
-                color: '#b34725  ', // label color on focus
+                color: '#000000ff  ', // label color on focus
               }, }}/>
           
           <TextField label="Password"
@@ -137,11 +158,11 @@ const LoginPage = () => {
             sx={{ backgroundColor: 'white',
               '& .MuiFilledInput-root': {
                 '&:after': {
-                  borderBottomColor: '#b34725  '  // your focus color here
+                  borderBottomColor: '#000000ff  '  // your focus color here
                 },
               },
               '& label.Mui-focused': {
-                color: '#b34725  ', // label color on focus
+                color: '#000000ff  ', // label color on focus
               }, }}/>
         
           
@@ -149,7 +170,7 @@ const LoginPage = () => {
           <Button
             fullWidth
             variant="contained"
-            sx={{ mt: 2, backgroundColor: 'white', color: '#b34725' }}
+            sx={{ mt: 2, backgroundColor: 'Black', color: '#ffffffff', fontFamily: 'Michroma, sans-serif', '&:hover': { backgroundColor: '#000000ff' } }}
             onClick={handleLogin}
             disabled={loading || !email || !password}
 
@@ -168,7 +189,6 @@ const LoginPage = () => {
                 alert('Google sign-in failed.');
               }}
               logo_alignment="center"
-              theme='filled_blue'
               text='signin_with'
               
 
@@ -176,15 +196,17 @@ const LoginPage = () => {
             />
           </GoogleOAuthProvider>
 
-        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{ mt: 2, color: '#000000ff', fontFamily: 'Michroma, sans-serif' }}>
             Don't have an account?
-            <a href="/signup" style={{ color: '#90caf9' }}> Sign up</a>
+            <a href="/signup" style={{ color: '#006fcaff' }}> Sign up</a>
         </Typography>
           
       </Paper>
     </Box>
   </>
-  
   );
 
 

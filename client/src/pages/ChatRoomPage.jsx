@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import socket from '../socket';  // client/src/socket.js
+import UserSidebar from '../components/UserMainSideBarControl'; 
 
 
 const ChatRoomPage = () => {

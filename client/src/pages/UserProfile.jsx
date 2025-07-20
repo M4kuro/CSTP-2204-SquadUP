@@ -10,10 +10,12 @@ import {
   Button,
   TextField,
 } from '@mui/material';
+import UserSidebar from '../components/UserMainSideBarControl'; // Importing the sidebar component
 import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
 import MonthlyCalendar from '../components/calendar/MonthlyCalendar'; // importing the calendar components (this is for monthly)
 import WeeklyCalendar from '../components/calendar/WeeklyCalendar';  // this is the weekly component import
 import DailyCalendar from '../components/calendar/DailyCalendar'; // this is the daily component import
+
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
@@ -27,7 +29,6 @@ const UserProfile = () => {
   const [mainImageFile, setMainImageFile] = useState(null);
   const [otherImages, setOtherImages] = useState([null, null, null]);
   const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
-  const allInterests = ['Video Games', 'Board Games', 'Sports', 'Music', 'Fitness'];
   const [showCalendar, setShowCalendar] = useState(false); // for the calendar
   const [calendarView, setCalendarView] = useState('month'); // for the calendar view.. or 'week', 'day' 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -221,14 +222,25 @@ const UserProfile = () => {
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        backgroundColor: '#2D3932',
+        backgroundColor: '#ffffffff',
         minHeight: '100vh',
         minWidth: '100vw',
-        padding: 4,
-        gap: 4,
-        justifyContent: 'center',
+        padding: 2,
+        gap: 2,
       }}
     >
+      <UserSidebar
+        currentUser={user}  
+        incomingRequests={[]}  // Assuming no incoming requests for now
+        setView={null}  // Not used in this context
+        setTabValue={null}  // Not used in this context
+        handleLogout={() => {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }} 
+        navigate={navigate}
+      />
+      
       {/* LEFT - IMAGES */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 7 }}>
         <Paper elevation={4} sx={{ padding: 2, backgroundColor: '#b0b0b0' }}>
@@ -325,14 +337,7 @@ const UserProfile = () => {
       {/* RIGHT - PROFILE DETAILS */}
 
       <Box sx={{ width: '100%', maxWidth: 600 }}>
-        <Button
-          onClick={() => navigate('/home')}  // fixed this it was set to the login page for some reason.. Just changed it to homepage.
-          variant="outlined"
-          sx={{ mb: 2, color: '#fff', borderColor: '#fff' }}
-        >
-          ⬅ Back to Homepage
-        </Button>
-
+        
         <Paper elevation={4} sx={{ ...sectionStyle, mb: 3 }}>
           <Avatar
             src={mainImage}

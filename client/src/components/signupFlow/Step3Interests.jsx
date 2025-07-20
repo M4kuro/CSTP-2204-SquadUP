@@ -16,7 +16,15 @@ const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => {
   // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
     return (
         <>
-          <Typography variant="h6" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: 'white',
+            mb: 2
+            
+           }}
+        >
             What kind of activity are you interested in?
           </Typography>
     
@@ -26,11 +34,12 @@ const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => {
                 <Chip
                   label={option}
                   clickable
-                  color={formData.interests.includes(option) ? 'primary' : 'default'}
+                  color={formData.interests.includes(option) ? '' : ''}
                   onClick={() => toggleInterest(option)}
                   sx={{
                     fontSize: '1rem',
                     padding: '10px',
+                    backgroundColor: formData.interests.includes(option) ? '#009d18ff' : 'white',
                   }}
                 />
               </Grid>
@@ -46,8 +55,8 @@ const Step3Interests = ({ formData, setFormData, onNext, onBack  }) => {
         </Button>
     
           <Button
-            variant="contained"
-            sx={{ backgroundColor: 'white', color: '#b34725' }}
+            variant="Outlined"
+            sx={{ backgroundColor: 'white', color: '#000000ff' }}
             onClick={onNext}
             disabled={formData.interests.length === 0}
           >
