@@ -15,14 +15,11 @@ const MessageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  timestamp: {
-    type: Date,
-    default: Date.now
-  },
   read: {
     type: Boolean,
     default: false
   }
-});
+}, { timestamps: true }); // this should add createdAt and updatedAt automatically to help with message consistency
 
 module.exports = mongoose.model('Message', MessageSchema);
+

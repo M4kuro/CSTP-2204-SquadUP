@@ -4,7 +4,18 @@ import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 
-const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue, handleLogout, navigate }) => {
+const UserSidebar = ({
+  currentUser,
+  incomingRequests = [],
+  setView,
+  setTabValue,
+  navigate
+}) => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <Box
       sx={{
@@ -38,7 +49,7 @@ const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue,
 
       {/* Navigation Buttons */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, px: 3 }}>
-        <Button variant="outlined" sx={buttonStyle} onClick={() => {navigate('/home');}}>Home Page</Button>
+        <Button variant="outlined" sx={buttonStyle} onClick={() => { navigate('/home'); }}>Home Page</Button>
         <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/profile')}>My Profile</Button>
         <Button variant="outlined" sx={buttonStyle} onClick={() => setView?.('requests')}>
           Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
@@ -48,11 +59,25 @@ const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue,
       </Box>
 
       {/* Bottom Section */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>
-        <Button variant="outlined" startIcon={<SettingsIcon />} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
+
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>       
+        <Button
+          variant="outlined"
+          startIcon={<SettingsIcon />}
+          sx={{ ...buttonStyle, justifyContent: 'flex-start' }}
+          fullWidth
+          onClick={() => navigate('/settings')}
+        >
+
           Settings
         </Button>
-        <Button variant="outlined" startIcon={<HelpIcon />} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
+        <Button
+          variant="outlined"
+          startIcon={<HelpIcon />}
+          sx={{ ...buttonStyle, justifyContent: 'flex-start' }}
+          fullWidth
+          onClick={() => navigate('/help')}
+        >
           Help
         </Button>
         <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
