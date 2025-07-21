@@ -218,22 +218,24 @@ const UserProfile = () => {
   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
-    <Box
+    <Box // Main Box =============================================
       sx={{
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: '#ffffffff',
         minHeight: '100vh',
         minWidth: '100vw',
-        padding: 2,
-        gap: 2,
+        padding: 1,
+        gap: 4,
+        justifyContent: 'center',
+        
       }}
     >
       <UserSidebar
         currentUser={user}  
-        incomingRequests={[]}  // Assuming no incoming requests for now
-        setView={null}  // Not used in this context
-        setTabValue={null}  // Not used in this context
+        incomingRequests={[]}  
+        setView={null}  
+        setTabValue={null}  
         handleLogout={() => {
           localStorage.removeItem('token');
           navigate('/login');
@@ -241,28 +243,45 @@ const UserProfile = () => {
         navigate={navigate}
       />
       
-      {/* LEFT - IMAGES */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 7 }}>
-        <Paper elevation={4} sx={{ padding: 2, backgroundColor: '#b0b0b0' }}>
+
+      
+      {/* IMAGES BOX ============================================================================================*/}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 5, ml: 30, }}>
+        <Paper elevation={4} sx={{ padding: 2, backgroundColor: '#000000ff' }}>
+
           <Avatar
             src={mainImage}
             sx={{ width: 340, height: 340 }}
           >
             {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
-          <Button variant="contained" component="label" sx={{ mt: 1 }}>
+          
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            sx={{
+              mt: 1,
+              color: '#ffffffff',
+              '&:hover': { backgroundColor: '#585858ff' },
+              borderColor: '#ffffffff',
+              fontFamily: 'Michroma, sans-serif',
+              fontSize: '12px'
+            }}>
+            
             Upload Main
             <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange('main', e)} />
           </Button>
         </Paper>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        {/* Extra images Upload Box ===========================================================================*/}
+        <Box sx={{ display: 'flex', gap: 3}}>
           {otherImages.map((img, idx) => (
             <Paper
               key={idx}
               elevation={4}
               sx={{
-                backgroundColor: '#b0b0b0',
+                backgroundColor: '#000000ff',
                 padding: 2,
                 display: 'flex',
                 flexDirection: 'column',
@@ -277,7 +296,12 @@ const UserProfile = () => {
               <Button
                 variant="outlined"
                 component="label"
-                sx={{ mt: 1, fontSize: '1.7rem' }}
+                sx={{
+                  mt: 2,
+                  fontSize: '20px',
+                  color: 'white',
+                  '&:hover': { backgroundColor: '#585858ff' },
+                    borderColor: 'white', }}
               >
                 +
                 <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
@@ -285,13 +309,14 @@ const UserProfile = () => {
             </Paper>
           ))}
         </Box>
-
-        {/* Calendar for Pro Users */}
+        {/*=============================================================================================================*/}
+        
+        {/* Calendar for Pro Users ====================================================================================== */}
         {showCalendar && (
           <Box
             sx={{
               mt: 4,
-              backgroundColor: '#f5f5f5',
+              backgroundColor: '#000000ff',
               p: 2,
               borderRadius: 2,
               maxWidth: '860px',    // 👈 Match width of your 3-image layout
@@ -301,19 +326,24 @@ const UserProfile = () => {
           >
             <Box sx={{ display: 'flex', gap: 2, mb: 2, justifyContent: 'center' }}>
               <Button
-                variant={calendarView === 'month' ? 'contained' : 'outlined'}
+                variant={calendarView === 'month' ? 'outlined' : ''}
+                sx={{
+                  fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff', 
+                 }}
                 onClick={() => setCalendarView('month')}
               >
                 Monthly
               </Button>
               <Button
-                variant={calendarView === 'week' ? 'contained' : 'outlined'}
+                variant={calendarView === 'week' ? 'outlined' : ''}
+                sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff' }}
                 onClick={() => setCalendarView('week')}
               >
                 Weekly
               </Button>
               <Button
-                variant={calendarView === 'day' ? 'contained' : 'outlined'}
+                variant={calendarView === 'day' ? 'outlined' : ''}
+                sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff' }}
                 onClick={() => setCalendarView('day')}
               >
                 Daily
@@ -333,15 +363,16 @@ const UserProfile = () => {
           </Box>
         )}
       </Box>
+      {/* ============================================================================================================*/}
 
-      {/* RIGHT - PROFILE DETAILS */}
+      {/* PROFILE DETAILS ============================================================================================ */}
 
-      <Box sx={{ width: '100%', maxWidth: 600 }}>
+      <Box sx={{ width: '100%', maxWidth: 560, ml: 4, mt: 5, }}>
         
         <Paper elevation={4} sx={{ ...sectionStyle, mb: 3 }}>
           <Avatar
             src={mainImage}
-            sx={{ width: 80, height: 80, bgcolor: '#FF5722', mx: 'auto' }}
+            sx={{ width: 80, height: 80, bgcolor: '#ff0000ff', mx: 'auto' }} // This can be orange (Google/gmail standard color)
           >
             {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
@@ -402,7 +433,7 @@ const UserProfile = () => {
                       sx={{
                         px: 2,
                         py: 0.5,
-                        backgroundColor: '#FF5722',
+                        backgroundColor: '#000000ff',
                         color: 'white',
                         borderRadius: '16px',
                         fontSize: '0.85rem',
@@ -459,13 +490,13 @@ const UserProfile = () => {
               />
               <Box
                 sx={{
-                  borderLeft: '4px solid #FF5722',
+                  borderLeft: '4px solid #000000ff',
                   pl: 1.5,
                   mt: 2,
                 }}
               >
                 <Typography variant="h6" sx={{ color: 'black' }}>
-                  What I'm Offering
+                What I'm Offering
                 </Typography>
               </Box>
 
@@ -488,23 +519,51 @@ const UserProfile = () => {
         {/* Socials section */}
         <Paper elevation={4} sx={sectionStyle}>
           <Typography variant="h6">Social Links</Typography>
-          <TextField name="instagram" label="Instagram" value={formData.instagram || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
-          <TextField name="facebook" label="Facebook" value={formData.facebook || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
-          <TextField name="x" label="X (Twitter)" value={formData.x || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
-          <TextField name="bluesky" label="Bluesky" value={formData.bluesky || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
+
+          <TextField
+            name="instagram"
+            label="Instagram"
+            value={formData.instagram || ''}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }} />
+          
+          <TextField
+            name="facebook"
+            label="Facebook"
+            value={formData.facebook || ''}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }} />
+          
+          <TextField
+            name="x"
+            label="X (Twitter)"
+            value={formData.x || ''}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }} />
+          
+          <TextField
+            name="bluesky"            
+            label="Bluesky"
+            value={formData.bluesky || ''}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }} />
         </Paper>
 
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Box sx={{ textAlign: 'center',}}>
           <Button
             variant="contained"
-            color="warning"
             onClick={isEditing ? handleSave : () => setIsEditing(true)}
-            sx={{ borderRadius: '12px', fontWeight: 'bold' }}
+            sx={{ borderRadius: '12px', mb: 2, fontFamily:'Michroma, sans-serif', color: '#ffffff', backgroundColor: '#000000ff', '&:hover': { backgroundColor: '#585858ff' } }}
           >
             {isEditing ? 'Save My Profile' : 'Edit My Profile'}
           </Button>
         </Box>
       </Box>
+      
     </Box>
   );
 };

@@ -329,9 +329,9 @@ const HomePage = () => {
   };
 
 
-  // --------------------------------- RENDER ----------------------------------------------
+  // --------------------------------- MAIN CONTENTENT  ----------------------------------------------
   return (
-    <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}> {/* Main Container / Whole screen content Container ===========================\  */}
+    <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', }}> {/* Main Container / Whole screen content Container ===========================\  */}
       
       <UserSidebar
         currentUser={currentUser}
@@ -343,7 +343,7 @@ const HomePage = () => {
       />
 
       
-      {/* Main Content */}
+      {/* Header ============================================================================ */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Logo + Tabs (always centered) */}
         <Box
@@ -376,7 +376,9 @@ const HomePage = () => {
           />
 
         </Box>
+        {/* Header ================================================================================================= */} 
 
+        {/* User GRID ============================================================================================== */}
         {selectedUser ? (
           <Box sx={{ flexGrow: 1, overflowY: 'auto'}}>
             <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
@@ -395,7 +397,11 @@ const HomePage = () => {
                 lg: 'repeat(4, 1fr)',
                 xl: 'repeat(5, 1fr)',
               },
-              gap: 2,
+                gap: 2,
+                justifyContent: 'center',
+                mx: 'auto',
+                ml: 35,
+                
             }}
           >
             {users
@@ -476,7 +482,7 @@ const HomePage = () => {
                             sx={{
                               backgroundColor: '#000000ff',
                               color: 'white',
-                              '&:hover': { backgroundColor: '#1a5700ff' },
+                              '&:hover': { backgroundColor: '#585858ff' },
                               fontFamily: 'Michroma, sans-serif', fontSize: '12px',
                             }}
                             disabled={sentRequests.includes(user._id)}
@@ -489,7 +495,7 @@ const HomePage = () => {
                           <Button
                                 variant="outlined"
                                 sx={{
-                                  color: '#000000ff', '&:hover': { backgroundColor: '#1a5700ff' },
+                                  color: '#000000ff', '&:hover': { backgroundColor: '#585858ff' },
                                   borderColor: '#000000ff',
 
                                   fontFamily: 'Michroma, sans-serif',
@@ -506,7 +512,7 @@ const HomePage = () => {
                             sx={{
                               backgroundColor: '#000000ff',
                               color: 'white',
-                              '&:hover': { backgroundColor: '#1a5700ff' },
+                              '&:hover': { backgroundColor: '#585858ff' },
                               fontFamily: 'Michroma, sans-serif', fontSize: '12px',
                             }}
                             onClick={() => handleViewUser(user._id)}

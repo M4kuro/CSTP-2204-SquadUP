@@ -8,13 +8,16 @@ const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue,
   return (
     <Box
       sx={{
-        width: '300px',
+        maxWidth: '400px',
         backgroundColor: '#000000ff',
         borderRadius: '20px',
-        m: 5,
+        m: 3,
         boxShadow: 10,
         display: 'flex',
         flexDirection: 'column',
+        position: 'fixed',
+        left: 0,
+
       }}
     >
       {/* Top Avatar Section */}
@@ -45,7 +48,7 @@ const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue,
       </Box>
 
       {/* Bottom Section */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 'auto', p: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>
         <Button variant="outlined" startIcon={<SettingsIcon />} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
           Settings
         </Button>
@@ -62,6 +65,7 @@ const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue,
 
 const buttonStyle = {
   color: 'white',
+  '&:hover': { backgroundColor: '#585858ff' },
   borderColor: 'white',
   textTransform: 'none',
   fontFamily: 'Michroma, sans-serif',
