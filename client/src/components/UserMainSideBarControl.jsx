@@ -4,7 +4,18 @@ import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 
-const UserSidebar = ({ currentUser, incomingRequests = [], setView, setTabValue, handleLogout, navigate }) => {
+const UserSidebar = ({
+  currentUser,
+  incomingRequests = [],
+  setView,
+  setTabValue,
+  navigate
+}) => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <Box
       sx={{

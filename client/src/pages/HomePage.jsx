@@ -4,14 +4,17 @@ import {
   Card, CardContent, CardMedia, Button,
   Grid, ListItem, ListItemButton, ListItemText
 } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import HelpIcon from '@mui/icons-material/Help';
-import LogoutIcon from '@mui/icons-material/Logout';
+// commenting out the following because they were not being utilized.
+// Do we still need these?
+
+// import SettingsIcon from '@mui/icons-material/Settings';
+// import HelpIcon from '@mui/icons-material/Help';
+// import LogoutIcon from '@mui/icons-material/Logout';
+// import axios from 'axios';  // this is for chat and messages feature
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
 import UserSidebar from '../components/UserMainSideBarControl'; 
 import TabControl from '../components/TabControl'; 
-import axios from 'axios';  // this is for chat and messages feature
 import api from '../api';
 
 // will need to refactor code later
@@ -35,53 +38,56 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [sentRequests, setSentRequests] = useState([]);
 
-  const handleTabChange = async (event, newValue) => {
-    setTabValue(newValue);
+// commenting this section out because handleTabChange, isn't being utilized after Leo created the component
+// called TabControl.jsx.  So do we still need this section?
 
-    if (newValue === 0) setView('nearby');
-    if (newValue === 1) setView('discover');
-    if (newValue === 2) setView('matches');
+//   const handleTabChange = async (event, newValue) => {
+//     setTabValue(newValue);
 
-    const token = localStorage.getItem('token');
+//     if (newValue === 0) setView('nearby');
+//     if (newValue === 1) setView('discover');
+//     if (newValue === 2) setView('matches');
 
-  try {
-    // 1. Get current user
-    const res = await fetch(`${baseUrl}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setCurrentUser(data);
+//     const token = localStorage.getItem('token');
 
-    // 2. Fetch requests
-    const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const requestsData = await requestsRes.json();
-    const filtered = requestsData.filter(
-      (u) => !data.matches?.includes(u._id)
-    );
-    setIncomingRequests(filtered);
+//   try {
+//     // 1. Get current user
+//     const res = await fetch(`${baseUrl}/me`, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     });
+//     const data = await res.json();
+//     setCurrentUser(data);
 
-    // 3. Fetch users based on selected tab
-    let endpoint = '';
-    if (newValue === 0) {
-      endpoint = `${baseUrl}/requests/${data._id}`;
-    } else if (newValue === 2) {
-      endpoint = `${baseUrl}/matches/${data._id}`;
-    } else {
-      endpoint = `${baseUrl}/discover`;
-    }
+//     // 2. Fetch requests
+//     const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     });
+//     const requestsData = await requestsRes.json();
+//     const filtered = requestsData.filter(
+//       (u) => !data.matches?.includes(u._id)
+//     );
+//     setIncomingRequests(filtered);
 
-    const usersRes = await fetch(endpoint, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const usersData = await usersRes.json();
-    setUsers(usersData);
+//     // 3. Fetch users based on selected tab
+//     let endpoint = '';
+//     if (newValue === 0) {
+//       endpoint = `${baseUrl}/requests/${data._id}`;
+//     } else if (newValue === 2) {
+//       endpoint = `${baseUrl}/matches/${data._id}`;
+//     } else {
+//       endpoint = `${baseUrl}/discover`;
+//     }
 
-  } catch (err) {
-    console.error('Tab refresh error:', err);
-  }
-};
+//     const usersRes = await fetch(endpoint, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     });
+//     const usersData = await usersRes.json();
+//     setUsers(usersData);
+
+//   } catch (err) {
+//     console.error('Tab refresh error:', err);
+//   }
+// };
 
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -173,10 +179,12 @@ const HomePage = () => {
     if (userToShow) setSelectedUser(userToShow);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
+  // Moved handleLogout to the component
+  // Logout Logic
+  // const handleLogout = () => {
+  //   localStorage.removeItem('token');
+  //   navigate('/');
+  // };
 
   // fetch the current user function
 
@@ -338,7 +346,7 @@ const HomePage = () => {
         incomingRequests={incomingRequests}
         setView={setView}
         setTabValue={setTabValue}
-        handleLogout={handleLogout}
+        // handleLogout={handleLogout}
         navigate={navigate}
       />
 
