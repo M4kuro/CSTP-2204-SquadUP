@@ -32,7 +32,8 @@ const ChatRoomPage = () => {
     const fetchMessages = async () => {
       try {
         const res = await api.get(`/chat/message/${threadId}`);
-        setMessages(res.data);
+        const sorted = res.data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        setMessages(sorted);
       } catch (err) {
         console.error('Error fetching messages:', err);
       }
@@ -61,15 +62,15 @@ const ChatRoomPage = () => {
   // this useeffect scrolls to the bottom based on last message
 
   useEffect(() => {
-  const container = messageContainerRef.current;
-  if (!container) return;
+    const container = messageContainerRef.current;
+    if (!container) return;
 
-  const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+    const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
 
-  if (isNearBottom) {
-    container.scrollTop = container.scrollHeight;
-  }
-}, [messages]);
+    if (isNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -134,7 +135,7 @@ const ChatRoomPage = () => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          
+
         }}>
           {messages.map((msg) => (
             <div
