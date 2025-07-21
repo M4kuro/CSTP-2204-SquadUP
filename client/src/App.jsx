@@ -8,6 +8,8 @@ import BookingDayCalendar from './components/calendar/BookingDayCalendar';
 import MessagesPage from './pages/MessagesPage';
 import ChatRoomPage from './pages/ChatRoomPage';
 import BookingSuccess from './pages/BookingSuccess';
+import SettingsPage from './pages/SettingsPage';
+import HelpPage from './pages/HelpPage';
 
 function App() {
 
@@ -29,6 +31,13 @@ function App() {
           <Route path="/booking/:proId" element={<BookingPage />} />
           <Route path="/booking/:proId/:yearMonth/:day" element={<BookingPage />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
+
+          {/* Help and Settings  */}
+
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/help" element={<HelpPage />} />
+
+
         </Routes>
       </Router>
 
