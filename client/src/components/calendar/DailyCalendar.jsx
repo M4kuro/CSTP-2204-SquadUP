@@ -48,12 +48,41 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
       }}
     >
       {/* Navigation */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Button onClick={handlePrevDay}>⬅ Prev</Button>
-        <Typography variant="h6" sx={{ textAlign: 'center' }}>
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 2, 
+      }}>
+        <Button
+          onClick={handlePrevDay}
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#000000ff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          ⬅ Prev
+        
+        </Button>
+
+        <Typography variant="h6" sx={{ textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '18px' }}>
           🕒 Daily Calendar View <br /> {formattedDate}
         </Typography>
-        <Button onClick={handleNextDay}>Next ➡</Button>
+
+        <Button
+          onClick={handleNextDay}
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#000000ff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          Next ➡
+        
+        </Button>
       </Box>
 
       {/* Hour blocks */}
@@ -79,12 +108,13 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
 
               <Paper
                 sx={{
-                  height: 48,
+                  height: 50,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: isBooked ? 'flex-start' : 'center',
                   backgroundColor: isBooked ? '#ffcc80' : '#e0e0e0',
-                  fontSize: '0.85rem',
+                  fontSize: '16px',
+                  fontFamily: 'Michroma, sans-serif',
                   borderRadius: 1,
                   px: isBooked ? 1 : 0,
                   gap: 1,

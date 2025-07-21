@@ -19,13 +19,16 @@ const UserSidebar = ({
   return (
     <Box
       sx={{
-        width: '300px',
+        maxWidth: '400px',
         backgroundColor: '#000000ff',
         borderRadius: '20px',
-        m: 5,
+        m: 3,
         boxShadow: 10,
         display: 'flex',
         flexDirection: 'column',
+        position: 'fixed',
+        left: 0,
+
       }}
     >
       {/* Top Avatar Section */}
@@ -56,7 +59,8 @@ const UserSidebar = ({
       </Box>
 
       {/* Bottom Section */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 'auto', p: 3 }}>
+
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>       
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
@@ -64,6 +68,7 @@ const UserSidebar = ({
           fullWidth
           onClick={() => navigate('/settings')}
         >
+
           Settings
         </Button>
         <Button
@@ -85,6 +90,7 @@ const UserSidebar = ({
 
 const buttonStyle = {
   color: 'white',
+  '&:hover': { backgroundColor: '#585858ff' },
   borderColor: 'white',
   textTransform: 'none',
   fontFamily: 'Michroma, sans-serif',
