@@ -16,6 +16,7 @@ import UserProfileCard from '../components/UserProfileCard';
 import UserSidebar from '../components/UserMainSideBarControl';
 import TabControl from '../components/TabControl';
 import api from '../api';
+import { useSearchParams } from 'react-router-dom';  // this is to help with the URL showing the tab states.
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -28,15 +29,20 @@ import api from '../api';
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const HomePage = () => {
+  const [searchParams] = useSearchParams();
+  const initialView = searchParams.get('view') || 'discover';
+  const [view, setView] = useState(initialView);
+
+  const initialTab = initialView === 'matches' ? 2 : initialView === 'requests' ? null : 1;
+  const [tabValue, setTabValue] = useState(initialTab);
+
   const userId = localStorage.getItem('userId');
-  const [tabValue, setTabValue] = useState(1); // default to "Discover"
   const [users, setUsers] = useState([]);
-  const [view, setView] = useState('discover');
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [incomingRequests, setIncomingRequests] = useState([]);
-  const navigate = useNavigate();
   const [sentRequests, setSentRequests] = useState([]);
+  const navigate = useNavigate();
 
   // commenting this section out because handleTabChange, isn't being utilized after Leo created the component
   // called TabControl.jsx.  So do we still need this section?
@@ -262,6 +268,13 @@ const HomePage = () => {
   useEffect(() => {
     if (currentUser?._id) fetchRequests();
   }, [currentUser]);
+
+  // use effect to help URL maintain the tabview info
+  useEffect(() => {
+  if (view) {
+    navigate(`/home?view=${view}`, { replace: true });
+  }
+}, [view]);
 
 
   // updating the handleAccept 

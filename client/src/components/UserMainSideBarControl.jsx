@@ -49,7 +49,17 @@ const UserSidebar = ({
 
       {/* Navigation Buttons */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, px: 3 }}>
-        <Button variant="outlined" sx={buttonStyle} onClick={() => { navigate('/home'); }}>Home Page</Button>
+        <Button
+          variant="outlined"
+          sx={buttonStyle}
+          onClick={() => {
+            setView?.('discover');     // Updating this because prabh wanted us to force discover view logic
+            setTabValue?.(1);          // this matches the discover tab
+            navigate('/home?view=discover');         // and keeps URL consistent
+          }}
+        >
+          Home Page
+        </Button>
         <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/profile')}>My Profile</Button>
         <Button variant="outlined" sx={buttonStyle} onClick={() => setView?.('requests')}>
           Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
@@ -60,6 +70,7 @@ const UserSidebar = ({
           onClick={() => {
             setView?.('matches');  // trying to ensure homepage fetches matches
             setTabValue?.(2);      // and also ensure the matches tab is highlighted
+            navigate('/home?view=matches');  // trying to keep the URL updated with what prabh wanted 
           }}
         >
           Squad
