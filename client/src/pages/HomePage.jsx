@@ -13,8 +13,8 @@ import {
 // import axios from 'axios';  // this is for chat and messages feature
 import { useNavigate } from 'react-router-dom';
 import UserProfileCard from '../components/UserProfileCard';
-import UserSidebar from '../components/UserMainSideBarControl'; 
-import TabControl from '../components/TabControl'; 
+import UserSidebar from '../components/UserMainSideBarControl';
+import TabControl from '../components/TabControl';
 import api from '../api';
 
 // will need to refactor code later
@@ -38,56 +38,56 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [sentRequests, setSentRequests] = useState([]);
 
-// commenting this section out because handleTabChange, isn't being utilized after Leo created the component
-// called TabControl.jsx.  So do we still need this section?
+  // commenting this section out because handleTabChange, isn't being utilized after Leo created the component
+  // called TabControl.jsx.  So do we still need this section?
 
-//   const handleTabChange = async (event, newValue) => {
-//     setTabValue(newValue);
+  //   const handleTabChange = async (event, newValue) => {
+  //     setTabValue(newValue);
 
-//     if (newValue === 0) setView('nearby');
-//     if (newValue === 1) setView('discover');
-//     if (newValue === 2) setView('matches');
+  //     if (newValue === 0) setView('nearby');
+  //     if (newValue === 1) setView('discover');
+  //     if (newValue === 2) setView('matches');
 
-//     const token = localStorage.getItem('token');
+  //     const token = localStorage.getItem('token');
 
-//   try {
-//     // 1. Get current user
-//     const res = await fetch(`${baseUrl}/me`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     });
-//     const data = await res.json();
-//     setCurrentUser(data);
+  //   try {
+  //     // 1. Get current user
+  //     const res = await fetch(`${baseUrl}/me`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const data = await res.json();
+  //     setCurrentUser(data);
 
-//     // 2. Fetch requests
-//     const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     });
-//     const requestsData = await requestsRes.json();
-//     const filtered = requestsData.filter(
-//       (u) => !data.matches?.includes(u._id)
-//     );
-//     setIncomingRequests(filtered);
+  //     // 2. Fetch requests
+  //     const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const requestsData = await requestsRes.json();
+  //     const filtered = requestsData.filter(
+  //       (u) => !data.matches?.includes(u._id)
+  //     );
+  //     setIncomingRequests(filtered);
 
-//     // 3. Fetch users based on selected tab
-//     let endpoint = '';
-//     if (newValue === 0) {
-//       endpoint = `${baseUrl}/requests/${data._id}`;
-//     } else if (newValue === 2) {
-//       endpoint = `${baseUrl}/matches/${data._id}`;
-//     } else {
-//       endpoint = `${baseUrl}/discover`;
-//     }
+  //     // 3. Fetch users based on selected tab
+  //     let endpoint = '';
+  //     if (newValue === 0) {
+  //       endpoint = `${baseUrl}/requests/${data._id}`;
+  //     } else if (newValue === 2) {
+  //       endpoint = `${baseUrl}/matches/${data._id}`;
+  //     } else {
+  //       endpoint = `${baseUrl}/discover`;
+  //     }
 
-//     const usersRes = await fetch(endpoint, {
-//       headers: { Authorization: `Bearer ${token}` },
-//     });
-//     const usersData = await usersRes.json();
-//     setUsers(usersData);
+  //     const usersRes = await fetch(endpoint, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const usersData = await usersRes.json();
+  //     setUsers(usersData);
 
-//   } catch (err) {
-//     console.error('Tab refresh error:', err);
-//   }
-// };
+  //   } catch (err) {
+  //     console.error('Tab refresh error:', err);
+  //   }
+  // };
 
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -340,7 +340,7 @@ const HomePage = () => {
   // --------------------------------- MAIN CONTENTENT  ----------------------------------------------
   return (
     <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', }}> {/* Main Container / Whole screen content Container ===========================\  */}
-      
+
       <UserSidebar
         currentUser={currentUser}
         incomingRequests={incomingRequests}
@@ -350,7 +350,7 @@ const HomePage = () => {
         navigate={navigate}
       />
 
-      
+
       {/* Header ============================================================================ */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Logo + Tabs (always centered) */}
@@ -384,11 +384,11 @@ const HomePage = () => {
           />
 
         </Box>
-        {/* Header ================================================================================================= */} 
+        {/* Header ================================================================================================= */}
 
         {/* User GRID ============================================================================================== */}
         {selectedUser ? (
-          <Box sx={{ flexGrow: 1, overflowY: 'auto'}}>
+          <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
             <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
           </Box>
         ) : (
@@ -405,11 +405,11 @@ const HomePage = () => {
                 lg: 'repeat(4, 1fr)',
                 xl: 'repeat(5, 1fr)',
               },
-                gap: 2,
-                justifyContent: 'center',
-                mx: 'auto',
-                ml: 35,
-                
+              gap: 2,
+              justifyContent: 'center',
+              mx: 'auto',
+              ml: 35,
+
             }}
           >
             {users
@@ -446,9 +446,9 @@ const HomePage = () => {
                           right: 8,
                           backgroundColor: '#ffbf00',
                           color: '#000000ff',
-                          padding: '2px 10px',                          
+                          padding: '2px 10px',
                           fontWeight: 'bold',
-                          fontSize: '11px', 
+                          fontSize: '11px',
                           fontFamily: 'Michroma, sans-serif',
                           boxShadow: 2,
                         }}>
@@ -458,8 +458,8 @@ const HomePage = () => {
                     </Box>
 
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography sx={{ fontFamily: 'Michroma, sans-serif', fontSize: '23px',}}>
-                        {user.username}                      
+                      <Typography sx={{ fontFamily: 'Michroma, sans-serif', fontSize: '23px', }}>
+                        {user.username}
                       </Typography>
                     </CardContent>
 
@@ -478,20 +478,45 @@ const HomePage = () => {
                           <Button variant="contained" color="error" onClick={() => handleUnsquad(user._id)}>
                             Unsquad
                           </Button>
-                          <Button variant="outlined" color="warning" onClick={() => handleViewUser(user._id)}>
-                            More
+
+                          <Button
+                            variant="outlined"
+                            sx={{
+                              color: '#000000ff',
+                              '&:hover': { backgroundColor: '#585858ff' },
+                              borderColor: '#000000ff',
+                              fontFamily: 'Michroma, sans-serif',
+                              fontSize: '12px',
+                            }}
+                            onClick={() => handleStartChat(user._id)}
+                          >
+                            Chat
                           </Button>
-                        </>
-                      ) : (
-                        <>
-                          {/* S+UP Button */}
+
                           <Button
                             variant="contained"
                             sx={{
                               backgroundColor: '#000000ff',
                               color: 'white',
                               '&:hover': { backgroundColor: '#585858ff' },
-                              fontFamily: 'Michroma, sans-serif', fontSize: '12px',
+                              fontFamily: 'Michroma, sans-serif',
+                              fontSize: '12px',
+                            }}
+                            onClick={() => handleViewUser(user._id)}
+                          >
+                            More
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              backgroundColor: '#000000ff',
+                              color: 'white',
+                              '&:hover': { backgroundColor: '#585858ff' },
+                              fontFamily: 'Michroma, sans-serif',
+                              fontSize: '12px',
                             }}
                             disabled={sentRequests.includes(user._id)}
                             onClick={() => handleSquadUp(user._id)}
@@ -499,29 +524,14 @@ const HomePage = () => {
                             {sentRequests.includes(user._id) ? 'Requested' : 'S+UP'}
                           </Button>
 
-                          {/* Chat Button */}
-                          <Button
-                                variant="outlined"
-                                sx={{
-                                  color: '#000000ff', '&:hover': { backgroundColor: '#585858ff' },
-                                  borderColor: '#000000ff',
-
-                                  fontFamily: 'Michroma, sans-serif',
-                                  fontSize: '12px',
-                                }}
-                            onClick={() => handleStartChat(user._id)} // 👈 pass in the other user's ID
-                          >
-                            Chat
-                          </Button>
-
-                          {/* More Button */}
                           <Button
                             variant="contained"
                             sx={{
                               backgroundColor: '#000000ff',
                               color: 'white',
                               '&:hover': { backgroundColor: '#585858ff' },
-                              fontFamily: 'Michroma, sans-serif', fontSize: '12px',
+                              fontFamily: 'Michroma, sans-serif',
+                              fontSize: '12px',
                             }}
                             onClick={() => handleViewUser(user._id)}
                           >
@@ -529,6 +539,7 @@ const HomePage = () => {
                           </Button>
                         </>
                       )}
+
                     </Box>
                   </Card>
                 </Grid>
