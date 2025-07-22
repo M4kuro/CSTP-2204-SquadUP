@@ -54,13 +54,22 @@ const UserSidebar = ({
         <Button variant="outlined" sx={buttonStyle} onClick={() => setView?.('requests')}>
           Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
         </Button>
-        <Button variant="outlined" sx={buttonStyle} onClick={() => setTabValue?.(2)}>Squad</Button>
+        <Button
+          variant="outlined"
+          sx={buttonStyle}
+          onClick={() => {
+            setView?.('matches');  // trying to ensure homepage fetches matches
+            setTabValue?.(2);      // and also ensure the matches tab is highlighted
+          }}
+        >
+          Squad
+        </Button>
         <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/messages')}>Messages</Button>
       </Box>
 
       {/* Bottom Section */}
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>       
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
