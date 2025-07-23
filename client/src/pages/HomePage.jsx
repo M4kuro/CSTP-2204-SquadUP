@@ -17,6 +17,7 @@ import UserSidebar from '../components/UserMainSideBarControl';
 import TabControl from '../components/TabControl';
 import api from '../api';
 import { useSearchParams } from 'react-router-dom';  // this is to help with the URL showing the tab states.
+import { Tooltip } from '@mui/material'; // this is to add the ellipsis and tooltips to the usernames when they're truncated.
 
 // will need to refactor code later
 // this is getting a bit much on the homepage.
@@ -271,10 +272,10 @@ const HomePage = () => {
 
   // use effect to help URL maintain the tabview info
   useEffect(() => {
-  if (view) {
-    navigate(`/home?view=${view}`, { replace: true });
-  }
-}, [view]);
+    if (view) {
+      navigate(`/home?view=${view}`, { replace: true });
+    }
+  }, [view]);
 
 
   // updating the handleAccept 
@@ -471,9 +472,21 @@ const HomePage = () => {
                     </Box>
 
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography sx={{ fontFamily: 'Michroma, sans-serif', fontSize: '23px', }}>
-                        {user.username}
-                      </Typography>
+                      <Tooltip title={user.username}>
+                        <Typography
+                          sx={{
+                            fontFamily: 'Michroma, sans-serif',
+                            fontSize: '23px',
+                            maxWidth: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            display: 'block',
+                          }}
+                        >
+                          {user.username}
+                        </Typography>
+                      </Tooltip>
                     </CardContent>
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mb: 1 }}>
