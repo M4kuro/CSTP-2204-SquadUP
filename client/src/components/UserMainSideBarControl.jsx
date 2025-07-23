@@ -49,6 +49,8 @@ const UserSidebar = ({
 
       {/* Navigation Buttons */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, px: 3 }}>
+
+        {/* Homepage Button */}
         <Button
           variant="outlined"
           sx={buttonStyle}
@@ -60,10 +62,16 @@ const UserSidebar = ({
         >
           Home Page
         </Button>
+
+        {/* MyProfile Button */}
         <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/profile')}>My Profile</Button>
+
+        {/* Requests Button */}
         <Button variant="outlined" sx={buttonStyle} onClick={() => setView?.('requests')}>
           Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
         </Button>
+
+        {/* Squad Button */}
         <Button
           variant="outlined"
           sx={buttonStyle}
@@ -75,12 +83,16 @@ const UserSidebar = ({
         >
           Squad
         </Button>
+
+        {/* Messages Button */}
         <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/messages')}>Messages</Button>
       </Box>
 
       {/* Bottom Section */}
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>
+
+        {/* Settings Button */}
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
@@ -91,6 +103,8 @@ const UserSidebar = ({
 
           Settings
         </Button>
+
+        {/* Help Button */}
         <Button
           variant="outlined"
           startIcon={<HelpIcon />}
@@ -100,6 +114,8 @@ const UserSidebar = ({
         >
           Help
         </Button>
+
+        {/* SignOut Button */}
         <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
           Sign Out
         </Button>
