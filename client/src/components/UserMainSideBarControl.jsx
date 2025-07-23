@@ -2,6 +2,11 @@ import { Box, Avatar, Typography, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
+// importing these next 4 for help with logic on "New messages"
+import { useEffect, useState } from 'react';
+import api from '../api';
+import { getUserIdFromToken } from '../utils/auth';
+import socket from '../socket';
 
 
 const UserSidebar = ({
@@ -15,6 +20,35 @@ const UserSidebar = ({
     localStorage.removeItem('token');
     navigate('/');
   };
+
+  //  adding this for unreadcount for messages:
+  const [unreadCount, setUnreadCount] = useState(0);
+  const userId = getUserIdFromToken();
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await api.get(`/chat/unread/${userId}`);
+        setUnreadCount(res.data.unreadCount || 0);
+      } catch (err) {
+        console.error('❌ Failed to get unread count:', err);
+      }
+    };
+
+    fetchUnread();
+
+    // 💬 Listen for incoming messages
+    socket.on('receiveMessage', (msg) => {
+      if (msg.sender !== userId) {
+        fetchUnread();
+      }
+    });
+
+    // 🧹 Cleanup on unmount
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, []);
 
   return (
     <Box
@@ -85,7 +119,21 @@ const UserSidebar = ({
         </Button>
 
         {/* Messages Button */}
-        <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/messages')}>Messages</Button>
+        <Button
+          variant="outlined"
+          sx={buttonStyle}
+          onClick={async () => {
+            try {
+              await api.post(`/chat/mark-all-read/${userId}`);
+              setUnreadCount(0); // locally clear the badge
+            } catch (err) {
+              console.error('❌ Failed to mark messages as read:', err);
+            }
+            navigate('/messages');
+          }}
+        >
+          Messages {unreadCount > 0 && `(${unreadCount})`}
+        </Button>
       </Box>
 
       {/* Bottom Section */}

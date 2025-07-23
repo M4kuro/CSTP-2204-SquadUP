@@ -277,6 +277,8 @@ const HomePage = () => {
     }
   }, [view]);
 
+ 
+
 
   // updating the handleAccept 
 

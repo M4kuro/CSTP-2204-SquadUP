@@ -9,27 +9,27 @@ module.exports = (io) => {
     // === Initiate chat with a user ===
 
     router.post('/get-or-create-thread', async (req, res) => {
-  const { senderId, recipientId } = req.body;
+        const { senderId, recipientId } = req.body;
 
-  try {
-    let thread = await Thread.findOne({
-      participants: { $all: [senderId, recipientId] }
+        try {
+            let thread = await Thread.findOne({
+                participants: { $all: [senderId, recipientId] }
+            });
+
+            if (!thread) {
+                thread = new Thread({
+                    participants: [senderId, recipientId],
+                    isAccepted: false,
+                    unreadFor: recipientId
+                });
+                await thread.save();
+            }
+
+            res.json({ threadId: thread._id });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     });
-
-    if (!thread) {
-      thread = new Thread({
-        participants: [senderId, recipientId],
-        isAccepted: false,
-        unreadFor: recipientId
-      });
-      await thread.save();
-    }
-
-    res.json({ threadId: thread._id });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
     // === Get all threads ===
     router.get('/threads/:userId', async (req, res) => {
@@ -53,6 +53,46 @@ module.exports = (io) => {
         } catch (err) {
             console.error('Error fetching messages:', err);
             res.status(500).json({ error: 'Failed to fetch messages' });
+        }
+    });
+
+    // === Get unread message count for a user ===
+    router.get('/unread/:userId', async (req, res) => {
+        const { userId } = req.params;
+        try {
+            const userThreadIds = await Thread.find({ participants: userId }).distinct('_id');
+            const count = await Message.countDocuments({
+                read: false,
+                sender: { $ne: userId },
+                threadId: { $in: userThreadIds }
+            });
+
+            res.json({ unreadCount: count });
+        } catch (err) {
+            console.error('❌ Error getting unread messages:', err);
+            res.status(500).json({ error: 'Failed to fetch unread count' });
+        }
+    });
+
+    // === Mark all messages as read for a user ===
+    router.post('/mark-all-read/:userId', async (req, res) => {
+        const { userId } = req.params;
+        try {
+            const threadIds = await Thread.find({ participants: userId }).distinct('_id');
+
+            await Message.updateMany(
+                {
+                    read: false,
+                    sender: { $ne: userId },
+                    threadId: { $in: threadIds }
+                },
+                { $set: { read: true } }
+            );
+
+            res.json({ success: true });
+        } catch (err) {
+            console.error('❌ Error marking messages read:', err);
+            res.status(500).json({ error: 'Failed to mark messages read' });
         }
     });
 
