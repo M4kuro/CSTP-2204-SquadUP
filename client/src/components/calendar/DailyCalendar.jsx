@@ -52,7 +52,7 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        mb: 2, 
+        mb: 2,  
       }}>
         <Button
           onClick={handlePrevDay}

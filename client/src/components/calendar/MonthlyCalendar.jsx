@@ -53,15 +53,47 @@ const MonthlyCalendar = ({ onSelectDay }) => {
           mb: 2,
         }}
       >
-        <Button onClick={handlePrevMonth}>⬅ Prev</Button>
-        <Typography variant="h6">{formattedMonthYear}</Typography>
-        <Button onClick={handleNextMonth}>Next ➡</Button>
+        <Button
+          onClick={handlePrevMonth}
+          variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          ⬅ Prev
+        
+        </Button>
+        <Typography
+          sx={{ textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '18px', color: '#ffffffff' }}
+        >
+          {formattedMonthYear}
+        
+        </Typography>
+        <Button
+          
+          onClick={handleNextMonth}
+          variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          Next ➡
+        
+        </Button>
       </Box>
 
       {/* Weekday headers */}
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', mb: 1 }}>
         {dayNames.map((day) => (
-          <Typography key={day} variant="subtitle2" align="center" fontWeight="bold">
+          <Typography key={day} variant="subtitle2" align="center" fontWeight="bold"
+          sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffffff' }}
+          >
             {day}
           </Typography>
         ))}
