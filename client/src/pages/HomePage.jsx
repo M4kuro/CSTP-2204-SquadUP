@@ -45,57 +45,6 @@ const HomePage = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const navigate = useNavigate();
 
-  // commenting this section out because handleTabChange, isn't being utilized after Leo created the component
-  // called TabControl.jsx.  So do we still need this section?
-
-  //   const handleTabChange = async (event, newValue) => {
-  //     setTabValue(newValue);
-
-  //     if (newValue === 0) setView('nearby');
-  //     if (newValue === 1) setView('discover');
-  //     if (newValue === 2) setView('matches');
-
-  //     const token = localStorage.getItem('token');
-
-  //   try {
-  //     // 1. Get current user
-  //     const res = await fetch(`${baseUrl}/me`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const data = await res.json();
-  //     setCurrentUser(data);
-
-  //     // 2. Fetch requests
-  //     const requestsRes = await fetch(`${baseUrl}/requests/${data._id}`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const requestsData = await requestsRes.json();
-  //     const filtered = requestsData.filter(
-  //       (u) => !data.matches?.includes(u._id)
-  //     );
-  //     setIncomingRequests(filtered);
-
-  //     // 3. Fetch users based on selected tab
-  //     let endpoint = '';
-  //     if (newValue === 0) {
-  //       endpoint = `${baseUrl}/requests/${data._id}`;
-  //     } else if (newValue === 2) {
-  //       endpoint = `${baseUrl}/matches/${data._id}`;
-  //     } else {
-  //       endpoint = `${baseUrl}/discover`;
-  //     }
-
-  //     const usersRes = await fetch(endpoint, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const usersData = await usersRes.json();
-  //     setUsers(usersData);
-
-  //   } catch (err) {
-  //     console.error('Tab refresh error:', err);
-  //   }
-  // };
-
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
 
@@ -186,14 +135,6 @@ const HomePage = () => {
     if (userToShow) setSelectedUser(userToShow);
   };
 
-  // Moved handleLogout to the component
-  // Logout Logic
-  // const handleLogout = () => {
-  //   localStorage.removeItem('token');
-  //   navigate('/');
-  // };
-
-  // fetch the current user function
 
   const fetchCurrentUser = async () => {
     try {
@@ -362,7 +303,6 @@ const HomePage = () => {
         incomingRequests={incomingRequests}
         setView={setView}
         setTabValue={setTabValue}
-        // handleLogout={handleLogout}
         navigate={navigate}
       />
 
@@ -424,7 +364,7 @@ const HomePage = () => {
               gap: 2,
               justifyContent: 'center',
               mx: 'auto',
-              ml: 35,
+              ml: 45,
 
             }}
           >
@@ -437,7 +377,7 @@ const HomePage = () => {
               .map((user) => (
                 <Grid item key={user._id}>
                   <Card sx={{
-                    height: 420,
+                    height: 450,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -479,11 +419,11 @@ const HomePage = () => {
                           sx={{
                             fontFamily: 'Michroma, sans-serif',
                             fontSize: '23px',
-                            maxWidth: '100%',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            display: 'block',
+                            textAlign: 'center',
+                            
                           }}
                         >
                           {user.username}
@@ -502,42 +442,69 @@ const HomePage = () => {
                           </Button>
                         </>
                       ) : view === 'matches' ? (
-                        <>
-                          <Button variant="contained" color="error" onClick={() => handleUnsquad(user._id)}>
-                            Unsquad
-                          </Button>
+                          <>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: '#000000ff',
-                              '&:hover': { backgroundColor: '#585858ff' },
-                              borderColor: '#000000ff',
-                              fontFamily: 'Michroma, sans-serif',
-                              fontSize: '12px',
-                            }}
-                            onClick={() => handleStartChat(user._id)}
-                          >
-                            Chat
-                          </Button>
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '100%',
+                                height: '30px',
+                                gap: 2,
+                                mb: 1,
+                              }}>
+                              <Button
+                                variant="outlined"
+                                sx={{
+                                  color: '#000000ff',
+                                  '&:hover': { backgroundColor: '#585858ff' },
+                                  borderColor: '#000000ff',
+                                  fontFamily: 'Michroma, sans-serif',
+                                  fontSize: '12px',
+                                }}
+                                onClick={() => handleStartChat(user._id)}
+                              >
+                                Chat
+                              </Button>
+    
+                              <Button
+                                  variant="contained"
+                                  
+                                sx={{
+                                  backgroundColor: '#000000ff',
+                                  color: 'white',
+                                  '&:hover': { backgroundColor: '#585858ff' },
+                                  fontFamily: 'Michroma, sans-serif',
+                                  fontSize: '12px',
+                                  width: '100px',
+                                }}
+                                  onClick={() => handleViewUser(user._id)}
+                                  
+                              >
+                                More
+                              </Button>
+                            </Box>
 
-                          <Button
-                            variant="contained"
-                            sx={{
-                              backgroundColor: '#000000ff',
-                              color: 'white',
-                              '&:hover': { backgroundColor: '#585858ff' },
-                              fontFamily: 'Michroma, sans-serif',
-                              fontSize: '12px',
-                            }}
-                            onClick={() => handleViewUser(user._id)}
-                          >
-                            More
-                          </Button>
+                            <Button variant="contained"
+                              color="error"
+                              sx={{
+                                backgroundColor: '#de0000ff',
+                                color: 'white',
+                                '&:hover': { backgroundColor: '#930000ff' },
+                                fontFamily: 'Michroma, sans-serif',
+                                fontSize: '10px',
+                              }}
+                              onClick={() => handleUnsquad(user._id)}>
+                              Unsquad
+                              </Button>
+                          </Box>
+
                         </>
                       ) : (
-                        <>
-                          <Button
+                            <>
+                              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, width: '80%',}}>
+                          <Button 
                             variant="contained"
                             sx={{
                               backgroundColor: '#000000ff',
@@ -545,9 +512,11 @@ const HomePage = () => {
                               '&:hover': { backgroundColor: '#585858ff' },
                               fontFamily: 'Michroma, sans-serif',
                               fontSize: '12px',
+                              
                             }}
                             disabled={sentRequests.includes(user._id)}
                             onClick={() => handleSquadUp(user._id)}
+                            fullWidth
                           >
                             {sentRequests.includes(user._id) ? 'Requested' : 'S+UP'}
                           </Button>
@@ -562,12 +531,14 @@ const HomePage = () => {
                               fontSize: '12px',
                             }}
                             onClick={() => handleViewUser(user._id)}
+                            fullWidth
+                                  
                           >
                             More
                           </Button>
+                              </Box>
                         </>
                       )}
-
                     </Box>
                   </Card>
                 </Grid>

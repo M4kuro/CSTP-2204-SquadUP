@@ -50,18 +50,50 @@ const MonthlyCalendar = ({ onSelectDay }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 2,
+          mb: 3,          
         }}
       >
-        <Button onClick={handlePrevMonth}>⬅ Prev</Button>
-        <Typography variant="h6">{formattedMonthYear}</Typography>
-        <Button onClick={handleNextMonth}>Next ➡</Button>
+        <Button
+          onClick={handlePrevMonth}
+          variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          ⬅ Prev
+        
+        </Button>
+        <Typography
+          sx={{ textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '18px', color: '#ffffffff' }}
+        >
+          {formattedMonthYear}
+        
+        </Typography>
+        <Button
+          
+          onClick={handleNextMonth}
+          variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}
+        >
+          Next ➡
+        
+        </Button>
       </Box>
 
       {/* Weekday headers */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', mb: 1 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
         {dayNames.map((day) => (
-          <Typography key={day} variant="subtitle2" align="center" fontWeight="bold">
+          <Typography key={day} variant="subtitle2" align="center" fontWeight="bold"
+          sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffffff' }}
+          >
             {day}
           </Typography>
         ))}
@@ -81,19 +113,20 @@ const MonthlyCalendar = ({ onSelectDay }) => {
 
           return (
             <Box
-              key={idx}
+              key={idx} 
               onClick={() => {
                 if (isClickable && onSelectDay) {
                   onSelectDay(day); // 🔥 Drill-down to day view
                 }
               }}
+              
               sx={{
                 border: '1px solid #ccc',
-                minHeight: 80,
+                minHeight: 70,
                 backgroundColor: isClickable
                   ? isWeekday
-                    ? '#c8f7c5'
-                    : '#eee'
+                    ? '#ffffffff'
+                    : '#707070ff'
                   : 'transparent',
                 borderRadius: 1,
                 display: 'flex',
@@ -102,7 +135,7 @@ const MonthlyCalendar = ({ onSelectDay }) => {
                 p: 1,
                 cursor: isClickable ? 'pointer' : 'default',
                 '&:hover': {
-                  backgroundColor: isClickable ? '#d5fbe1' : 'transparent',
+                  backgroundColor: isClickable ? '#00c63fff' : 'transparent',
                 },
               }}
             >
