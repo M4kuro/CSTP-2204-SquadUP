@@ -37,14 +37,13 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
   return (
     <Box
       sx={{
-        width: '80%',
+        width: '90%',
         maxWidth: '860px',
         margin: '0 auto',
-        mt: 2,
         backgroundColor: '#f5f5f5',
         borderRadius: 2,
         boxShadow: 3,
-        p: 3,
+        p: 2,
       }}
     >
       {/* Navigation */}
@@ -102,13 +101,13 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
 
           return (
             <React.Fragment key={hour}>
-              <Typography align="right" pr={1} fontWeight={500}>
+              <Typography align="right" pr={1} fontWeight={500} sx={{fontFamily:'Michroma'}} >
                 {hour}
               </Typography>
 
               <Paper
                 sx={{
-                  height: 50,
+                  height: 42,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: isBooked ? 'flex-start' : 'center',
@@ -117,7 +116,6 @@ const DailyCalendar = ({ bookingsByDate = {}, selectedDate }) => {
                   fontFamily: 'Michroma, sans-serif',
                   borderRadius: 1,
                   px: isBooked ? 1 : 0,
-                  gap: 1,
                 }}
                 elevation={1}
               >

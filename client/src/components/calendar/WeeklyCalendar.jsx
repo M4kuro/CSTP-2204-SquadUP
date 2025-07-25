@@ -41,41 +41,60 @@ const WeeklyCalendar = ({ bookingsByDate = {}, onSelectDay }) => {
   return (
     <Box
       sx={{
-        width: '80%',
-        maxWidth: '860px',
-        margin: '0 auto',
-        mt: 2,
-        backgroundColor: '#f5f5f5',
+        width: '95%',
+        backgroundColor: '#000000ff',
         borderRadius: 2,
         boxShadow: 3,
-        p: 3,
       }}
     >
       {/* Navigation */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Button onClick={handlePrevWeek}>⬅ Prev</Button>
-        <Typography variant="h6" sx={{ textAlign: 'center' }}>
+        <Button onClick={handlePrevWeek}
+        variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}>⬅ Prev</Button>
+        <Typography 
+          sx={{
+            textAlign: 'center',
+            color: 'White',
+            fontFamily: "Michroma"
+          
+         }}>
           🗓 Weekly Calendar View <br /> ({formattedRange})
         </Typography>
-        <Button onClick={handleNextWeek}>Next ➡</Button>
+        <Button onClick={handleNextWeek}variant='outlined'
+          sx={{
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
+          }}>Next ➡</Button>
       </Box>
 
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: '100px repeat(5, 1fr)',
+          gridTemplateColumns: '90px repeat(5, 1fr)',
           gap: 1,
           alignItems: 'center',
           width: '100%',
           boxSizing: 'border-box',
           overflow: 'visible',
-          paddingBottom: 1,
         }}
       >
         {/* Header row with dates */}
         <Box /> {/* Empty corner cell */}
         {weekDates.map((date, idx) => (
-          <Typography key={idx} align="center" fontWeight="bold">
+          <Typography key={idx} align="center"
+            sx={{
+              fontFamily: 'Michroma',
+              color: 'white'
+            }} 
+          >
             {weekdays[idx]} <br />
             {date.getMonth() + 1}/{date.getDate()}
           </Typography>
@@ -84,7 +103,7 @@ const WeeklyCalendar = ({ bookingsByDate = {}, onSelectDay }) => {
         {/* Time slots */}
         {hours.map((hour) => (
           <React.Fragment key={hour}>
-            <Typography align="right" pr={1} sx={{ fontWeight: 500 }}>
+            <Typography align="center" pr={1} sx={{ fontWeight: 500, color:'white', fontFamily:'Michroma' }}>
               {hour}
             </Typography>
             {weekDates.map((dateObj, idx) => {
@@ -96,12 +115,13 @@ const WeeklyCalendar = ({ bookingsByDate = {}, onSelectDay }) => {
                   key={`${hour}-${idx}`}
                   onClick={() => booking && onSelectDay && onSelectDay(dateObj)}
                   sx={{
-                    height: 36,
+                    height: 40,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: booking ? 'flex-start' : 'center',
                     backgroundColor: booking ? '#ffcc80' : '#e0e0e0',
-                    fontSize: '0.8rem',
+                    fontSize: '10px',
+                    fontFamily: 'Michroma',
                     borderRadius: 1,
                     px: booking ? 1 : 0,
                     gap: 1,

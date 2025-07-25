@@ -57,10 +57,14 @@ const UserProfileCard = ({ user, onBack }) => {
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        width: '100%',
-        padding: 4,
+        width: '75%',
+        flexDirection: 'column',
+        alignItems: 'center',
+        ml: 50,
+        mt: 2,
+        mb: 2,
+
+
       }}
     >
       <Paper
@@ -88,10 +92,7 @@ const UserProfileCard = ({ user, onBack }) => {
           </Avatar>
           <Box>
             <Typography variant="h5">{user.username}</Typography>
-
-            {/* -- <Typography variant="body2">{user.email}</Typography> -- removing the display for user email we dont want 
-            everyone to see eachothers email for spam/security reasons --  */}
-
+            
             <Typography variant="body2">Age: {calculateAge(user.birthdate)}</Typography>
           </Box>
         </Box>

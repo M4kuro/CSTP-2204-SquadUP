@@ -31,23 +31,18 @@ const MessagesPage = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <UserSidebar navigate={navigate} />
-            <Box sx={{ flex: 1, p: 5 }}>
-                <button
-                    onClick={() => navigate('/home')}
-                    style={{
-                        backgroundColor: '#FF5722',
-                        color: 'white',
-                        border: 'none',
-                        padding: '10px 20px',
-                        borderRadius: '8px',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                        marginBottom: '20px'
-                    }}
-                >
-                    ← Back to Homepage
-                </button>
+            <UserSidebar               
+                navigate={navigate}
+            />
+            
+            <Box sx={{
+                flex: 1,
+                p: 5,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                ml: 50
+            }}>
                 <h2>Your Conversations</h2>
 
                 <div className="messages-wrapper-container">

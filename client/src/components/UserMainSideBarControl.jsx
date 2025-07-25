@@ -53,7 +53,7 @@ const UserSidebar = ({
   return (
     <Box
       sx={{
-        maxWidth: '400px',
+        maxWidth: '500px',
         backgroundColor: '#000000ff',
         borderRadius: '20px',
         m: 3,
@@ -76,13 +76,18 @@ const UserSidebar = ({
           alt={currentUser?.username || 'User'}
           sx={{ width: 200, height: 200, mx: 'auto' }}
         />
-        <Typography variant="h4">
-          {currentUser?.username || 'Unknown'}
-        </Typography>
+        
       </Box>
 
       {/* Navigation Buttons */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, px: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, px: 3 }}>
+        <Typography sx={{ color: 'white', textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '20px' }}>
+          {currentUser?.username || 'Unknown'}
+        
+        </Typography>
+        <Typography sx={{ color: 'white', textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '15px' }}>
+          {currentUser?.email || ''}
+        </Typography>
 
         {/* Homepage Button */}
         <Button

@@ -226,7 +226,7 @@ const UserProfile = () => {
         minHeight: '100vh',
         minWidth: '100vw',
         padding: 1,
-        gap: 4,
+        gap: 1,
         justifyContent: 'center',
         
       }}
@@ -242,8 +242,6 @@ const UserProfile = () => {
         }} 
         navigate={navigate}
       />
-      
-
       
       {/* IMAGES BOX ============================================================================================*/}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 5, ml: 30, }}>
@@ -369,20 +367,16 @@ const UserProfile = () => {
 
       <Box sx={{ width: '100%', maxWidth: 560, ml: 4, mt: 5, }}>
         
-        <Paper elevation={4} sx={{ ...sectionStyle, mb: 3 }}>
-          <Avatar
-            src={mainImage}
-            sx={{ width: 80, height: 80, bgcolor: '#ff0000ff', mx: 'auto' }} // This can be orange (Google/gmail standard color)
-          >
-            {!mainImage && user?.username?.[0]?.toUpperCase()}
-          </Avatar>
-          <Typography variant="h5" sx={{ mt: 1 }}>{user.username}</Typography>
-          <Typography variant="body2">{user.email}</Typography>
-        </Paper>
+        
 
         {/* Personal info section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6">Personal Info</Typography>
+          <Typography  sx={{
+            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
+          }}>
+          Personal Info
+        </Typography>
+          
           <TextField
             label="Birthdate"
             name="birthdate"
@@ -393,22 +387,14 @@ const UserProfile = () => {
             onFocus={handleFocus}
             InputProps={{ readOnly: !isEditing }}
           />
-          {/* Commenting this out for now because we *MAY* use this in the future.  Some trainers/Pros may want to know before hand what client stats are like
-          <TextField label="Height" name="height" value={formData.height || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} />
-          <TextField label="Weight" name="weight" value={formData.weight || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ style: { backgroundColor: '#b0b0b0' }, readOnly: !isEditing }} /> */}
-        </Paper>
-
-        {/* Bio Section */}
-        <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6">About Me</Typography>
+          {/* BIO */}
+          <Typography sx={{
+            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
+          }}>About Me</Typography>
           <TextField fullWidth name="bio" label="Your Bio" multiline rows={3} value={formData.bio || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
-        </Paper>
-
-        {/* Interests section */}
-        <Paper elevation={4} sx={sectionStyle} onClick={() => {
-          if (!isEditing) setIsEditing(true);
-        }}>
-          <Typography variant="h6" gutterBottom>Interests</Typography>
+          <Typography sx={{
+            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
+          }} gutterBottom>Interests</Typography>
 
           {isEditing ? (
             interestOptions.map((interest) => (
@@ -438,6 +424,7 @@ const UserProfile = () => {
                         borderRadius: '16px',
                         fontSize: '0.85rem',
                         fontWeight: 500,
+                        fontFamily: 'Michroma, sans-serif',
                       }}
                     >
                       {interest}
@@ -446,15 +433,23 @@ const UserProfile = () => {
                 </Box>
               ) : (
                 <Typography variant="body2" color="textSecondary">No interests selected.</Typography>
-              )}
-            </Box>
-          )}
+                )}
+                
+              </Box>
+            )}
         </Paper>
+
+        
+
+        {/* Interests section */}
+        
 
 
         {/* Payment and rating section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6">Pro Coaching</Typography>
+          <Typography sx={{
+            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
+          }}>Pro Coaching</Typography>
 
           <FormControlLabel
             control={
@@ -518,7 +513,13 @@ const UserProfile = () => {
 
         {/* Socials section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6">Social Links</Typography>
+          <Typography variant="h6"
+            sx={{
+              fontFamily: "Michroma",
+              fontSize:"18px"
+
+            }}
+          >Social Links</Typography>
 
           <TextField
             name="instagram"
