@@ -107,9 +107,8 @@ const UserSidebar = ({ incomingRequests = [] }) => {
           variant="outlined"
           sx={buttonStyle}
           onClick={() => {
-            // setView?.('discover');     // Updating this because prabh wanted us to force discover view logic
-            // setTabValue?.(1);          // this matches the discover tab
-            navigate("/home?tabValue=1"); // and keeps URL consistent
+            setTabValue(1); // Sets the Discover tab programmatically
+            navigate("/home?tabValue=1"); // Keeps the URL in sync for shareability or refresh
           }}
         >
           Home Page
