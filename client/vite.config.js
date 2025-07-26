@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:2000", // express backend
+        target: "http://localhost:5000", // express backend
         changeOrigin: true,
       },
     },
