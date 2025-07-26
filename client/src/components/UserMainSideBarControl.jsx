@@ -1,24 +1,25 @@
-import { Box, Avatar, Typography, Button } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import HelpIcon from '@mui/icons-material/Help';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { Box, Avatar, Typography, Button } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HelpIcon from "@mui/icons-material/Help";
+import LogoutIcon from "@mui/icons-material/Logout";
 // importing these next 4 for help with logic on "New messages"
-import { useEffect, useState } from 'react';
-import api from '../api';
-import { getUserIdFromToken } from '../utils/auth';
-import socket from '../socket';
+import { useContext, useEffect, useState } from "react";
+import api from "../api";
+import { getUserIdFromToken } from "../utils/auth";
+import socket from "../socket";
+import { useNavigate } from "react-router-dom";
+import AppContext from "../context/AppContext";
 
+const UserSidebar = ({ incomingRequests = [] }) => {
+  const navigate = useNavigate();
+  const { setTabValue, currentUser } = useContext(AppContext);
 
-const UserSidebar = ({
-  currentUser,
-  incomingRequests = [],
-  setView,
-  setTabValue,
-  navigate
-}) => {
+  console.log(currentUser, "currentUser");
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    navigate("/");
+    window.location.reload();
   };
 
   //  adding this for unreadcount for messages:
@@ -31,14 +32,14 @@ const UserSidebar = ({
         const res = await api.get(`/chat/unread/${userId}`);
         setUnreadCount(res.data.unreadCount || 0);
       } catch (err) {
-        console.error('❌ Failed to get unread count:', err);
+        console.error("❌ Failed to get unread count:", err);
       }
     };
 
     fetchUnread();
 
     // 💬 Listen for incoming messages
-    socket.on('receiveMessage', (msg) => {
+    socket.on("receiveMessage", (msg) => {
       if (msg.sender !== userId) {
         fetchUnread();
       }
@@ -46,47 +47,59 @@ const UserSidebar = ({
 
     // 🧹 Cleanup on unmount
     return () => {
-      socket.off('receiveMessage');
+      socket.off("receiveMessage");
     };
   }, []);
+
+  console.log(currentUser, "cirr");
 
   return (
     <Box
       sx={{
-        maxWidth: '500px',
-        backgroundColor: '#000000ff',
-        borderRadius: '20px',
-        m: 3,
+        backgroundColor: "#000000ff",
+        borderRadius: "20px",
         boxShadow: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
+        display: "flex",
+        flexDirection: "column",
+        position: "fixed",
         left: 0,
-
       }}
+      id="sidebar"
     >
       {/* Top Avatar Section */}
-      <Box sx={{ p: 3, textAlign: 'center' }}>
+      <Box sx={{ p: 3, textAlign: "center" }}>
         <Avatar
           src={
             currentUser?.profileImageUrl
               ? `${import.meta.env.VITE_API_URL}/uploads/${currentUser.profileImageUrl}`
-              : '/placeholder-profile.png'
+              : "/placeholder-profile.png"
           }
-          alt={currentUser?.username || 'User'}
-          sx={{ width: 200, height: 200, mx: 'auto' }}
+          alt={currentUser?.username || "User"}
+          sx={{ width: 200, height: 200, mx: "auto" }}
         />
-        
       </Box>
 
       {/* Navigation Buttons */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, px: 3 }}>
-        <Typography sx={{ color: 'white', textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '20px' }}>
-          {currentUser?.username || 'Unknown'}
-        
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3 }}>
+        <Typography
+          sx={{
+            color: "white",
+            textAlign: "center",
+            fontFamily: "Michroma, sans-serif",
+            fontSize: "20px",
+          }}
+        >
+          {currentUser?.username || "Unknown"}
         </Typography>
-        <Typography sx={{ color: 'white', textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '15px' }}>
-          {currentUser?.email || ''}
+        <Typography
+          sx={{
+            color: "white",
+            textAlign: "center",
+            fontFamily: "Michroma, sans-serif",
+            fontSize: "15px",
+          }}
+        >
+          {currentUser?.email || ""}
         </Typography>
 
         {/* Homepage Button */}
@@ -94,20 +107,31 @@ const UserSidebar = ({
           variant="outlined"
           sx={buttonStyle}
           onClick={() => {
-            setView?.('discover');     // Updating this because prabh wanted us to force discover view logic
-            setTabValue?.(1);          // this matches the discover tab
-            navigate('/home?view=discover');         // and keeps URL consistent
+            // setView?.('discover');     // Updating this because prabh wanted us to force discover view logic
+            // setTabValue?.(1);          // this matches the discover tab
+            navigate("/home?tabValue=1"); // and keeps URL consistent
           }}
         >
           Home Page
         </Button>
 
         {/* MyProfile Button */}
-        <Button variant="outlined" sx={buttonStyle} onClick={() => navigate('/profile')}>My Profile</Button>
+        <Button
+          variant="outlined"
+          sx={buttonStyle}
+          onClick={() => navigate("/profile")}
+        >
+          My Profile
+        </Button>
 
         {/* Requests Button */}
-        <Button variant="outlined" sx={buttonStyle} onClick={() => setView?.('requests')}>
-          Requests {incomingRequests.length > 0 && `(${incomingRequests.length})`}
+        <Button
+          variant="outlined"
+          sx={buttonStyle}
+          onClick={() => navigate("/requests")}
+        >
+          Requests{" "}
+          {incomingRequests.length > 0 && `(${incomingRequests.length})`}
         </Button>
 
         {/* Squad Button */}
@@ -115,9 +139,9 @@ const UserSidebar = ({
           variant="outlined"
           sx={buttonStyle}
           onClick={() => {
-            setView?.('matches');  // trying to ensure homepage fetches matches
-            setTabValue?.(2);      // and also ensure the matches tab is highlighted
-            navigate('/home?view=matches');  // trying to keep the URL updated with what prabh wanted 
+            // setView?.('matches');  // trying to ensure homepage fetches matches
+            setTabValue?.(2); // and also ensure the matches tab is highlighted
+            navigate("/home?view=matches"); // trying to keep the URL updated with what prabh wanted
           }}
         >
           Squad
@@ -132,9 +156,9 @@ const UserSidebar = ({
               await api.post(`/chat/mark-all-read/${userId}`);
               setUnreadCount(0); // locally clear the badge
             } catch (err) {
-              console.error('❌ Failed to mark messages as read:', err);
+              console.error("❌ Failed to mark messages as read:", err);
             }
-            navigate('/messages');
+            navigate("/messages");
           }}
         >
           Messages {unreadCount > 0 && `(${unreadCount})`}
@@ -143,17 +167,17 @@ const UserSidebar = ({
 
       {/* Bottom Section */}
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 10, p: 3 }}>
-
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 10, p: 3 }}
+      >
         {/* Settings Button */}
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
-          sx={{ ...buttonStyle, justifyContent: 'flex-start' }}
+          sx={{ ...buttonStyle, justifyContent: "flex-start" }}
           fullWidth
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate("/settings")}
         >
-
           Settings
         </Button>
 
@@ -161,15 +185,21 @@ const UserSidebar = ({
         <Button
           variant="outlined"
           startIcon={<HelpIcon />}
-          sx={{ ...buttonStyle, justifyContent: 'flex-start' }}
+          sx={{ ...buttonStyle, justifyContent: "flex-start" }}
           fullWidth
-          onClick={() => navigate('/help')}
+          onClick={() => navigate("/help")}
         >
           Help
         </Button>
 
         {/* SignOut Button */}
-        <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout} sx={{ ...buttonStyle, justifyContent: 'flex-start' }} fullWidth>
+        <Button
+          variant="outlined"
+          startIcon={<LogoutIcon />}
+          onClick={handleLogout}
+          sx={{ ...buttonStyle, justifyContent: "flex-start" }}
+          fullWidth
+        >
           Sign Out
         </Button>
       </Box>
@@ -178,11 +208,11 @@ const UserSidebar = ({
 };
 
 const buttonStyle = {
-  color: 'white',
-  '&:hover': { backgroundColor: '#585858ff' },
-  borderColor: 'white',
-  textTransform: 'none',
-  fontFamily: 'Michroma, sans-serif',
+  color: "white",
+  "&:hover": { backgroundColor: "#585858ff" },
+  borderColor: "white",
+  textTransform: "none",
+  fontFamily: "Michroma, sans-serif",
 };
 
 export default UserSidebar;
