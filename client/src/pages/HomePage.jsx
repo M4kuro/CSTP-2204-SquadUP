@@ -143,7 +143,7 @@ const HomePage = () => {
         }}
       >
         {users.map((user) => (
-          <UserCard user={user} type="discover" />
+          <UserCard key={user._id} user={user} type="discover" />  // added user._id here due to error in console log for type
         ))}
       </Box>
     );
