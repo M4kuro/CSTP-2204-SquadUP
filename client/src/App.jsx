@@ -17,7 +17,7 @@ import { baseUrl, TabValue } from "./constant";
 import RequestsPage from './pages/RequestsPage';
 
 // 👇 Create an inner component where it's safe to use useLocation
-const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchCurrentUser, currentUser }) => {
+const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchCurrentUser, currentUser, requestCount, fetchRequestCount, setRequestCount }) => {
   const location = useLocation();
   const hideSidebarRoutes = ["/", "/login", "/signup"];
   const shouldShowSidebar = isLoggedIn && !hideSidebarRoutes.includes(location.pathname);
@@ -30,6 +30,9 @@ const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchC
     fetchCurrentUser,
     currentUser,
     isLoggedIn,
+    requestCount,         // needed for requests counter
+    setRequestCount,      // also needed for requests counter
+    fetchRequestCount     // also needed for requests counter 
   };
 
   return (
@@ -67,6 +70,7 @@ function App() {
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState();
+  const [requestCount, setRequestCount] = useState(0); // this is to pass down counters for the requests
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -109,11 +113,28 @@ function App() {
       console.error("Error fetching current user:", err);
     }
   };
+  // adding the fetch request counter here.
+  const fetchRequestCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${baseUrl}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch current user");
+      const data = await res.json();
+      if (data?.squadRequests) {
+        setRequestCount(data.squadRequests.length);
+      }
+    } catch (err) {
+      console.error("❌ Failed to get request count:", err);
+    }
+  };
 
   useEffect(() => {
     if (isLoggedIn) {
       fetchUsers();
       fetchCurrentUser();
+      fetchRequestCount(); // requests counter
     }
   }, [isLoggedIn, tabValue]); // we want to ensure that any time tabValue changes, the right users get fetched.
 
@@ -127,6 +148,9 @@ function App() {
         fetchUsers={fetchUsers}
         fetchCurrentUser={fetchCurrentUser}
         currentUser={currentUser}
+        requestCount={requestCount} 
+        setRequestCount={setRequestCount} 
+        fetchRequestCount={fetchRequestCount} 
       />
     </Router>
   );

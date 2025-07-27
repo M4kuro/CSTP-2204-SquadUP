@@ -87,6 +87,12 @@ router.get("/matches/:userId", authenticateToken, async (req, res) => {
     );
     if (!currentUser) return res.status(404).json({ error: "User not found" });
 
+    // deduplicate matches based on _id  ** incase of duplicates this prevents it.
+    const uniqueMatches = currentUser.matches.filter(
+      (user, index, self) =>
+        index === self.findIndex((u) => u._id.toString() === user._id.toString())
+    );
+
     res.json(currentUser.matches);
   } catch (err) {
     console.error("Error fetching matches:", err);

@@ -14,6 +14,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
   const navigate = useNavigate();
   const { setTabValue, currentUser } = useContext(AppContext);
 
+
   console.log(currentUser, "currentUser");
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -38,6 +39,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
     fetchUnread();
 
+
     // 💬 Listen for incoming messages
     socket.on("receiveMessage", (msg) => {
       if (msg.sender !== userId) {
@@ -50,6 +52,14 @@ const UserSidebar = ({ incomingRequests = [] }) => {
       socket.off("receiveMessage");
     };
   }, []);
+
+  // adding this useEffect for unread requests:
+  const { requestCount, fetchRequestCount, setRequestCount } = useContext(AppContext);
+
+  useEffect(() => {
+    fetchRequestCount();
+  }, []);
+
 
   console.log(currentUser, "cirr");
 
@@ -129,8 +139,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
           sx={buttonStyle}
           onClick={() => navigate("/requests")}
         >
-          Requests{" "}
-          {incomingRequests.length > 0 && `(${incomingRequests.length})`}
+          Requests {requestCount > 0 && `(${requestCount})`}
         </Button>
 
         {/* Squad Button */}

@@ -12,7 +12,7 @@ import {
 import { baseUrl } from "../constant";
 
 export const UserCard = (props) => {
-  const { user, type, onRemove, refreshRequests } = props;
+  const { user, type, onRemove, refreshRequests, updateRequestCount } = props;
   const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
   const [sentRequests, setSentRequests] = useState([]);
   const token = localStorage.getItem("token");
@@ -54,6 +54,7 @@ export const UserCard = (props) => {
         await fetchCurrentUser();
         await fetchUsers();
         refreshRequests?.();
+        updateRequestCount?.();
       } else {
         alert(data.message || "Something went wrong.");
       }
@@ -79,20 +80,20 @@ export const UserCard = (props) => {
         body: JSON.stringify({ requesterId }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Decline failed");
+      console.log("🔍 Full decline response:", res);
+      if (!res.ok) {
+        const errorText = await res.text(); // fallback if not JSON
+        throw new Error(errorText || "Decline failed");
+      }
 
       console.log("✅ Declined request from:", requesterId);
 
-      // remove user immediately from when decline is clicked.
-      if (onRemove) onRemove(requesterId);
-
-      // 🔁 Refresh the UI to reflect the updated requests list
-      // fetchRequests();
+      onRemove?.(requesterId);
       fetchUsers();
+      updateRequestCount?.();
     } catch (err) {
-      console.error("Decline error:", err);
-      alert("Error declining request.");
+      console.error("Decline error:", err?.message || err);
+      alert(`Error declining request: ${err?.message || "Unknown error"}`);
     }
   };
 
