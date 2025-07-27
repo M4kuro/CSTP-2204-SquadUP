@@ -1,12 +1,67 @@
 import { Box, Typography } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "../context/AppContext";
 import { UserCard } from "../components/UserCard";
 
 const RequestsPage = () => {
-  const { users } = useContext(AppContext);
+  const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
+  const [allUsers, setAllUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const userId = localStorage.getItem("userId");
-  const currentUser = users.find((u) => u._id === userId);
+
+
+  useEffect(() => {
+    const loadRequestsData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        // im basically having to use JWT here to make this work.. im sure you already know what im doing.
+        // sorry im not sure how to make this work otherwise :(
+
+        // need to fetch **ALL** users from /discover (ignore tabValue) couldnt get this to work otherwise!
+        const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/discover`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const usersData = await userRes.json();
+        setAllUsers(usersData);
+
+        // and then fetch the current user
+        const currentRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentUserData = await currentRes.json();
+        setCurrentUser(currentUserData);
+      } catch (err) {
+        console.error("❌ Failed to load request data:", err);
+      }
+    };
+
+    loadRequestsData();
+  }, []);
+
+  if (!currentUser) {
+    return (
+      <Box
+        sx={{
+          ml: "260px",
+          flexGrow: 1,
+          p: 4,
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6" color="textSecondary">
+          Loading your SquadUP requests...
+        </Typography>
+      </Box>
+    );
+  }
+
+  const incomingRequestUsers = allUsers.filter((user) =>
+    currentUser?.squadRequests?.includes(user._id)
+  );
 
   return (
     <Box
@@ -47,11 +102,9 @@ const RequestsPage = () => {
               width: "max-content",
             }}
           >
-            {users
-              .filter((user) => currentUser?.squadRequests?.includes(user._id))
-              .map((user) => (
-                <UserCard key={user._id} user={user} type="request" />
-              ))}
+            {incomingRequestUsers.map((user) => (
+              <UserCard key={user._id} user={user} type="request" />
+            ))}
           </Box>
         )}
       </Box>
