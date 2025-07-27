@@ -39,6 +39,15 @@ const RequestsPage = () => {
     loadRequestsData();
   }, []);
 
+  // adding a small bit of code to help with auto removing users from requests page on decline (otherwise you have to manually refresh)
+  const handleRemoveUserFromRequests = (userIdToRemove) => {
+  setAllUsers((prevUsers) =>
+    prevUsers.filter((user) => user._id !== userIdToRemove)
+  );
+};
+
+
+
   if (!currentUser) {
     return (
       <Box
@@ -103,7 +112,7 @@ const RequestsPage = () => {
             }}
           >
             {incomingRequestUsers.map((user) => (
-              <UserCard key={user._id} user={user} type="request" />
+              <UserCard key={user._id} user={user} type="request" onRemove={handleRemoveUserFromRequests}/>
             ))}
           </Box>
         )}
