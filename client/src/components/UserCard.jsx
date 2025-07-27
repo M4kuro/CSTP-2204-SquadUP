@@ -12,8 +12,8 @@ import {
 import { baseUrl } from "../constant";
 
 export const UserCard = (props) => {
-  const { user, type } = props;
-  const { fetchUsers } = useContext(AppContext);
+  const { user, type, onRemove, refreshRequests } = props;
+  const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
   const [sentRequests, setSentRequests] = useState([]);
   const token = localStorage.getItem("token");
   const currentUserId = localStorage.getItem("userId");
@@ -47,10 +47,13 @@ export const UserCard = (props) => {
           alert("🤔 S+UP request sent. Waiting for a match.");
         }
 
-        // Refresh views
+        // removes the user from local request view after clicking accept.
+        onRemove?.(requestingUserId);
+
+        // refreshes the views
         await fetchCurrentUser();
         await fetchUsers();
-        // await fetchRequests();
+        refreshRequests?.();
       } else {
         alert(data.message || "Something went wrong.");
       }
@@ -80,6 +83,9 @@ export const UserCard = (props) => {
       if (!res.ok) throw new Error(data.message || "Decline failed");
 
       console.log("✅ Declined request from:", requesterId);
+
+      // remove user immediately from when decline is clicked.
+      if (onRemove) onRemove(requesterId);
 
       // 🔁 Refresh the UI to reflect the updated requests list
       // fetchRequests();
@@ -327,9 +333,8 @@ export const UserCard = (props) => {
           sx={{ height: 300 }}
           image={
             user.profileImageUrl
-              ? `${import.meta.env.VITE_API_URL}/uploads/${
-                  user.profileImageUrl
-                }`
+              ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl
+              }`
               : "/placeholder-profile.png"
           }
         />
