@@ -115,7 +115,7 @@ function App() {
       fetchUsers();
       fetchCurrentUser();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, tabValue]); // we want to ensure that any time tabValue changes, the right users get fetched.
 
   return (
     <Router>
