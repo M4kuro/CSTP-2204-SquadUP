@@ -4,14 +4,13 @@ import AppContext from "../context/AppContext";
 import { UserCard } from "../components/UserCard";
 
 const RequestsPage = () => {
-  const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
+  const { fetchUsers, fetchCurrentUser, fetchRequestCount } = useContext(AppContext);
   const [allUsers, setAllUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const userId = localStorage.getItem("userId");
 
 
-  useEffect(() => {
-    const loadRequestsData = async () => {
+  const loadRequestsData = async () => {
       try {
         const token = localStorage.getItem("token");
 
@@ -36,6 +35,7 @@ const RequestsPage = () => {
       }
     };
 
+  useEffect(() => {
     loadRequestsData();
   }, []);
 
@@ -112,7 +112,7 @@ const RequestsPage = () => {
             }}
           >
             {incomingRequestUsers.map((user) => (
-              <UserCard key={user._id} user={user} type="request" onRemove={handleRemoveUserFromRequests}/>
+              <UserCard key={user._id} user={user} type="request" onRemove={handleRemoveUserFromRequests} refreshRequests={loadRequestsData} updateRequestCount={fetchRequestCount}/>
             ))}
           </Box>
         )}
