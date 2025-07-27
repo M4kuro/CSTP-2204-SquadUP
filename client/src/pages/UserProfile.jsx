@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -9,18 +9,17 @@ import {
   Avatar,
   Button,
   TextField,
-} from '@mui/material';
-import UserSidebar from '../components/UserMainSideBarControl'; // Importing the sidebar component
-import { useNavigate } from 'react-router-dom';  // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
-import MonthlyCalendar from '../components/calendar/MonthlyCalendar'; // importing the calendar components (this is for monthly)
-import WeeklyCalendar from '../components/calendar/WeeklyCalendar';  // this is the weekly component import
-import DailyCalendar from '../components/calendar/DailyCalendar'; // this is the daily component import
-
+} from "@mui/material";
+import UserSidebar from "../components/UserMainSideBarControl"; // Importing the sidebar component
+import { useNavigate } from "react-router-dom"; // REMOVED PARAMS BECAUSE WERE NOT USING IT ANYMORE DUE TO JWT DECODING
+import MonthlyCalendar from "../components/calendar/MonthlyCalendar"; // importing the calendar components (this is for monthly)
+import WeeklyCalendar from "../components/calendar/WeeklyCalendar"; // this is the weekly component import
+import DailyCalendar from "../components/calendar/DailyCalendar"; // this is the daily component import
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const UserProfile = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -30,7 +29,7 @@ const UserProfile = () => {
   const [otherImages, setOtherImages] = useState([null, null, null]);
   const [otherImageFiles, setOtherImageFiles] = useState([null, null, null]);
   const [showCalendar, setShowCalendar] = useState(false); // for the calendar
-  const [calendarView, setCalendarView] = useState('month'); // for the calendar view.. or 'week', 'day' 
+  const [calendarView, setCalendarView] = useState("month"); // for the calendar view.. or 'week', 'day'
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [bookingMap, setBookingMap] = useState({});
@@ -48,12 +47,16 @@ const UserProfile = () => {
         setFormData(data);
 
         if (data.profileImageUrl) {
-          setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`);
+          setMainImage(
+            `${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`,
+          );
         }
 
         if (data.otherImages && data.otherImages.length > 0) {
-          const imageUrls = data.otherImages.map(filename =>
-            filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+          const imageUrls = data.otherImages.map((filename) =>
+            filename
+              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
+              : null,
           );
           setOtherImages(imageUrls);
         }
@@ -65,17 +68,17 @@ const UserProfile = () => {
               `${import.meta.env.VITE_API_URL}/api/bookings/pro/${data._id}`,
               {
                 headers: { Authorization: `Bearer ${token}` },
-              }
+              },
             );
             const bookingsData = await bookingsRes.json();
 
             if (!Array.isArray(bookingsData)) {
-              console.error('Unexpected bookings data:', bookingsData);
+              console.error("Unexpected bookings data:", bookingsData);
               return;
             }
 
             const map = {};
-            bookingsData.forEach(booking => {
+            bookingsData.forEach((booking) => {
               if (!map[booking.date]) map[booking.date] = {};
               map[booking.date][booking.hour] = {
                 email: booking.clientEmail,
@@ -86,24 +89,22 @@ const UserProfile = () => {
 
             setBookingMap(map);
           } catch (bookingErr) {
-            console.error('Error fetching pro bookings:', bookingErr);
+            console.error("Error fetching pro bookings:", bookingErr);
           }
         }
-
       } catch (err) {
-        console.error('Error fetching user profile:', err);
+        console.error("Error fetching user profile:", err);
       }
     };
 
     fetchProfile();
   }, []);
 
-
   const handleImageChange = (index, e) => {
     const file = e.target.files[0];
     if (file) {
       setIsEditing(true);
-      if (index === 'main') {
+      if (index === "main") {
         setMainImage(URL.createObjectURL(file));
         setMainImageFile(file);
       } else {
@@ -129,69 +130,74 @@ const UserProfile = () => {
     try {
       let updatedFields = { ...formData };
       const imageForm = new FormData();
-      if (mainImageFile) imageForm.append('main', mainImageFile);
+      if (mainImageFile) imageForm.append("main", mainImageFile);
       otherImageFiles.forEach((file, i) => {
         if (file) imageForm.append(`other${i}`, file);
       });
 
-      if (mainImageFile || otherImageFiles.some(f => f)) {
+      if (mainImageFile || otherImageFiles.some((f) => f)) {
         const imgRes = await fetch(`${baseUrl}/me/upload`, {
-          method: 'POST',
+          method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: imageForm,
         });
         const imgData = await imgRes.json();
         if (imgData.profileImageUrl) {
           updatedFields.profileImageUrl = imgData.profileImageUrl;
-          setMainImage(`${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`);
+          setMainImage(
+            `${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`,
+          );
         }
         if (imgData.otherImages) {
           updatedFields.otherImages = imgData.otherImages;
-          const updatedPreviews = imgData.otherImages.map(filename =>
-            filename ? `${import.meta.env.VITE_API_URL}/uploads/${filename}` : null
+          const updatedPreviews = imgData.otherImages.map((filename) =>
+            filename
+              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
+              : null,
           );
           setOtherImages(updatedPreviews);
         }
       }
 
       const res = await fetch(`${baseUrl}/me`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedFields),
       });
 
-      if (!res.ok) throw new Error('Failed to update profile');
+      if (!res.ok) throw new Error("Failed to update profile");
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      alert("Profile updated successfully!");
     } catch (err) {
-      console.error('Error saving profile:', err);
-      alert('Failed to update profile.');
+      console.error("Error saving profile:", err);
+      alert("Failed to update profile.");
     }
   };
 
   const sectionStyle = {
-    backgroundColor: '#b0b0b0',
-    color: '#000',
-    borderRadius: '16px',
-    padding: '20px',
-    marginBottom: '20px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    width: '100%',
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
+    backgroundColor: "#b0b0b0",
+    color: "#000",
+    borderRadius: "16px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+    width: "100%",
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
   };
 
   if (!user) {
-    return <Typography sx={{ color: '#fff', p: 4 }}>Loading profile...</Typography>;
+    return (
+      <Typography sx={{ color: "#fff", p: 4 }}>Loading profile...</Typography>
+    );
   }
-
 
   const handleInterestToggle = (interest) => {
     setFormData((prev) => {
@@ -202,161 +208,176 @@ const UserProfile = () => {
     });
   };
 
-  const interestOptions = [
-    'Sports',
-    'Board Games',
-    'Video Games',
-  ];
-
+  const interestOptions = ["Sports", "Board Games", "Video Games"];
 
   const handleDrillToDay = (date) => {
-  setSelectedDate(new Date(date));   // updates which day DailyCalendar shows
-  setCalendarView('day');            // switches to Daily view
-};
-
+    setSelectedDate(new Date(date)); // updates which day DailyCalendar shows
+    setCalendarView("day"); // switches to Daily view
+  };
 
   // ================================ MAIN RETURN/CONTENT START FROM HERE ================================
 
   return (
     <Box // Main Box =============================================
       sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: '#ffffffff',
-        minHeight: '100vh',
-        minWidth: '100vw',
+        display: "flex",
+        flexDirection: "row",
+        backgroundColor: "#ffffffff",
+        minHeight: "100vh",
+        minWidth: "100vw",
         padding: 1,
         gap: 1,
-        justifyContent: 'center',
-        
+        justifyContent: "center",
       }}
     >
-      <UserSidebar
-        currentUser={user}  
-        incomingRequests={[]}  
-        setView={null}  
-        setTabValue={null}  
-        handleLogout={() => {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }} 
-        navigate={navigate}
-      />
-      
       {/* IMAGES BOX ============================================================================================*/}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 5, ml: 30, }}>
-        <Paper elevation={4} sx={{ padding: 2, backgroundColor: '#000000ff' }}>
-
-          <Avatar
-            src={mainImage}
-            sx={{ width: 340, height: 340 }}
-          >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          mt: 5,
+          ml: 30,
+        }}
+      >
+        <Paper elevation={4} sx={{ padding: 2, backgroundColor: "#000000ff" }}>
+          <Avatar src={mainImage} sx={{ width: 340, height: 340 }}>
             {!mainImage && user?.username?.[0]?.toUpperCase()}
           </Avatar>
-          
+
           <Button
             variant="outlined"
             component="label"
             fullWidth
             sx={{
               mt: 1,
-              color: '#ffffffff',
-              '&:hover': { backgroundColor: '#585858ff' },
-              borderColor: '#ffffffff',
-              fontFamily: 'Michroma, sans-serif',
-              fontSize: '12px'
-            }}>
-            
+              color: "#ffffffff",
+              "&:hover": { backgroundColor: "#585858ff" },
+              borderColor: "#ffffffff",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "12px",
+            }}
+          >
             Upload Main
-            <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange('main', e)} />
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={(e) => handleImageChange("main", e)}
+            />
           </Button>
         </Paper>
 
         {/* Extra images Upload Box ===========================================================================*/}
-        <Box sx={{ display: 'flex', gap: 3}}>
+        <Box sx={{ display: "flex", gap: 3 }}>
           {otherImages.map((img, idx) => (
             <Paper
               key={idx}
               elevation={4}
               sx={{
-                backgroundColor: '#000000ff',
+                backgroundColor: "#000000ff",
                 padding: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
                 borderRadius: 2,
               }}
             >
-              <Avatar
-                src={img}
-                sx={{ width: 160, height: 160 }}
-              />
+              <Avatar src={img} sx={{ width: 160, height: 160 }} />
               <Button
                 variant="outlined"
                 component="label"
                 sx={{
                   mt: 2,
-                  fontSize: '20px',
-                  color: 'white',
-                  '&:hover': { backgroundColor: '#585858ff' },
-                    borderColor: 'white', }}
+                  fontSize: "20px",
+                  color: "white",
+                  "&:hover": { backgroundColor: "#585858ff" },
+                  borderColor: "white",
+                }}
               >
                 +
-                <input type="file" hidden accept="image/*" onChange={(e) => handleImageChange(idx, e)} />
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(idx, e)}
+                />
               </Button>
             </Paper>
           ))}
         </Box>
         {/*=============================================================================================================*/}
-        
+
         {/* Calendar for Pro Users ====================================================================================== */}
         {showCalendar && (
           <Box
             sx={{
               mt: 4,
-              backgroundColor: '#000000ff',
+              backgroundColor: "#000000ff",
               p: 2,
               borderRadius: 2,
-              maxWidth: '860px',    // 👈 Match width of your 3-image layout
-              width: '95%',
-              margin: '0 auto',     // 👈 Center it horizontally
+              maxWidth: "860px", // 👈 Match width of your 3-image layout
+              width: "95%",
+              margin: "0 auto", // 👈 Center it horizontally
             }}
           >
-            <Box sx={{ display: 'flex', gap: 2, mb: 2, justifyContent: 'center' }}>
+            <Box
+              sx={{ display: "flex", gap: 2, mb: 2, justifyContent: "center" }}
+            >
               <Button
-                variant={calendarView === 'month' ? 'outlined' : ''}
+                variant={calendarView === "month" ? "outlined" : ""}
                 sx={{
-                  fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff', 
-                 }}
-                onClick={() => setCalendarView('month')}
+                  fontFamily: "Michroma, sans-serif",
+                  color: "#ffffff",
+                  borderColor: "#ffffff",
+                }}
+                onClick={() => setCalendarView("month")}
               >
                 Monthly
               </Button>
               <Button
-                variant={calendarView === 'week' ? 'outlined' : ''}
-                sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff' }}
-                onClick={() => setCalendarView('week')}
+                variant={calendarView === "week" ? "outlined" : ""}
+                sx={{
+                  fontFamily: "Michroma, sans-serif",
+                  color: "#ffffff",
+                  borderColor: "#ffffff",
+                }}
+                onClick={() => setCalendarView("week")}
               >
                 Weekly
               </Button>
               <Button
-                variant={calendarView === 'day' ? 'outlined' : ''}
-                sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffff', borderColor: '#ffffff' }}
-                onClick={() => setCalendarView('day')}
+                variant={calendarView === "day" ? "outlined" : ""}
+                sx={{
+                  fontFamily: "Michroma, sans-serif",
+                  color: "#ffffff",
+                  borderColor: "#ffffff",
+                }}
+                onClick={() => setCalendarView("day")}
               >
                 Daily
               </Button>
             </Box>
 
             {/* Stub views for when you click on month/week/day (we might replace these later) */}
-           {calendarView === 'month' && (
-              <MonthlyCalendar bookingsByDate={bookingMap} onSelectDay={handleDrillToDay} />
+            {calendarView === "month" && (
+              <MonthlyCalendar
+                bookingsByDate={bookingMap}
+                onSelectDay={handleDrillToDay}
+              />
             )}
-            {calendarView === 'week' && (
-              <WeeklyCalendar bookingsByDate={bookingMap} onSelectDay={handleDrillToDay} />
+            {calendarView === "week" && (
+              <WeeklyCalendar
+                bookingsByDate={bookingMap}
+                onSelectDay={handleDrillToDay}
+              />
             )}
-            {calendarView === 'day' && (
-              <DailyCalendar bookingsByDate={bookingMap} selectedDate={selectedDate} />
+            {calendarView === "day" && (
+              <DailyCalendar
+                bookingsByDate={bookingMap}
+                selectedDate={selectedDate}
+              />
             )}
           </Box>
         )}
@@ -365,36 +386,60 @@ const UserProfile = () => {
 
       {/* PROFILE DETAILS ============================================================================================ */}
 
-      <Box sx={{ width: '100%', maxWidth: 560, ml: 4, mt: 5, }}>
-        
-        
-
+      <Box sx={{ width: "100%", maxWidth: 560, ml: 4, mt: 5 }}>
         {/* Personal info section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography  sx={{
-            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
-          }}>
-          Personal Info
-        </Typography>
-          
+          <Typography
+            sx={{
+              color: "black",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "18px",
+            }}
+          >
+            Personal Info
+          </Typography>
+
           <TextField
             label="Birthdate"
             name="birthdate"
             type="date"
             InputLabelProps={{ shrink: true }}
-            value={formData.birthdate ? formData.birthdate.split('T')[0] : ''}
+            value={formData.birthdate ? formData.birthdate.split("T")[0] : ""}
             onChange={handleChange}
             onFocus={handleFocus}
             InputProps={{ readOnly: !isEditing }}
           />
           {/* BIO */}
-          <Typography sx={{
-            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
-          }}>About Me</Typography>
-          <TextField fullWidth name="bio" label="Your Bio" multiline rows={3} value={formData.bio || ''} onChange={handleChange} onFocus={handleFocus} InputProps={{ readOnly: !isEditing }} />
-          <Typography sx={{
-            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
-          }} gutterBottom>Interests</Typography>
+          <Typography
+            sx={{
+              color: "black",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "18px",
+            }}
+          >
+            About Me
+          </Typography>
+          <TextField
+            fullWidth
+            name="bio"
+            label="Your Bio"
+            multiline
+            rows={3}
+            value={formData.bio || ""}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            InputProps={{ readOnly: !isEditing }}
+          />
+          <Typography
+            sx={{
+              color: "black",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "18px",
+            }}
+            gutterBottom
+          >
+            Interests
+          </Typography>
 
           {isEditing ? (
             interestOptions.map((interest) => (
@@ -412,19 +457,19 @@ const UserProfile = () => {
           ) : (
             <Box sx={{ ml: 1 }}>
               {formData.interests.length ? (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                   {formData.interests.map((interest) => (
                     <Box
                       key={interest}
                       sx={{
                         px: 2,
                         py: 0.5,
-                        backgroundColor: '#000000ff',
-                        color: 'white',
-                        borderRadius: '16px',
-                        fontSize: '0.85rem',
+                        backgroundColor: "#000000ff",
+                        color: "white",
+                        borderRadius: "16px",
+                        fontSize: "0.85rem",
                         fontWeight: 500,
-                        fontFamily: 'Michroma, sans-serif',
+                        fontFamily: "Michroma, sans-serif",
                       }}
                     >
                       {interest}
@@ -432,24 +477,27 @@ const UserProfile = () => {
                   ))}
                 </Box>
               ) : (
-                <Typography variant="body2" color="textSecondary">No interests selected.</Typography>
-                )}
-                
-              </Box>
-            )}
+                <Typography variant="body2" color="textSecondary">
+                  No interests selected.
+                </Typography>
+              )}
+            </Box>
+          )}
         </Paper>
 
-        
-
         {/* Interests section */}
-        
-
 
         {/* Payment and rating section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography sx={{
-            color: 'black', fontFamily: 'Michroma, sans-serif', fontSize: '18px'
-          }}>Pro Coaching</Typography>
+          <Typography
+            sx={{
+              color: "black",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "18px",
+            }}
+          >
+            Pro Coaching
+          </Typography>
 
           <FormControlLabel
             control={
@@ -468,16 +516,16 @@ const UserProfile = () => {
             <>
               <Button
                 variant="outlined"
-                onClick={() => setShowCalendar(prev => !prev)}
+                onClick={() => setShowCalendar((prev) => !prev)}
                 sx={{ mt: 2 }}
               >
-                {showCalendar ? 'Hide Calendar' : 'My Calendar / Schedule'}
+                {showCalendar ? "Hide Calendar" : "My Calendar / Schedule"}
               </Button>
               <TextField
                 label="Hourly Rate ($)"
                 name="hourlyRate"
                 type="number"
-                value={formData.hourlyRate || ''}
+                value={formData.hourlyRate || ""}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 InputProps={{ readOnly: !isEditing }}
@@ -485,23 +533,22 @@ const UserProfile = () => {
               />
               <Box
                 sx={{
-                  borderLeft: '4px solid #000000ff',
+                  borderLeft: "4px solid #000000ff",
                   pl: 1.5,
                   mt: 2,
                 }}
               >
-                <Typography variant="h6" sx={{ color: 'black' }}>
-                What I'm Offering
+                <Typography variant="h6" sx={{ color: "black" }}>
+                  What I'm Offering
                 </Typography>
               </Box>
-
 
               <TextField
                 label="Service Details"
                 name="proDescription"
                 multiline
                 rows={3}
-                value={formData.proDescription || ''}
+                value={formData.proDescription || ""}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 InputProps={{ readOnly: !isEditing }}
@@ -513,58 +560,70 @@ const UserProfile = () => {
 
         {/* Socials section */}
         <Paper elevation={4} sx={sectionStyle}>
-          <Typography variant="h6"
+          <Typography
+            variant="h6"
             sx={{
               fontFamily: "Michroma",
-              fontSize:"18px"
-
+              fontSize: "18px",
             }}
-          >Social Links</Typography>
+          >
+            Social Links
+          </Typography>
 
           <TextField
             name="instagram"
             label="Instagram"
-            value={formData.instagram || ''}
+            value={formData.instagram || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }} />
-          
+            InputProps={{ readOnly: !isEditing }}
+          />
+
           <TextField
             name="facebook"
             label="Facebook"
-            value={formData.facebook || ''}
+            value={formData.facebook || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }} />
-          
+            InputProps={{ readOnly: !isEditing }}
+          />
+
           <TextField
             name="x"
             label="X (Twitter)"
-            value={formData.x || ''}
+            value={formData.x || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }} />
-          
+            InputProps={{ readOnly: !isEditing }}
+          />
+
           <TextField
-            name="bluesky"            
+            name="bluesky"
             label="Bluesky"
-            value={formData.bluesky || ''}
+            value={formData.bluesky || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }} />
+            InputProps={{ readOnly: !isEditing }}
+          />
         </Paper>
 
-        <Box sx={{ textAlign: 'center',}}>
+        <Box sx={{ textAlign: "center" }}>
           <Button
             variant="contained"
             onClick={isEditing ? handleSave : () => setIsEditing(true)}
-            sx={{ borderRadius: '12px', mb: 2, fontFamily:'Michroma, sans-serif', color: '#ffffff', backgroundColor: '#000000ff', '&:hover': { backgroundColor: '#585858ff' } }}
+            sx={{
+              borderRadius: "12px",
+              mb: 2,
+              fontFamily: "Michroma, sans-serif",
+              color: "#ffffff",
+              backgroundColor: "#000000ff",
+              "&:hover": { backgroundColor: "#585858ff" },
+            }}
           >
-            {isEditing ? 'Save My Profile' : 'Edit My Profile'}
+            {isEditing ? "Save My Profile" : "Edit My Profile"}
           </Button>
         </Box>
       </Box>
-      
     </Box>
   );
 };

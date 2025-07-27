@@ -1,84 +1,123 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import UserSidebar from '../components/UserMainSideBarControl';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import UserSidebar from "../components/UserMainSideBarControl";
+import { useNavigate } from "react-router-dom";
 
-const HelpPage = () => {
+const SettingsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <UserSidebar
-        navigate={navigate}
-        setView={() => {}}
-        setTabValue={() => {}}
-        handleLogout={() => {}}
-        currentUser={null}
-        incomingRequests={[]}
-      />
-
-      <Box sx={{ p: 5, flex: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          mt: 10,
+          ml: 40,
+          flexGrow: 1,
+          p: 5,
+          overflowY: "auto",
+          maxWidth: "1000px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        }}
+      >
         <Typography
-          variant="h3"
-          gutterBottom
-          sx={{ fontFamily: 'Michroma, sans-serif', color: '#000000ff' }}
+          variant="h4"
+          sx={{ fontFamily: "Michroma, sans-serif", mb: 3 }}
         >
-          Help Center
+          Account Settings
         </Typography>
 
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ fontFamily: 'Michroma, sans-serif' }}
-        >
-          Welcome to the SquadUP Help Center! Below are answers to common questions to help you get started.
+        {/* Personal Info */}
+        <Typography variant="h6" sx={{ fontFamily: "Michroma, sans-serif" }}>
+          Personal Information
         </Typography>
+        <TextField fullWidth label="Username" margin="normal" />
+        <TextField fullWidth label="Email" type="email" margin="normal" />
+        <Button variant="contained" sx={{ mt: 2 }}>
+          Save Changes
+        </Button>
 
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            💬 How do I chat with someone?
-          </Typography>
-          <Typography variant="body2" sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            To chat with someone, you must both be matched or on your squad. Once matched and squaded, you'll see a Chat button under their card in the Matches tab or Squad view.
-          </Typography>
-        </Box>
+        <Divider sx={{ my: 4 }} />
 
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            🤝 How do I S+UP with someone?
-          </Typography>
-          <Typography variant="body2" sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            Browse through Nearby or Discover users. Click “S+UP” to send a request. If they click accept on your request, it’s a match!
-          </Typography>
-        </Box>
-
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            📅 How do bookings work?
-          </Typography>
-          <Typography variant="body2" sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            If a user is a Pro, you can book a time slot on their calendar by clicking “Book Now” on their profile. Once confirmed, you'll receive a notification.
-          </Typography>
-        </Box>
-
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            👤 How can I edit my profile?
-          </Typography>
-          <Typography variant="body2" sx={{ fontFamily: 'Michroma, sans-serif' }}>
-            Go to “My Profile” from the sidebar. There you can update your info, profile pictures, interests, and social links.
-          </Typography>
-        </Box>
-
-        <Typography
-          variant="body2"
-          sx={{ mt: 6, fontFamily: 'Michroma, sans-serif', color: '#777' }}
-        >
-          Still need help? Email us at <strong>support@squadup.app</strong>
+        {/* Password */}
+        <Typography variant="h6" sx={{ fontFamily: "Michroma, sans-serif" }}>
+          Change Password
         </Typography>
+        <TextField fullWidth label="Current Password" type="password" margin="normal" />
+        <TextField fullWidth label="New Password" type="password" margin="normal" />
+        <TextField fullWidth label="Confirm New Password" type="password" margin="normal" />
+        <Button variant="contained" color="warning" sx={{ mt: 2 }}>
+          Update Password
+        </Button>
+
+        <Divider sx={{ my: 4 }} />
+
+        {/* Blocked Users */}
+        <Typography
+          variant="h6"
+          sx={{ fontFamily: "Michroma, sans-serif", mb: 1 }}
+        >
+          Blocked Users
+        </Typography>
+        <Box
+          sx={{
+            maxHeight: 300,
+            overflowY: "auto",
+            border: "1px solid #ddd",
+            borderRadius: 2,
+            p: 1,
+            backgroundColor: "#f9f9f9",
+          }}
+        >
+          <List>
+            {["User123", "Player99", "ToxicTim", "SaltySarah", "AFKAndy", "SpammySam"].map(
+              (user, idx) => (
+                <ListItem
+                  key={idx}
+                  secondaryAction={
+                    <Button color="error" variant="outlined" size="small">
+                      Unblock
+                    </Button>
+                  }
+                >
+                  <ListItemText primary={user} />
+                </ListItem>
+              )
+            )}
+          </List>
+        </Box>
+
+        <Divider sx={{ my: 4 }} />
+
+        {/* Delete Account */}
+        <Typography
+          variant="h6"
+          sx={{ fontFamily: "Michroma, sans-serif", color: "red" }}
+        >
+          Danger Zone
+        </Typography>
+        <Button variant="outlined" color="error" sx={{ mt: 2 }}>
+          Delete My Account
+        </Button>
       </Box>
     </Box>
   );
 };
 
-export default HelpPage;
+export default SettingsPage;
