@@ -1,18 +1,18 @@
 body {
-  display: flex;
-  height: 100vh;
-  background-color: #ffffff;
-  margin: 0;
-  padding: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
 }
 
 #root {
-  display: flex;
-  width: 100%;
-}
+    display: flex;
+    width: 100%; }
 
-/* Google Places input override */
-/* This is talking to Step2GetLocation.jsx and Locationinput.jsx */
+
+    /* Google Places input override */
+    /* This is talking to Step2GetLocation.jsx and Locationinput.jsx */
 .pac-target-input {
   font-size: 1.1rem !important;
   height: 50px !important;
@@ -35,6 +35,7 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
+  
 }
 
 .messages-title {
@@ -61,10 +62,7 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(200px, 1fr)
-  ); /* responsive grid */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* responsive grid */
   gap: 20px;
 
   width: 100%;
@@ -82,7 +80,7 @@ body {
   transition: background-color 0.2s ease;
   cursor: pointer;
   min-width: 0; /* 🔥 ensures flex/grid doesn’t overflow */
-  width: 100%; /* 🔥 card takes up full cell width */
+  width: 100%;   /* 🔥 card takes up full cell width */
   box-sizing: border-box;
 }
 
@@ -97,6 +95,7 @@ body {
   object-fit: cover;
   margin-bottom: 10px;
 }
+
 
 .message-content {
   display: flex;

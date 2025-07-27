@@ -1,15 +1,16 @@
-import GooglePlacesAutocomplete from "react-google-autocomplete";
+import GooglePlacesAutocomplete from 'react-google-autocomplete';
 
 const LocationInput = ({ onPlaceSelected }) => {
   return (
     <GooglePlacesAutocomplete
       apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+
       selectProps={{
         onChange: (place) => onPlaceSelected(place),
-        placeholder: "Enter your city...",
+        placeholder: 'Enter your city...',
       }}
       autocompletionRequest={{
-        types: ["(cities)"],
+        types: ['(cities)'],
       }}
     />
   );
