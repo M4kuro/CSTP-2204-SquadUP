@@ -47,6 +47,7 @@ const SettingsPage = () => {
           justifyContent: "space-between",
         }}
       >
+        {/* adding a comment to force a change to push to github */}
         {/* Personal Info */}
         <Box sx={{ flex: 1, minWidth: 300 }}>
           <Typography fontFamily={"Michroma, sans-serif"} variant="h6">Update Personal Information</Typography>
