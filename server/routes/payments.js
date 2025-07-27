@@ -1,25 +1,25 @@
-const express = require("express");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const { authenticateToken } = require("../middleware/auth");
-const User = require("../models/User");
+const express = require('express');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { authenticateToken } = require('../middleware/auth');
+const User = require('../models/User');
 
 const router = express.Router();
 
-router.post("/create-checkout-session", authenticateToken, async (req, res) => {
+router.post('/create-checkout-session', authenticateToken, async (req, res) => {
   const { proId, day, hour, yearMonth } = req.body;
-  console.log("📥 Received booking request:", { proId, day, hour, yearMonth });
+  console.log('📥 Received booking request:', { proId, day, hour, yearMonth });
 
   // ✅ SAFEGUARD: Ensure all values are present
   if (!proId || !day || !hour || !yearMonth) {
-    return res.status(400).json({ error: "Missing booking data" });
+    return res.status(400).json({ error: 'Missing booking data' });
   }
 
   // ✅ Combine yearMonth and day to get fullDate
   const fullDate = `${yearMonth}-${day}`; // e.g., "2025-07-10"
-  const dateParts = fullDate.split("-"); // ["2025", "07", "10"]
+  const dateParts = fullDate.split('-');  // ["2025", "07", "10"]
 
   if (dateParts.length !== 3) {
-    return res.status(400).json({ error: "Invalid fullDate format" });
+    return res.status(400).json({ error: 'Invalid fullDate format' });
   }
 
   const justDay = dateParts[2]; // "10"
@@ -30,26 +30,22 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
 
     const proUser = await User.findById(proId);
     if (!proUser || !proUser.hourlyRate) {
-      return res
-        .status(404)
-        .json({ message: "Pro user not found or missing rate" });
+      return res.status(404).json({ message: 'Pro user not found or missing rate' });
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `Session with ${proUser.username}`,
-            },
-            unit_amount: proUser.hourlyRate * 100, // Stripe expects cents
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Session with ${proUser.username}`,
           },
-          quantity: 1,
+          unit_amount: proUser.hourlyRate * 100, // Stripe expects cents
         },
-      ],
+        quantity: 1,
+      }],
       success_url: `${process.env.CLIENT_URL}/booking-success?proId=${proId}&yearMonth=${yearMonth}&day=${justDay}`,
       cancel_url: `${process.env.CLIENT_URL}/booking-cancel`,
       // this is for the checkout.session.completed event
@@ -66,7 +62,7 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
           clientId,
           clientEmail,
           proId,
-          day: fullDate, // ✅ use full date like "2025-07-10"
+          day: fullDate,  // ✅ use full date like "2025-07-10"
           hour,
         },
       },
@@ -74,8 +70,8 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
 
     res.status(200).json({ sessionId: session.id });
   } catch (error) {
-    console.error("❌ Stripe Checkout Error:", error);
-    res.status(500).json({ error: "Unable to create checkout session" });
+    console.error('❌ Stripe Checkout Error:', error);
+    res.status(500).json({ error: 'Unable to create checkout session' });
   }
 });
 

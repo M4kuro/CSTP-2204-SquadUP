@@ -1,19 +1,20 @@
 {
-  "services": [
-    {
-      "name": "backend",
-      "rootDir": "server",
-      "startCommand": "node index.js",
-      "installCommand": "npm install"
-    },
-    {
-      "name": "frontend",
-      "rootDir": "client",
-      "startCommand": "npm run preview",
-      "installCommand": "npm install && npm run build",
-      "envVars": {
-        "VITE_API_URL": "https://cstp-2204-squadup-production.up.railway.app"
+    "services": [
+      {
+        "name": "backend",
+        "rootDir": "server",
+        "startCommand": "node index.js",
+        "installCommand": "npm install"
+      },
+      {
+        "name": "frontend",
+        "rootDir": "client",
+        "startCommand": "npm run preview",
+        "installCommand": "npm install && npm run build",
+        "envVars": {
+          "VITE_API_URL": "https://cstp-2204-squadup-production.up.railway.app"
+        }
       }
-    }
-  ]
-}
+    ]
+  }
+  

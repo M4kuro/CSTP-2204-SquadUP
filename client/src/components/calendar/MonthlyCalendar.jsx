@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import React, { useState } from 'react';
+import { Box, Button, Typography } from '@mui/material';
 
 // Utility to get all days of the given month
 const generateMonthDays = (year, month) => {
@@ -14,13 +14,11 @@ const generateMonthDays = (year, month) => {
   return days;
 };
 
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const MonthlyCalendar = ({ onSelectDay }) => {
   const today = new Date();
-  const [currentDate, setCurrentDate] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1),
-  );
+  const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -32,20 +30,16 @@ const MonthlyCalendar = ({ onSelectDay }) => {
   const paddedDays = Array(firstDayOfWeek).fill(null).concat(daysInMonth);
 
   const handlePrevMonth = () => {
-    setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
-    );
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
-    );
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
   const formattedMonthYear = currentDate.toLocaleDateString(undefined, {
-    month: "long",
-    year: "numeric",
+    month: 'long',
+    year: 'numeric',
   });
 
   return (
@@ -53,57 +47,52 @@ const MonthlyCalendar = ({ onSelectDay }) => {
       {/* Month Navigation */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,          
         }}
       >
         <Button
           onClick={handlePrevMonth}
-          variant="outlined"
+          variant='outlined'
           sx={{
-            fontFamily: "Michroma, sans-serif",
-            color: "#ffffffff",
-            borderColor: "#ffffff",
-            "&:hover": { backgroundColor: "#585858ff" },
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
           }}
         >
           ⬅ Prev
+        
         </Button>
         <Typography
-          sx={{
-            textAlign: "center",
-            fontFamily: "Michroma, sans-serif",
-            fontSize: "18px",
-            color: "#ffffffff",
-          }}
+          sx={{ textAlign: 'center', fontFamily: 'Michroma, sans-serif', fontSize: '18px', color: '#ffffffff' }}
         >
           {formattedMonthYear}
+        
         </Typography>
         <Button
+          
           onClick={handleNextMonth}
-          variant="outlined"
+          variant='outlined'
           sx={{
-            fontFamily: "Michroma, sans-serif",
-            color: "#ffffffff",
-            borderColor: "#ffffff",
-            "&:hover": { backgroundColor: "#585858ff" },
+            fontFamily: 'Michroma, sans-serif',
+            color: '#ffffffff',
+            borderColor: '#ffffff',
+            '&:hover': { backgroundColor: '#585858ff' },
           }}
         >
           Next ➡
+        
         </Button>
       </Box>
 
       {/* Weekday headers */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
         {dayNames.map((day) => (
-          <Typography
-            key={day}
-            variant="subtitle2"
-            align="center"
-            fontWeight="bold"
-            sx={{ fontFamily: "Michroma, sans-serif", color: "#ffffffff" }}
+          <Typography key={day} variant="subtitle2" align="center" fontWeight="bold"
+          sx={{ fontFamily: 'Michroma, sans-serif', color: '#ffffffff' }}
           >
             {day}
           </Typography>
@@ -113,8 +102,8 @@ const MonthlyCalendar = ({ onSelectDay }) => {
       {/* Calendar grid */}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
           gap: 1,
         }}
       >
@@ -124,33 +113,34 @@ const MonthlyCalendar = ({ onSelectDay }) => {
 
           return (
             <Box
-              key={idx}
+              key={idx} 
               onClick={() => {
                 if (isClickable && onSelectDay) {
                   onSelectDay(day); // 🔥 Drill-down to day view
                 }
               }}
+              
               sx={{
-                border: "1px solid #ccc",
+                border: '1px solid #ccc',
                 minHeight: 70,
                 backgroundColor: isClickable
                   ? isWeekday
-                    ? "#ffffffff"
-                    : "#707070ff"
-                  : "transparent",
+                    ? '#ffffffff'
+                    : '#707070ff'
+                  : 'transparent',
                 borderRadius: 1,
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
                 p: 1,
-                cursor: isClickable ? "pointer" : "default",
-                "&:hover": {
-                  backgroundColor: isClickable ? "#00c63fff" : "transparent",
+                cursor: isClickable ? 'pointer' : 'default',
+                '&:hover': {
+                  backgroundColor: isClickable ? '#00c63fff' : 'transparent',
                 },
               }}
             >
               <Typography variant="caption">
-                {day ? day.getDate() : ""}
+                {day ? day.getDate() : ''}
               </Typography>
             </Box>
           );
