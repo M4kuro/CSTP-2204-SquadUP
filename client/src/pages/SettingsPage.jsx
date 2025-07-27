@@ -18,28 +18,73 @@ const SettingsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      <Box sx={{ flex: 1, p: 5 }}>
-        <Typography
-          variant="h4"
-          sx={{ fontFamily: "Michroma, sans-serif", mb: 3 }}
+    <Box
+      sx={{
+        mt: 10,
+        ml: 40,
+        p: 5,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: '100vw',
+        overflowY: 'auto',
+      }}
+    >
+      <Typography
+        variant="h4"
+        sx={{ fontFamily: "Michroma, sans-serif", mb: 3 }}
+      >
+        Account Settings
+      </Typography>
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: 4,
+          width: "100%",
+          maxWidth: "1000px",
+          flexWrap: "wrap", // for mobile responsiveness
+          justifyContent: "space-between",
+        }}
+      >
+        {/* Personal Info */}
+        <Box sx={{ flex: 1, minWidth: 300 }}>
+          <Typography fontFamily={"Michroma, sans-serif"} variant="h6">Update Personal Information</Typography>
+          <TextField fullWidth label="Username" margin="normal" />
+          <TextField fullWidth label="Email" type="email" margin="normal" />
+          <Button  variant="contained" sx={{ mt: 2 }}>
+            Save Changes
+          </Button>
+        </Box>
+
+        {/* Danger Zone */}
+        <Box
+          sx={{
+            minWidth: 220,
+            border: "1px solid #ddd",
+            borderRadius: 2,
+            p: 2,
+            height: "fit-content",
+            backgroundColor: "#f9f9f9",
+            mt: -2
+          }}
         >
-          Account Settings
-        </Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontFamily: "Michroma, sans-serif", color: "red" }}
+          >
+            Danger Zone
+          </Typography>
+          <Button variant="outlined" color="error" sx={{ mt: 2 }}>
+            Delete My Account
+          </Button>
+        </Box>
+      </Box>
 
-        {/* Username & Email */}
-        <Typography variant="h6" sx={{ fontFamily: "Michroma, sans-serif" }}>
-          Personal Information
-        </Typography>
-        <TextField fullWidth label="Username" margin="normal" />
-        <TextField fullWidth label="Email" type="email" margin="normal" />
-        <Button variant="contained" sx={{ mt: 2 }}>
-          Save Changes
-        </Button>
+      <Divider sx={{ my: 4 }} />
 
-        <Divider sx={{ my: 4 }} />
-
-        {/* Password Change */}
+      {/* Password Change */}
+      <Box sx={{ maxWidth: 700 }}>
         <Typography variant="h6" sx={{ fontFamily: "Michroma, sans-serif" }}>
           Change Password
         </Typography>
@@ -64,29 +109,31 @@ const SettingsPage = () => {
         <Button variant="contained" color="warning" sx={{ mt: 2 }}>
           Update Password
         </Button>
+      </Box>
 
-        <Divider sx={{ my: 4 }} />
+      <Divider sx={{ my: 4 }} />
 
-        {/* Blocked Users */}
-        <Typography
-          variant="h6"
-          sx={{ fontFamily: "Michroma, sans-serif", mb: 1 }}
-        >
-          Blocked Users
-        </Typography>
+      {/* Blocked Users */}
+      <Typography
+        variant="h6"
+        sx={{ fontFamily: "Michroma, sans-serif", mb: 1 }}
+      >
+        Blocked Users
+      </Typography>
+
+      <Box sx={{ width: '100%', maxWidth: 800 }}>
 
         <Box
           sx={{
             maxHeight: 300,
-            overflowY: "auto",
-            border: "1px solid #ddd",
+            overflowY: 'auto',
+            border: '1px solid #ddd',
             borderRadius: 2,
             p: 1,
-            backgroundColor: "#f9f9f9",
+            backgroundColor: '#f9f9f9',
           }}
         >
           <List>
-            {/* Example Blocked Users */}
             {[
               "User123",
               "Player99",
@@ -108,20 +155,13 @@ const SettingsPage = () => {
             ))}
           </List>
         </Box>
-        <Divider sx={{ my: 4 }} />
-
-        {/* Delete Account */}
-        <Typography
-          variant="h6"
-          sx={{ fontFamily: "Michroma, sans-serif", color: "red" }}
-        >
-          Danger Zone
-        </Typography>
-        <Button variant="outlined" color="error" sx={{ mt: 2 }}>
-          Delete My Account
-        </Button>
       </Box>
+
+      <Divider sx={{ my: 4 }} />
+
+     
     </Box>
+
   );
 };
 
