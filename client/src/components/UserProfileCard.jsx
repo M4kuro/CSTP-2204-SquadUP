@@ -59,7 +59,7 @@ const UserProfileCard = ({ user, onBack }) => {
     <Box
       sx={{
         display: "flex",
-        width: "75%",
+        width: "72%",
         flexDirection: "column",
         alignItems: "center",
         ml: 50,
@@ -91,36 +91,80 @@ const UserProfileCard = ({ user, onBack }) => {
             {!user.profileImageUrl && user.username[0]?.toUpperCase()}
           </Avatar>
           <Box>
-            <Typography variant="h5">{user.username}</Typography>
+            <Typography
+              sx={{
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "30px",
+              }}
+            
+            >{user.username}</Typography>
 
-            <Typography variant="body2">
+            <Typography sx={{
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "20px",
+              }}>
               Age: {calculateAge(user.birthdate)}
             </Typography>
           </Box>
         </Box>
 
-        <Typography variant="h6" sx={{ mt: 3 }}>
+        <Typography sx={{
+          mt: 3,
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "20px"
+
+        }}>
           About Me
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
+        <Typography sx={{
+          mb: 2,
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "13px"
+
+        }}>
           {user.bio || "No bio provided."}
         </Typography>
 
         {/* Pro section */}
         {user.isPro && (
           <Box
-            sx={{ mt: 2, p: 2, border: "1px solid #FF5722", borderRadius: 2 }}
+            sx={{
+              mt: 2,
+              p: 2,
+              border: "3px solid #ffbf00",
+              borderRadius: 2
+            }}
           >
-            <Typography variant="h6" sx={{ color: "#FF5722" }}>
-              🌟 <strong>Pro Coach Available!</strong>
+            <Typography sx={{
+              color: "#000000ff",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "20px"
+
+            }}>
+              <strong>Pro Coach Available!</strong>
             </Typography>
-            <Typography>
+
+            <Typography
+              sx={{
+              color: "#000000ff",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "15px"
+              }}
+            >
               <strong>Hourly Rate:</strong> ${user.hourlyRate}/hr
             </Typography>
-            <Typography>
+
+            <Typography
+              sx={{
+              color: "#000000ff",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "15px"
+              }}
+            >
               <strong>What I'm Offering:</strong>{" "}
               {user.proDescription || "No description provided."}
             </Typography>
+
             {user.ratings?.length > 0 ? (
               <Box
                 sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}
@@ -133,7 +177,9 @@ const UserProfileCard = ({ user, onBack }) => {
                   precision={0.5}
                   readOnly
                 />
-                <Typography variant="body2">
+                
+                <Typography sx={{
+                  fontFamily: "Michroma, sans-serif", fontSize: "15px"}}>
                   ({user.ratings.length} rating
                   {user.ratings.length > 1 ? "s" : ""})
                 </Typography>
@@ -147,18 +193,25 @@ const UserProfileCard = ({ user, onBack }) => {
         {/* Leave a rating */}
         {user.isPro &&
           !user.ratings?.some((r) => r.userId === currentUserId) && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" sx={{ color: "#FF5722" }}>
-                Rate This Pro
-              </Typography>
+          <Box sx={{ mt: 2, mb: 2 }}>
+            
+            <Typography
+              sx={{
+                color: "#000000ff",
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "20px",
+              }}>
+                Rate (1 - 5)
+            </Typography>
+            
               <TextField
                 type="number"
-                label="Stars (1–5)"
                 inputProps={{ min: 1, max: 5 }}
                 value={newRating}
                 onChange={(e) => setNewRating(Number(e.target.value))}
                 sx={{ mb: 2 }}
-              />
+            />
+            
               <TextField
                 label="Comment (optional)"
                 fullWidth
@@ -167,10 +220,15 @@ const UserProfileCard = ({ user, onBack }) => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 sx={{ mb: 2 }}
-              />
+            />
+            
               <Button
                 variant="contained"
-                color="warning"
+                sx={{
+                  color: "#ffffffff",
+                  backgroundColor: "#000000ff",
+                  fontFamily: "Michroma"
+                }}
                 onClick={handleSubmitRating}
               >
                 Submit Rating
@@ -178,25 +236,54 @@ const UserProfileCard = ({ user, onBack }) => {
             </Box>
           )}
 
-        <Typography variant="h6">Interests</Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
+        <Typography sx={{
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "20px"
+        }}>
+          Interests</Typography>
+
+        <Typography sx={{
+          mb: 2,
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "15px"
+        }}
+        >
           {user.interests?.length > 0
             ? user.interests.join(", ")
             : "No interests listed."}
         </Typography>
 
-        <Typography variant="h6">Location</Typography>
-        <Typography variant="body1">{user.location?.city || "N/A"}</Typography>
+        <Typography sx={{
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "20px"
+        }}
+        >
+          Location
+        
+        </Typography>
+        <Typography sx={{
+          fontFamily: "Michroma, sans-serif",
+          fontSize: "15px"
+        }}>{user.location?.city || "N/A"}</Typography>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-          <Button variant="contained" color="secondary" onClick={onBack}>
+          <Button variant="contained" sx={{
+                  color: "#ffffffff",
+                  backgroundColor: "#000000ff",
+                  fontFamily: "Michroma"
+                }} onClick={onBack}>
             Back to Grid
           </Button>
 
           {user.isPro && (
             <Button
               variant="contained"
-              color="primary"
+              sx={{
+                color: "#000000ff",
+                backgroundColor: "#ffbf00",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "15px"
+              }}
               onClick={() => navigate(`/booking/${user._id}`)}
             >
               Book with Pro
