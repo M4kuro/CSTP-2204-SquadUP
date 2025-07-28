@@ -12,7 +12,7 @@ import {
 import { baseUrl } from "../constant";
 
 export const UserCard = (props) => {
-  const { user, type, onRemove, refreshRequests, updateRequestCount } = props;
+  const { user, type, onRemove, refreshRequests, updateRequestCount, onViewUser, } = props;
   const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
   const [sentRequests, setSentRequests] = useState([]);
   const token = localStorage.getItem("token");
@@ -233,7 +233,7 @@ export const UserCard = (props) => {
                 fontSize: "12px",
                 width: "100px",
               }}
-              onClick={() => handleViewUser(user._id)}
+              onClick={() => onViewUser?.(user._id)}
             >
               More
             </Button>
@@ -295,7 +295,7 @@ export const UserCard = (props) => {
               fontFamily: "Michroma, sans-serif",
               fontSize: "12px",
             }}
-            onClick={() => handleViewUser(user._id)}
+            onClick={() => onViewUser?.(user._id)}
             fullWidth
           >
             More
