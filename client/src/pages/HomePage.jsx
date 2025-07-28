@@ -98,6 +98,11 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+  // this should clear selected profile when switching tabs
+  setSelectedUser(null);
+}, [tabValue]);
+
+  useEffect(() => {
     fetchUsers();
   }, [tabValue]);
 
@@ -149,6 +154,16 @@ const HomePage = () => {
   };
 
   const renderMatchesUsers = () => {
+    if (selectedUser) {
+    return (
+      <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+        <UserProfileCard
+          user={selectedUser}
+          onBack={() => setSelectedUser(null)}
+        />
+      </Box>
+    );
+  }
     return (
       <Box
         sx={{
@@ -170,7 +185,7 @@ const HomePage = () => {
         }}
       >
         {users.map((user) => (
-          <UserCard user={user} type="matches" />
+          <UserCard key={user._id} user={user} type="matches" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} onStartChat={handleStartChat} />
         ))}
       </Box>
     );
