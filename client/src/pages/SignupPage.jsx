@@ -25,11 +25,18 @@ const SignupPage = () => {
 
   return (
     <>
+      <Box
+      display="grid"
+      gridTemplateColumns="50% 50%"
+      width="100%"
+      height="100%"
+      id="Signup-grid">
+
+
       {/* Left Side - Interactive form area */}
       <Box
         sx={{
-          width: "50%",
-          backgroundColor: "# ",
+          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -82,7 +89,7 @@ const SignupPage = () => {
       {/* Right Side */}
       <Box
         sx={{
-          width: "50%",
+          width: "100%",
           backgroundColor: "#000000ff",
           display: "flex",
           alignItems: "center",
@@ -102,6 +109,8 @@ const SignupPage = () => {
           SquadUP
         </Typography>
       </Box>
+      </Box>
+
     </>
   );
 };

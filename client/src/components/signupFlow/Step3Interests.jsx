@@ -36,6 +36,7 @@ const Step3Interests = ({ formData, setFormData, onNext, onBack }) => {
               sx={{
                 fontSize: "1rem",
                 padding: "10px",
+                "&:hover": { backgroundColor: "#009d18ff" },
                 backgroundColor: formData.interests.includes(option)
                   ? "#009d18ff"
                   : "white",

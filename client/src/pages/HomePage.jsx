@@ -142,7 +142,7 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          mx: "auto",
+          
           ml: 45,
         }}
       >
@@ -180,7 +180,6 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          mx: "auto",
           ml: 45,
         }}
       >
@@ -208,7 +207,6 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          mx: "auto",
           ml: 45,
         }}
       >
@@ -244,8 +242,8 @@ const HomePage = () => {
         overflow: "hidden",
       }}
     >
-      {" "}
-      {/* Main Container / Whole screen content Container ===========================\  */}
+      
+      
       {/* Header ============================================================================ */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Logo + Tabs (always centered) */}

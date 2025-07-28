@@ -287,10 +287,11 @@ export const UserCard = (props) => {
           </Button>
 
           <Button
-            variant="contained"
+            variant="Outlined"
             sx={{
-              backgroundColor: "#000000ff",
-              color: "white",
+              backgroundColor: "#e4e4e4ff",
+              color: "Black",
+              borderColor: "#000000ff",
               "&:hover": { backgroundColor: "#585858ff" },
               fontFamily: "Michroma, sans-serif",
               fontSize: "12px",
