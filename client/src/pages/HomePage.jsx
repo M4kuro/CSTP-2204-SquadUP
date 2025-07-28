@@ -113,14 +113,13 @@ const HomePage = () => {
   }, [tabValue]);
 
   const renderDiscoverUsers = () => {
-    // return (
-    //  {selectedUser ? (
-    //       <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
-    //         <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
-    //       </Box>
-    //     ) : (
-
-    // )
+   if (selectedUser) {
+    return (
+      <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+        <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
+      </Box>
+    );
+  }
 
     return (
       <Box
@@ -143,7 +142,7 @@ const HomePage = () => {
         }}
       >
         {users.map((user) => (
-          <UserCard key={user._id} user={user} type="discover" />  // added user._id here due to error in console log for type
+          <UserCard key={user._id} user={user} type="discover" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} />  // added user._id here due to error in console log for type
         ))}
       </Box>
     );
