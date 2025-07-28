@@ -12,7 +12,7 @@ import {
 import { baseUrl } from "../constant";
 
 export const UserCard = (props) => {
-  const { user, type, onRemove, refreshRequests, updateRequestCount, onViewUser, } = props;
+  const { user, type, onRemove, refreshRequests, updateRequestCount, onViewUser, onStartChat, } = props;
   const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
   const [sentRequests, setSentRequests] = useState([]);
   const token = localStorage.getItem("token");
@@ -218,7 +218,7 @@ export const UserCard = (props) => {
                 fontFamily: "Michroma, sans-serif",
                 fontSize: "12px",
               }}
-              onClick={() => handleStartChat(user._id)}
+              onClick={() => onStartChat?.(user._id)}
             >
               Chat
             </Button>
