@@ -66,7 +66,7 @@ const HomePage = () => {
         recipientId,
       });
 
-      navigate(`/messages/${res.data.threadId}`);
+      navigate(`/messages?userId=${recipientId}`);
     } catch (err) {
       console.error("Error starting chat:", err);
     }

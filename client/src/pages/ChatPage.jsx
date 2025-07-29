@@ -3,6 +3,7 @@ import api from "../api";
 import socket from "../socket";
 import { Box } from "@mui/material";
 import { getUserIdFromToken } from "../utils/auth"; // Use this instead of redefining
+import { useSearchParams } from "react-router-dom";
 
 const ChatPage = () => {
   console.log("ChatPage mounted");
@@ -12,19 +13,35 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messageContainerRef = useRef(null);
+  const [searchParams] = useSearchParams();
+  const directUserId = searchParams.get("userId");
 
   useEffect(() => {
     const fetchThreads = async () => {
       try {
         const res = await api.get(`/chat/threads/${userId}`);
-        setThreads(Array.isArray(res.data) ? res.data : []);
+        const threadsData = Array.isArray(res.data) ? res.data : [];
+        setThreads(threadsData);
+
+        if (directUserId) {
+          const matchedThread = threadsData.find((thread) =>
+            thread.participants.some((p) => p._id.toString() === directUserId)
+          );
+
+          if (matchedThread) {
+            setSelectedThread(matchedThread);
+          } else {
+            console.warn("No existing thread found for user:", directUserId);
+          }
+        }
       } catch (err) {
         console.error("Error fetching threads:", err);
       }
     };
 
-    fetchThreads();
-  }, []);
+    fetchThreads(); // ✅ now this is outside the async function
+
+  }, [userId, directUserId]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -90,38 +107,73 @@ const ChatPage = () => {
     }
   };
 
-    return (
-      <Box sx={{
-      display:"grid",
-      gridTemplateColumns:"70% 30%",
-      width:"70%",
-      height:"100%",
-        ml: "370px",
-      position:"Fixed"
-      }}>
+  return (
+    <Box sx={{
+      display: "grid",
+      gridTemplateColumns: "70% 30%",
+      width: "70%",
+      height: "100%",
+      ml: "370px",
+      position: "Fixed"
+    }}>
       {/* Left: Threads */}
-      <Box sx={{ width: "95%", overflowY: "auto", fontFamily:"Michroma"  }}>
-          <h3>Your Conversations</h3>
+      <Box sx={{ width: "95%", overflowY: "auto", fontFamily: "Michroma" }}>
+        <h3>Your Conversations</h3>
         <ul className="message-list">
           {threads.map((thread) => {
             const otherUser = thread.participants.find(
               (p) => p._id.toString() !== userId
             );
+
             return (
               <li
                 key={thread._id}
                 className="message-card"
-                onClick={() => setSelectedThread(thread)}
-              >
-                <img
-                  src={
-                    otherUser?.profileImageUrl
-                      ? `/uploads/${otherUser.profileImageUrl}`
-                      : "/default-avatar.png"
+                onClick={async () => {
+                  setSelectedThread(thread);
+                  try {
+                    await api.post(`/chat/mark-thread-read/${thread._id}`, {
+                      userId,
+                    });
+
+                    // Refresh threads so unread dot disappears
+                    const res = await api.get(`/chat/threads/${userId}`);
+                    setThreads(Array.isArray(res.data) ? res.data : []);
+                  } catch (err) {
+                    console.error("Error clearing unread status:", err);
                   }
-                  alt="avatar"
-                  className="message-avatar"
-                />
+                }}
+              >
+                {/* 🔴 Avatar + Badge wrapper */}
+                <Box sx={{ position: "relative", width: 50, height: 50 }}>
+                  <img
+                    src={
+                      otherUser?.profileImageUrl
+                        ? `/uploads/${otherUser.profileImageUrl}`
+                        : "/default-avatar.png"
+                    }
+                    alt="avatar"
+                    className="message-avatar"
+                    style={{ width: "100%", borderRadius: "50%" }}
+                  />
+                  {/* 🔴 Show red dot if unread */}
+                  {thread.unreadFor === userId && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        backgroundColor: "red",
+                        borderRadius: "50%",
+                        width: 12,
+                        height: 12,
+                        boxShadow: 1,
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {/* Username + subtext */}
                 <div className="message-content">
                   <p className="message-username">
                     {otherUser?.username || "Unknown User"}
@@ -143,8 +195,8 @@ const ChatPage = () => {
           flexDirection: "column",
           justifyContent: "space-between",
           width: "400px",
-            overflowY: "auto",
-          fontFamily:"Michroma"
+          overflowY: "auto",
+          fontFamily: "Michroma"
         }}
       >
         {selectedThread ? (
@@ -161,7 +213,7 @@ const ChatPage = () => {
                 color: "white",
                 borderRadius: "10px",
                 height: "200px",
-                
+
               }}
             >
               {messages.map((msg) => (
