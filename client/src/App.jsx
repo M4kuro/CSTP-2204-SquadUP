@@ -4,8 +4,6 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import UserProfile from "./pages/UserProfile";
 import BookingPage from "./pages/BookingPage";
-import MessagesPage from "./pages/MessagesPage";
-import ChatRoomPage from "./pages/ChatRoomPage";
 import BookingSuccess from "./pages/BookingSuccess";
 import SettingsPage from "./pages/SettingsPage";
 import HelpPage from "./pages/HelpPage";
@@ -15,6 +13,7 @@ import AppContext from "./context/AppContext";
 import { useEffect, useState } from "react";
 import { baseUrl, TabValue } from "./constant";
 import RequestsPage from './pages/RequestsPage';
+import ChatPage from "./pages/ChatPage";
 
 // 👇 Create an inner component where it's safe to use useLocation
 const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchCurrentUser, currentUser, requestCount, fetchRequestCount, setRequestCount }) => {
@@ -52,8 +51,7 @@ const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchC
           <Route path="/home" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/requests" element={<RequestsPage />} />
-          <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/messages/:threadId" element={<ChatRoomPage />} />
+          <Route path="/messages" element={<ChatPage />} />
           <Route path="/booking/:proId" element={<BookingPage />} />
           <Route path="/booking/:proId/:yearMonth/:day" element={<BookingPage />} />
           <Route path="/booking-success" element={<BookingSuccess />} />

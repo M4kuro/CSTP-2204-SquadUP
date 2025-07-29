@@ -242,8 +242,6 @@ const HomePage = () => {
         overflow: "hidden",
       }}
     >
-      
-      
       {/* Header ============================================================================ */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Logo + Tabs (always centered) */}

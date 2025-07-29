@@ -61,7 +61,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
   }, []);
 
 
-  console.log(currentUser, "cirr");
+  console.log(currentUser, "cur");
 
   return (
     <Box
@@ -72,7 +72,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
         display: "flex",
         flexDirection: "column",
         position: "fixed",
-        left: 0,
+        left: 10,
       }}
       id="sidebar"
     >
