@@ -107,6 +107,16 @@ const ChatPage = () => {
     }
   };
 
+  const handleDeleteThread = async (threadId) => {
+    try {
+      await api.delete(`/chat/thread/${threadId}/${userId}`);
+      setThreads(prev => prev.filter(t => t._id !== threadId));
+    } catch (err) {
+      console.error("❌ Failed to delete thread:", err);
+      alert("Could not delete thread.");
+    }
+  };
+
   return (
     <Box sx={{
       display: "grid",
@@ -129,6 +139,7 @@ const ChatPage = () => {
               <li
                 key={thread._id}
                 className="message-card"
+                style={{ position: "relative" }}
                 onClick={async () => {
                   setSelectedThread(thread);
                   try {
@@ -136,7 +147,6 @@ const ChatPage = () => {
                       userId,
                     });
 
-                    // Refresh threads so unread dot disappears
                     const res = await api.get(`/chat/threads/${userId}`);
                     setThreads(Array.isArray(res.data) ? res.data : []);
                   } catch (err) {
@@ -144,9 +154,30 @@ const ChatPage = () => {
                   }
                 }}
               >
+                {/* 🗑️ Delete button (top right corner) */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent opening the thread when clicking delete
+                    handleHideThread(thread._id);
+                  }}
+                  title="Delete"
+                  style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "10px",
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "16px",
+                    color: "#888",
+                    cursor: "pointer",
+                  }}
+                >
+                  🗑️
+                </button>
+
                 {/* 🔴 Avatar + Badge wrapper */}
                 <Box sx={{ position: "relative", width: 50, height: 50 }}>
-                  <img
+                  {/* <img
                     src={
                       otherUser?.profileImageUrl
                         ? `/uploads/${otherUser.profileImageUrl}`
@@ -155,8 +186,20 @@ const ChatPage = () => {
                     alt="avatar"
                     className="message-avatar"
                     style={{ width: "100%", borderRadius: "50%" }}
+                  /> */}
+                  {/* commeing out the above old image code for cloudinary: */}
+                  <img
+                    src={
+                      otherUser?.profileImageUrl?.startsWith("http")
+                        ? otherUser.profileImageUrl
+                        : otherUser?.profileImageUrl
+                          ? `/uploads/${otherUser.profileImageUrl}`
+                          : "/default-avatar.png"
+                    }
+                    alt="avatar"
+                    className="message-avatar"
+                    style={{ width: "100%", borderRadius: "50%" }}
                   />
-                  {/* 🔴 Show red dot if unread */}
                   {thread.unreadFor === userId && (
                     <Box
                       sx={{
@@ -181,6 +224,7 @@ const ChatPage = () => {
                   <p className="message-subtext">Click to open chat</p>
                 </div>
               </li>
+
             );
           })}
         </ul>

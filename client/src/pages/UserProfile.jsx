@@ -34,6 +34,25 @@ const UserProfile = () => {
 
   const [bookingMap, setBookingMap] = useState({});
 
+  // cloudinary code to upload images to cloudinary:
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("folder", "squadup"); // Optional: keeps assets organized
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+    return data.secure_url;
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,17 +66,11 @@ const UserProfile = () => {
         setFormData(data);
 
         if (data.profileImageUrl) {
-          setMainImage(
-            `${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`,
-          );
+          setMainImage(data.profileImageUrl);
         }
 
         if (data.otherImages && data.otherImages.length > 0) {
-          const imageUrls = data.otherImages.map((filename) =>
-            filename
-              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
-              : null,
-          );
+          const imageUrls = data.otherImages.map((url) => url || null);
           setOtherImages(imageUrls);
         }
 
@@ -128,37 +141,28 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      let updatedFields = { ...formData };
-      const imageForm = new FormData();
-      if (mainImageFile) imageForm.append("main", mainImageFile);
-      otherImageFiles.forEach((file, i) => {
-        if (file) imageForm.append(`other${i}`, file);
-      });
+      const updatedFields = { ...formData };
 
-      if (mainImageFile || otherImageFiles.some((f) => f)) {
-        const imgRes = await fetch(`${baseUrl}/me/upload`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: imageForm,
-        });
-        const imgData = await imgRes.json();
-        if (imgData.profileImageUrl) {
-          updatedFields.profileImageUrl = imgData.profileImageUrl;
-          setMainImage(
-            `${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`,
-          );
-        }
-        if (imgData.otherImages) {
-          updatedFields.otherImages = imgData.otherImages;
-          const updatedPreviews = imgData.otherImages.map((filename) =>
-            filename
-              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
-              : null,
-          );
-          setOtherImages(updatedPreviews);
-        }
+      // 🔼 Upload main image to Cloudinary
+      if (mainImageFile) {
+        const url = await uploadToCloudinary(mainImageFile);
+        updatedFields.profileImageUrl = url;
+        setMainImage(url); // Update preview
       }
 
+      // 🔼 Upload other images to Cloudinary
+      const uploadedOther = [];
+      for (let i = 0; i < otherImageFiles.length; i++) {
+        if (otherImageFiles[i]) {
+          const url = await uploadToCloudinary(otherImageFiles[i]);
+          uploadedOther[i] = url;
+        } else {
+          uploadedOther[i] = otherImages[i]; // Keep existing image if not changed
+        }
+      }
+      updatedFields.otherImages = uploadedOther;
+
+      // 📤 Send updated profile to backend
       const res = await fetch(`${baseUrl}/me`, {
         method: "PUT",
         headers: {
@@ -169,6 +173,7 @@ const UserProfile = () => {
       });
 
       if (!res.ok) throw new Error("Failed to update profile");
+
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
@@ -178,6 +183,7 @@ const UserProfile = () => {
       alert("Failed to update profile.");
     }
   };
+
 
   const sectionStyle = {
     backgroundColor: "#b0b0b0",

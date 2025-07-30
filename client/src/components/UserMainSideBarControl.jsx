@@ -78,11 +78,21 @@ const UserSidebar = ({ incomingRequests = [] }) => {
     >
       {/* Top Avatar Section */}
       <Box sx={{ p: 3, textAlign: "center" }}>
-        <Avatar
+        {/* <Avatar
           src={
             currentUser?.profileImageUrl
               ? `${import.meta.env.VITE_API_URL}/uploads/${currentUser.profileImageUrl}`
               : "/placeholder-profile.png"
+          }
+          alt={currentUser?.username || "User"}
+          sx={{ width: 200, height: 200, mx: "auto" }}
+        /> */}
+        {/* couldinary image section commenting out the old way */}
+        <Avatar
+          src={
+            currentUser?.profileImageUrl?.startsWith("http")
+              ? currentUser.profileImageUrl
+              : `${import.meta.env.VITE_API_URL}/uploads/${currentUser?.profileImageUrl}`
           }
           alt={currentUser?.username || "User"}
           sx={{ width: 200, height: 200, mx: "auto" }}
