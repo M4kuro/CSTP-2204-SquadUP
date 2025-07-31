@@ -76,6 +76,9 @@ function App() {
   }, []);
 
   const fetchUsers = async () => {
+    setUsers([]); // clear previous users to prevent duplicates
+
+
     try {
       let endpoint = "";
       // if (tabValue === TabValue.Nearby) {
