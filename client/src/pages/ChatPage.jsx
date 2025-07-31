@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import api from "../api";
 import socket from "../socket";
 import { Box, Typography, Avatar } from "@mui/material";
-import { getUserIdFromToken } from "../utils/auth"; // Use this instead of redefining
+import { getUserIdFromToken } from "../utils/auth";
 import { useSearchParams } from "react-router-dom";
 
 const ChatPage = () => {
@@ -39,8 +39,7 @@ const ChatPage = () => {
       }
     };
 
-    fetchThreads(); // ✅ now this is outside the async function
-
+    fetchThreads();
   }, [userId, directUserId]);
 
   useEffect(() => {
@@ -81,7 +80,8 @@ const ChatPage = () => {
     if (!container) return;
 
     const isNearBottom =
-      container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+      container.scrollHeight - container.scrollTop <=
+      container.clientHeight + 100;
 
     if (isNearBottom) {
       container.scrollTop = container.scrollHeight;
@@ -106,178 +106,151 @@ const ChatPage = () => {
       console.error("Error sending message:", err);
     }
   };
-    const handleDeleteThread = async (threadId) => {
-        try {
-          await api.delete(`/chat/thread/${threadId}/${userId}`);
-          setThreads(prev => prev.filter(t => t._id !== threadId));
-        } catch (err) {
-          console.error("❌ Failed to delete thread:", err);
-          alert("Could not delete thread.");
-        }
-      };
 
-    return (
+  const handleDeleteThread = async (threadId) => {
+    try {
+      await api.delete(`/chat/thread/${threadId}/${userId}`);
+      setThreads((prev) => prev.filter((t) => t._id !== threadId));
+      if (selectedThread?._id === threadId) {
+        setSelectedThread(null);
+      }
+    } catch (err) {
+      console.error("❌ Failed to delete thread:", err);
+      alert("Could not delete thread.");
+    }
+  };
+
+  const handleThreadClick = async (thread) => {
+    setSelectedThread(thread);
+    try {
+      await api.post(`/chat/mark-thread-read/${thread._id}`, {
+        userId,
+      });
+
+      const res = await api.get(`/chat/threads/${userId}`);
+      setThreads(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Error clearing unread status:", err);
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "50% 50%",
+        width: "80%",
+        height: "100%",
+        ml: "370px",
+        position: "fixed",
+      }}
+    >
+      {/* Left: Threads */}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: "50% 50%",
           width: "80%",
           height: "100%",
-          ml: "370px",
-          position: "Fixed",
+          overflowY: "auto",
+          padding: 2,
+          boxSizing: "border-box",
+          fontFamily: "Michroma",
         }}
       >
-        {/* Left: Threads */}
-        <Box
-          sx={{
-            width: "80%",
-            height: "100%",
-            overflowY: "auto",
-            padding: 2,
-            boxSizing: "border-box",
-            fontFamily: "Michroma",
-          }}
-        >
-          <Typography fontFamily={"Michroma"} fontSize={20} mb={3}>
-            Your Conversations
-          </Typography>
+        <Typography fontFamily={"Michroma"} fontSize={20} mb={3}>
+          Your Conversations
+        </Typography>
 
-          {threads.map((thread) => {
-            const otherUser = thread.participants.find(
-              (p) => p._id.toString() !== userId
-            );
+        {threads.map((thread) => {
+          const otherUser = thread.participants.find(
+            (p) => p._id.toString() !== userId
+          );
 
-            return (
+          return (
+            <Box
+              key={thread._id}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 1.5,
+                marginBottom: 1,
+                borderRadius: 2,
+                backgroundColor: "#f5f5f5",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+                position: "relative",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
+              onClick={() => handleThreadClick(thread)}
+            >
+              {/* Delete button */}
               <Box
-                key={thread._id}
-                onClick={() => setSelectedThread(thread)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteThread(thread._id);
+                }}
                 sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 1.5,
-                  marginBottom: 1,
-                  borderRadius: 2,
-                  backgroundColor: "#f5f5f5",
+                  position: "absolute",
+                  top: 8,
+                  right: 10,
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "16px",
+                  color: "#888",
                   cursor: "pointer",
-                  transition: "background-color 0.2s",
+                  zIndex: 1,
                   "&:hover": {
-                    backgroundColor: "#e0e0e0",
+                    color: "#ff4444",
                   },
                 }}
               >
+                🗑️
+              </Box>
+
+              {/* Avatar with unread indicator */}
+              <Box sx={{ position: "relative", marginRight: 2 }}>
                 <Avatar
                   src={
-                    otherUser?.profileImageUrl
+                    otherUser?.profileImageUrl?.startsWith("http")
+                      ? otherUser.profileImageUrl
+                      : otherUser?.profileImageUrl
                       ? `/uploads/${otherUser.profileImageUrl}`
                       : "/default-avatar.png"
                   }
                   alt={otherUser?.username || "Unknown User"}
-                  sx={{ width: 60, height: 60, marginRight: 2 }}
+                  sx={{ width: 60, height: 60 }}
                 />
-
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {otherUser?.username || "Unknown User"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Click to open chat
-                  </Typography>
-                </Box>
+                {thread.unreadFor === userId && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      backgroundColor: "red",
+                      borderRadius: "50%",
+                      width: 12,
+                      height: 12,
+                      boxShadow: 1,
+                    }}
+                  />
+                )}
               </Box>
 
-              
-                className="message-card"
-                style={{ position: "relative" }}
-                onClick={async () => {
-                  setSelectedThread(thread);
-                  try {
-                    await api.post(`/chat/mark-thread-read/${thread._id}`, {
-                      userId,
-                    });
-
-                    const res = await api.get(`/chat/threads/${userId}`);
-                    setThreads(Array.isArray(res.data) ? res.data : []);
-                  } catch (err) {
-                    console.error("Error clearing unread status:", err);
-                  }
-                }}
-              >
-        
-                {/* 🗑️ Delete button (top right corner) */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent opening the thread when clicking delete
-                    handleHideThread(thread._id);
-                  }}
-                  title="Delete"
-                  style={{
-                    position: "absolute",
-                    top: "8px",
-                    right: "10px",
-                    background: "transparent",
-                    border: "none",
-                    fontSize: "16px",
-                    color: "#888",
-                    cursor: "pointer",
-                  }}
-                >
-                  🗑️
-                </button>
-
-                {/* 🔴 Avatar + Badge wrapper */}
-                <Box sx={{ position: "relative", width: 50, height: 50 }}>
-                  {/* <img
-                    src={
-                      otherUser?.profileImageUrl
-                        ? `/uploads/${otherUser.profileImageUrl}`
-                        : "/default-avatar.png"
-                    }
-                    alt="avatar"
-                    className="message-avatar"
-                    style={{ width: "100%", borderRadius: "50%" }}
-                  /> */}
-                  {/* commeing out the above old image code for cloudinary: */}
-                  <img
-                    src={
-                      otherUser?.profileImageUrl?.startsWith("http")
-                        ? otherUser.profileImageUrl
-                        : otherUser?.profileImageUrl
-                          ? `/uploads/${otherUser.profileImageUrl}`
-                          : "/default-avatar.png"
-                    }
-                    alt="avatar"
-                    className="message-avatar"
-                    style={{ width: "100%", borderRadius: "50%" }}
-                  />
-                  {thread.unreadFor === userId && (
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        backgroundColor: "red",
-                        borderRadius: "50%",
-                        width: 12,
-                        height: 12,
-                        boxShadow: 1,
-                      }}
-                    />
-                  )}
-                </Box>
-
-                {/* Username + subtext */}
-                <div className="message-content">
-                  <p className="message-username">
-                    {otherUser?.username || "Unknown User"}
-                  </p>
-                  <p className="message-subtext">Click to open chat</p>
-                </div>
-              </li>
-            );
-          })}
-        </Box>
-
+              {/* User info */}
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  {otherUser?.username || "Unknown User"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Click to open chat
+                </Typography>
+              </Box>
+            </Box>
+          );
+        })}
+      </Box>
 
       {/* Right: Chat Window */}
       <Box
@@ -289,15 +262,17 @@ const ChatPage = () => {
           justifyContent: "space-between",
           width: "400px",
           overflowY: "auto",
-          fontFamily: "Michroma"
+          fontFamily: "Michroma",
         }}
       >
         {selectedThread ? (
           <>
-            <h2>Chat</h2>
-            <div
+            <Typography variant="h4" mb={2}>
+              Chat
+            </Typography>
+            <Box
               ref={messageContainerRef}
-              style={{
+              sx={{
                 flex: 1,
                 overflowY: "auto",
                 padding: "10px",
@@ -305,14 +280,15 @@ const ChatPage = () => {
                 background: "#111",
                 color: "white",
                 borderRadius: "10px",
-                height: "200px",
-
+                minHeight: "200px",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               {messages.map((msg) => (
-                <div
+                <Box
                   key={msg._id}
-                  style={{
+                  sx={{
                     backgroundColor:
                       msg.sender === userId ? "#ffbf00d8" : "#444",
                     padding: "10px",
@@ -324,84 +300,53 @@ const ChatPage = () => {
                   }}
                 >
                   {msg.content}
-                </div>
+                </Box>
               ))}
-            </div>
-            <form
+            </Box>
+            <Box
+              component="form"
               onSubmit={handleSendMessage}
-              style={{ display: "flex", gap: "8px" }}
+              sx={{ display: "flex", gap: "8px" }}
             >
-              <input
+              <Box
+                component="input"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
-
-                style={{
+                sx={{
                   flex: 1,
-                  overflowY: "auto",
                   padding: "10px",
-                  marginBottom: "10px",
-                  background: "#111",
+                  borderRadius: "5px",
+                  border: "1px solid gray",
+                  backgroundColor: "white",
+                  color: "black",
+                }}
+              />
+              <Box
+                component="button"
+                type="submit"
+                sx={{
+                  backgroundColor: "#ffbf00d8",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "5px",
                   color: "white",
-                  borderRadius: "10px",
-                  
-                  
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "#e6ac00",
+                  },
                 }}
               >
-                {messages.map((msg) => (
-                  <div
-                    key={msg._id}
-                    style={{
-                      backgroundColor:
-                        msg.sender === userId ? "#ffbf00d8" : "#444",
-                      padding: "10px",
-                      borderRadius: "10px",
-                      margin: "5px 0",
-                      alignSelf:
-                        msg.sender === userId ? "flex-end" : "flex-start",
-                      maxWidth: "60%",
-                    }}
-                  >
-                    {msg.content}
-                  </div>
-                ))}
-              </div>
-              <form
-                onSubmit={handleSendMessage}
-                style={{ display: "flex", gap: "8px" }}
-              >
-                <input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "1px solid gray",
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: "#ffbf00d8",
-                    border: "none",
-                    padding: "10px 20px",
-                    borderRadius: "5px",
-                    color: "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  Send
-                </button>
-              </form>
-            </>
-          ) : (
-            <p>Select a conversation to start chatting</p>
-          )}
-        </Box>
+                Send
+              </Box>
+            </Box>
+          </>
+        ) : (
+          <Typography>Select a conversation to start chatting</Typography>
+        )}
       </Box>
-    );
+    </Box>
+  );
 };
 
 export default ChatPage;
