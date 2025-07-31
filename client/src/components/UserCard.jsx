@@ -330,7 +330,7 @@ export const UserCard = (props) => {
       }}
     >
       <Box sx={{ position: "relative" }}>
-        <CardMedia
+        {/* <CardMedia
           component="div"
           sx={{ height: 300 }}
           image={
@@ -339,6 +339,12 @@ export const UserCard = (props) => {
               }`
               : "/placeholder-profile.png"
           }
+        /> */}
+        {/* adding this to handle showing the profileimage on usercards from cloudinaryURLS */}
+        <CardMedia
+          component="div"
+          sx={{ height: 300 }}
+          image={user.profileImageUrl || "/placeholder-profile.png"}
         />
         {user.isPro && (
           <Box

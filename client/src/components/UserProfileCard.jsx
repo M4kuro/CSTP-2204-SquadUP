@@ -79,11 +79,25 @@ const UserProfileCard = ({ user, onBack }) => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-          <Avatar
+          {/* <Avatar
             src={
               user.profileImageUrl
                 ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
                 : undefined
+            }
+            alt={user.username}
+            sx={{ width: 120, height: 120 }}
+          >
+            {!user.profileImageUrl && user.username[0]?.toUpperCase()}
+          </Avatar> */}
+          {/* commeing out the above old image profile code inplace of the cloudinary code: */}
+          <Avatar
+            src={
+              user.profileImageUrl?.startsWith("http")
+                ? user.profileImageUrl
+                : user.profileImageUrl
+                  ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl}`
+                  : undefined
             }
             alt={user.username}
             sx={{ width: 120, height: 120 }}
@@ -96,13 +110,13 @@ const UserProfileCard = ({ user, onBack }) => {
                 fontFamily: "Michroma, sans-serif",
                 fontSize: "30px",
               }}
-            
+
             >{user.username}</Typography>
 
             <Typography sx={{
-                fontFamily: "Michroma, sans-serif",
-                fontSize: "20px",
-              }}>
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "20px",
+            }}>
               Age: {calculateAge(user.birthdate)}
             </Typography>
           </Box>
@@ -146,9 +160,9 @@ const UserProfileCard = ({ user, onBack }) => {
 
             <Typography
               sx={{
-              color: "#000000ff",
-              fontFamily: "Michroma, sans-serif",
-              fontSize: "15px"
+                color: "#000000ff",
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "15px"
               }}
             >
               <strong>Hourly Rate:</strong> ${user.hourlyRate}/hr
@@ -156,9 +170,9 @@ const UserProfileCard = ({ user, onBack }) => {
 
             <Typography
               sx={{
-              color: "#000000ff",
-              fontFamily: "Michroma, sans-serif",
-              fontSize: "15px"
+                color: "#000000ff",
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "15px"
               }}
             >
               <strong>What I'm Offering:</strong>{" "}
@@ -177,9 +191,10 @@ const UserProfileCard = ({ user, onBack }) => {
                   precision={0.5}
                   readOnly
                 />
-                
+
                 <Typography sx={{
-                  fontFamily: "Michroma, sans-serif", fontSize: "15px"}}>
+                  fontFamily: "Michroma, sans-serif", fontSize: "15px"
+                }}>
                   ({user.ratings.length} rating
                   {user.ratings.length > 1 ? "s" : ""})
                 </Typography>
@@ -193,25 +208,25 @@ const UserProfileCard = ({ user, onBack }) => {
         {/* Leave a rating */}
         {user.isPro &&
           !user.ratings?.some((r) => r.userId === currentUserId) && (
-          <Box sx={{ mt: 2, mb: 2 }}>
-            
-            <Typography
-              sx={{
-                color: "#000000ff",
-                fontFamily: "Michroma, sans-serif",
-                fontSize: "20px",
-              }}>
+            <Box sx={{ mt: 2, mb: 2 }}>
+
+              <Typography
+                sx={{
+                  color: "#000000ff",
+                  fontFamily: "Michroma, sans-serif",
+                  fontSize: "20px",
+                }}>
                 Rate (1 - 5)
-            </Typography>
-            
+              </Typography>
+
               <TextField
                 type="number"
                 inputProps={{ min: 1, max: 5 }}
                 value={newRating}
                 onChange={(e) => setNewRating(Number(e.target.value))}
                 sx={{ mb: 2 }}
-            />
-            
+              />
+
               <TextField
                 label="Comment (optional)"
                 fullWidth
@@ -220,8 +235,8 @@ const UserProfileCard = ({ user, onBack }) => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 sx={{ mb: 2 }}
-            />
-            
+              />
+
               <Button
                 variant="contained"
                 sx={{
@@ -259,7 +274,7 @@ const UserProfileCard = ({ user, onBack }) => {
         }}
         >
           Location
-        
+
         </Typography>
         <Typography sx={{
           fontFamily: "Michroma, sans-serif",
@@ -268,10 +283,10 @@ const UserProfileCard = ({ user, onBack }) => {
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
           <Button variant="contained" sx={{
-                  color: "#ffffffff",
-                  backgroundColor: "#000000ff",
-                  fontFamily: "Michroma"
-                }} onClick={onBack}>
+            color: "#ffffffff",
+            backgroundColor: "#000000ff",
+            fontFamily: "Michroma"
+          }} onClick={onBack}>
             Back to Grid
           </Button>
 
@@ -281,8 +296,8 @@ const UserProfileCard = ({ user, onBack }) => {
               sx={{
                 color: "#000000ff",
                 backgroundColor: "#ffbf00",
-              fontFamily: "Michroma, sans-serif",
-              fontSize: "15px"
+                fontFamily: "Michroma, sans-serif",
+                fontSize: "15px"
               }}
               onClick={() => navigate(`/booking/${user._id}`)}
             >
