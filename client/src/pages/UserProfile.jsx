@@ -413,8 +413,28 @@ const UserProfile = () => {
             value={formData.birthdate ? formData.birthdate.split("T")[0] : ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff", // green border on focus
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff", // hover border
+                },
+              },
+            }}
+            // This is red but works, dont worry
+            InputLabelProps={{
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff", // green label on focus
+                },
+              },
+            }}
           />
+
           {/* BIO */}
           <Typography
             sx={{
@@ -455,6 +475,12 @@ const UserProfile = () => {
                   <Checkbox
                     checked={formData.interests.includes(interest)}
                     onChange={() => handleInterestToggle(interest)}
+                    sx={{
+                      color: "#000",
+                      "&.Mui-checked": {
+                        color: "#000000ff",
+                      },
+                    }}
                   />
                 }
                 label={interest}
@@ -513,6 +539,12 @@ const UserProfile = () => {
                   setFormData({ ...formData, isPro: e.target.checked })
                 }
                 onFocus={handleFocus}
+                sx={{
+                  color: "#000",
+                  "&.Mui-checked": {
+                    color: "#000000ff",
+                  },
+                }}
               />
             }
             label="I'm a Pro who can teach or coach"
@@ -523,7 +555,13 @@ const UserProfile = () => {
               <Button
                 variant="outlined"
                 onClick={() => setShowCalendar((prev) => !prev)}
-                sx={{ mt: 2 }}
+                sx={{
+                  color: "#000000ff",
+                  "&:hover": { backgroundColor: "#585858ff" },
+                  borderColor: "#000000ff",
+                  fontFamily: "Michroma, sans-serif",
+                  fontSize: "12px",
+                }}
               >
                 {showCalendar ? "Hide Calendar" : "My Calendar / Schedule"}
               </Button>

@@ -78,9 +78,10 @@ function App() {
   const fetchUsers = async () => {
     try {
       let endpoint = "";
-      if (tabValue === TabValue.Nearby) {
-        endpoint = `${baseUrl}/requests/${isLoggedIn}`;
-      } else if (tabValue === TabValue.Matches) {
+      // if (tabValue === TabValue.Nearby) {
+      //   endpoint = `${baseUrl}/requests/${isLoggedIn}`;
+
+      if (tabValue === TabValue.Matches) {
         endpoint = `${baseUrl}/matches/${isLoggedIn}`;
       } else {
         endpoint = `${baseUrl}/discover`;

@@ -190,32 +190,32 @@ const HomePage = () => {
     );
   };
 
-  const renderNearbyUsers = () => {
-    return (
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          p: 2,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
-            xl: "repeat(5, 1fr)",
-          },
-          gap: 2,
-          justifyContent: "center",
-          ml: 45,
-        }}
-      >
-        {users.map((user) => (
-          <UserCard user={user} type="nearby" />
-        ))}
-      </Box>
-    );
-  };
+  // const renderNearbyUsers = () => {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         flexGrow: 1,
+  //         overflowY: "auto",
+  //         p: 2,
+  //         display: "grid",
+  //         gridTemplateColumns: {
+  //           xs: "1fr",
+  //           sm: "repeat(2, 1fr)",
+  //           md: "repeat(3, 1fr)",
+  //           lg: "repeat(4, 1fr)",
+  //           xl: "repeat(5, 1fr)",
+  //         },
+  //         gap: 2,
+  //         justifyContent: "center",
+  //         ml: 45,
+  //       }}
+  //     >
+  //       {users.map((user) => (
+  //         <UserCard user={user} type="nearby" />
+  //       ))}
+  //     </Box>
+  //   );
+  // };
 
   console.log(tabValue, "tabValue");
 
@@ -227,8 +227,8 @@ const HomePage = () => {
       // Matches
       case 2:
         return renderMatchesUsers();
-      default:
-        return renderNearbyUsers();
+      //default:
+       // return renderNearbyUsers();
     }
   };
 
@@ -270,8 +270,6 @@ const HomePage = () => {
           />
         </Box>
         {/* Header ================================================================================================= */}
-
-        {/* User GRID ============================================================================================== */}
 
         {renderTabUsers(tabValue)}
       </Box>

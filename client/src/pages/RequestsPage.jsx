@@ -84,13 +84,17 @@ const RequestsPage = () => {
       {/* Content area with sidebar offset */}
       <Box
         sx={{
-          ml: "260px", // Sidebar offset
+          ml: "290px", // Sidebar offset
           flexGrow: 1,
-          p: 4,
+          p: 3,
           overflowY: "auto",
         }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography sx={{
+          fontFamily: "Michroma",
+          fontSize: "25px",
+          ml:"40px"
+        }}>
           Incoming Requests
         </Typography>
 
