@@ -6,6 +6,8 @@ const router = express.Router();
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const { authenticateToken } = require("../middleware/auth"); // Had to move it.
+const Thread = require("../models/Thread");  // wanting to remove threads and messages on unsquad
+const Message = require("../models/Message"); // wanting to remove threads and messages on unsquad
 
 // Storage settings ==============================================  testing cloudinary so commening this out.
 // const storage = multer.diskStorage({
@@ -189,7 +191,7 @@ router.post("/:id/squadup", authenticateToken, async (req, res) => {
       if (!targetUser.matches.includes(currentUserId)) {
         targetUser.matches.push(currentUserId);
       }
-       // always remove the pending request
+      // always remove the pending request
       currentUser.squadRequests = currentUser.squadRequests.filter(
         (id) => id.toString() !== targetUserId,
       );
@@ -260,18 +262,28 @@ router.post("/:id/unsquad", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // remove each other from matches
+    // removes matches
     currentUser.matches = currentUser.matches.filter(
-      (id) => id.toString() !== targetUserId,
+      (id) => id.toString() !== targetUserId
     );
     targetUser.matches = targetUser.matches.filter(
-      (id) => id.toString() !== currentUserId,
+      (id) => id.toString() !== currentUserId
     );
 
     await currentUser.save();
     await targetUser.save();
 
-    return res.status(200).json({ message: "You have unsquaded." });
+    // deletes threads and messages on unsquadding.
+    const thread = await Thread.findOne({
+      participants: { $all: [currentUserId, targetUserId] },
+    });
+
+    if (thread) {
+      await Message.deleteMany({ threadId: thread._id });
+      await Thread.deleteOne({ _id: thread._id });
+    }
+
+    return res.status(200).json({ message: "You have unsquaded and chat was deleted." });
   } catch (err) {
     console.error("❌ Unsquad error:", err);
     res.status(500).json({ error: "Failed to unsquad." });
