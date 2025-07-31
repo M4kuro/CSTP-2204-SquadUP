@@ -16,7 +16,7 @@ import RequestsPage from './pages/RequestsPage';
 import ChatPage from "./pages/ChatPage";
 
 // 👇 Create an inner component where it's safe to use useLocation
-const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchCurrentUser, currentUser, requestCount, fetchRequestCount, setRequestCount }) => {
+const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchCurrentUser, currentUser, setCurrentUser, requestCount, fetchRequestCount, setRequestCount }) => {
   const location = useLocation();
   const hideSidebarRoutes = ["/", "/login", "/signup"];
   const shouldShowSidebar = isLoggedIn && !hideSidebarRoutes.includes(location.pathname);
@@ -28,6 +28,7 @@ const InnerApp = ({ isLoggedIn, tabValue, users, setTabValue, fetchUsers, fetchC
     fetchUsers,
     fetchCurrentUser,
     currentUser,
+    setCurrentUser,
     isLoggedIn,
     requestCount,         // needed for requests counter
     setRequestCount,      // also needed for requests counter
@@ -150,9 +151,10 @@ function App() {
         fetchUsers={fetchUsers}
         fetchCurrentUser={fetchCurrentUser}
         currentUser={currentUser}
-        requestCount={requestCount} 
-        setRequestCount={setRequestCount} 
-        fetchRequestCount={fetchRequestCount} 
+        setCurrentUser={setCurrentUser}
+        requestCount={requestCount}
+        setRequestCount={setRequestCount}
+        fetchRequestCount={fetchRequestCount}
       />
     </Router>
   );

@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom"; // REMOVED PARAMS BECAUSE WERE N
 import MonthlyCalendar from "../components/calendar/MonthlyCalendar"; // importing the calendar components (this is for monthly)
 import WeeklyCalendar from "../components/calendar/WeeklyCalendar"; // this is the weekly component import
 import DailyCalendar from "../components/calendar/DailyCalendar"; // this is the daily component import
+import { useContext } from "react"; // trying to get the sidebar picture to autoupdate on save click
+import AppContext from "../context/AppContext"; // trying to get the sidebar picture to autoupdate on save click
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
@@ -31,6 +33,7 @@ const UserProfile = () => {
   const [showCalendar, setShowCalendar] = useState(false); // for the calendar
   const [calendarView, setCalendarView] = useState("month"); // for the calendar view.. or 'week', 'day'
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { setCurrentUser } = useContext(AppContext);  // trying to get the sidebar picture to autoupdate on save click
 
   const [bookingMap, setBookingMap] = useState({});
 
@@ -176,6 +179,7 @@ const UserProfile = () => {
 
       const updatedUser = await res.json();
       setUser(updatedUser);
+      setCurrentUser(updatedUser); // update the global user so sidebar refreshes too
       setIsEditing(false);
       alert("Profile updated successfully!");
     } catch (err) {
