@@ -193,7 +193,8 @@ const LoginPage = () => {
           <Box my={2}>
             <hr />
           </Box>{" "}
-          {/* Line between login and google button */}
+
+          {/* Line between login and google button 
           <GoogleOAuthProvider clientId={clientId} locale="en">
             <GoogleLogin
               onSuccess={handleGoogleLogin}
@@ -205,6 +206,8 @@ const LoginPage = () => {
               text="signin_with"
             />
           </GoogleOAuthProvider>
+          */}
+
           <Typography
             variant="body2"
             align="center"

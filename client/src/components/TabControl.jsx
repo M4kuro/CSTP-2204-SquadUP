@@ -70,11 +70,11 @@ const TabControl = ({ setCurrentUser, setIncomingRequests }) => {
         "& .MuiTabs-indicator": { backgroundColor: "#000000ff !important" },
       }}
     >
-      <Tab
+      {/* <Tab
         label="Nearby"
         sx={{ fontFamily: "Michroma, sans-serif" }}
         onClick={() => handleTabClick(TabValue.Nearby)}
-      />
+      /> */}
       <Tab
         label="Discover"
         sx={{ fontFamily: "Michroma, sans-serif" }}

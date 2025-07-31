@@ -178,7 +178,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
       <Box
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 10, p: 3 }}
       >
-        {/* Settings Button */}
+        {/* Settings Button 
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
@@ -188,6 +188,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
         >
           Settings
         </Button>
+        */}
 
         {/* Help Button */}
         <Button
