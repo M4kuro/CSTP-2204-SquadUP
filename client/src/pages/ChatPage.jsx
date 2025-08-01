@@ -179,8 +179,13 @@ const ChatPage = () => {
                 cursor: "pointer",
                 transition: "background-color 0.2s",
                 position: "relative",
+                backgroundColor:
+                  selectedThread?._id === thread._id ? "#ffbf00" : "#ffffffff",
                 "&:hover": {
-                  backgroundColor: "#e0e0e0",
+                  backgroundColor:
+                    selectedThread?._id === thread._id
+                      ? "#848484ff"
+                      : "#848484ff",
                 },
               }}
               onClick={() => handleThreadClick(thread)}
@@ -205,9 +210,7 @@ const ChatPage = () => {
                     color: "#ff4444",
                   },
                 }}
-              >
-                🗑️
-              </Box>
+              ></Box>
 
               {/* Avatar with unread indicator */}
               <Box sx={{ position: "relative", marginRight: 2 }}>
