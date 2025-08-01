@@ -9,10 +9,12 @@ import { getUserIdFromToken } from "../utils/auth";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 import AppContext from "../context/AppContext";
+import { Tooltip } from "@mui/material";
 
 const UserSidebar = ({ incomingRequests = [] }) => {
   const navigate = useNavigate();
   const { setTabValue, currentUser } = useContext(AppContext);
+
 
   console.log(currentUser, "currentUser");
   const handleLogout = () => {
@@ -38,6 +40,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
     fetchUnread();
 
+
     // 💬 Listen for incoming messages
     socket.on("receiveMessage", (msg) => {
       if (msg.sender !== userId) {
@@ -51,7 +54,15 @@ const UserSidebar = ({ incomingRequests = [] }) => {
     };
   }, []);
 
-  console.log(currentUser, "cirr");
+  // adding this useEffect for unread requests:
+  const { requestCount, fetchRequestCount, setRequestCount } = useContext(AppContext);
+
+  useEffect(() => {
+    fetchRequestCount();
+  }, []);
+
+
+  console.log(currentUser, "cur");
 
   return (
     <Box
@@ -62,17 +73,27 @@ const UserSidebar = ({ incomingRequests = [] }) => {
         display: "flex",
         flexDirection: "column",
         position: "fixed",
-        left: 0,
+        left: 10,
       }}
       id="sidebar"
     >
       {/* Top Avatar Section */}
       <Box sx={{ p: 3, textAlign: "center" }}>
-        <Avatar
+        {/* <Avatar
           src={
             currentUser?.profileImageUrl
               ? `${import.meta.env.VITE_API_URL}/uploads/${currentUser.profileImageUrl}`
               : "/placeholder-profile.png"
+          }
+          alt={currentUser?.username || "User"}
+          sx={{ width: 200, height: 200, mx: "auto" }}
+        /> */}
+        {/* couldinary image section commenting out the old way */}
+        <Avatar
+          src={
+            currentUser?.profileImageUrl?.startsWith("http")
+              ? currentUser.profileImageUrl
+              : `${import.meta.env.VITE_API_URL}/uploads/${currentUser?.profileImageUrl}`
           }
           alt={currentUser?.username || "User"}
           sx={{ width: 200, height: 200, mx: "auto" }}
@@ -81,26 +102,44 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
       {/* Navigation Buttons */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3 }}>
-        <Typography
-          sx={{
-            color: "white",
-            textAlign: "center",
-            fontFamily: "Michroma, sans-serif",
-            fontSize: "20px",
-          }}
-        >
-          {currentUser?.username || "Unknown"}
-        </Typography>
-        <Typography
-          sx={{
-            color: "white",
-            textAlign: "center",
-            fontFamily: "Michroma, sans-serif",
-            fontSize: "15px",
-          }}
-        >
-          {currentUser?.email || ""}
-        </Typography>
+
+        {/* Username with ellipsis + tooltip */}
+        <Tooltip title={currentUser?.username || "Unknown"}>
+          <Typography
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "20px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: 200,
+              mx: "auto",
+            }}
+          >
+            {currentUser?.username || "Unknown"}
+          </Typography>
+        </Tooltip>
+
+        {/* Email with ellipsis + tooltip */}
+        <Tooltip title={currentUser?.email || ""}>
+          <Typography
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "15px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: 200,
+              mx: "auto",
+            }}
+          >
+            {currentUser?.email || ""}
+          </Typography>
+        </Tooltip>
 
         {/* Homepage Button */}
         <Button
@@ -129,8 +168,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
           sx={buttonStyle}
           onClick={() => navigate("/requests")}
         >
-          Requests{" "}
-          {incomingRequests.length > 0 && `(${incomingRequests.length})`}
+          Requests {requestCount > 0 && `(${requestCount})`}
         </Button>
 
         {/* Squad Button */}
@@ -169,7 +207,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
       <Box
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 10, p: 3 }}
       >
-        {/* Settings Button */}
+        {/* Settings Button 
         <Button
           variant="outlined"
           startIcon={<SettingsIcon />}
@@ -179,6 +217,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
         >
           Settings
         </Button>
+        */}
 
         {/* Help Button */}
         <Button

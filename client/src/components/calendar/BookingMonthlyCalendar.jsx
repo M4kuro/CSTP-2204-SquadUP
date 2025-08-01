@@ -31,8 +31,9 @@ const BookingMonthlyCalendar = ({ proId }) => {
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        mt: 4,
+        
         mx: "auto",
+        
       }}
     >
       <Box
@@ -45,10 +46,7 @@ const BookingMonthlyCalendar = ({ proId }) => {
           boxShadow: 4,
         }}
       >
-        <Typography variant="h6" sx={{ textAlign: "center", mb: 3 }}>
-          📅 Select a Day to Book with Pro
-        </Typography>
-
+        
         {/* Weekday headers */}
         <Box
           sx={{

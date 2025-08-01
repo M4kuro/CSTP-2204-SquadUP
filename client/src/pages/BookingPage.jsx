@@ -24,31 +24,47 @@ const BookingPage = () => {
   }, [proId]);
 
   return (
-    <Box sx={{ width: "100%", p: 4 }}>
-      {/* Consistent Header */}
-      <Box sx={{ width: "100%", maxWidth: "960px", mx: "auto", mb: 3 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            mb: 2,
-            textAlign: "center",
-            backgroundColor: "#f0f4f8",
-            p: 2,
-            borderRadius: 2,
-            boxShadow: 1,
-          }}
-        >
-          Booking with {proUser?.username || "..."}
-        </Typography>
-      </Box>
+    <Box
+  sx={{
+    display: "flex",
+    width: "100vw", 
+    overflow: "hidden",
+    
+  }}
+>
+  {/* Shifted right for sidebar */}
+  <Box
+    sx={{
+      ml: "260px", // sidebar offset
+      flexGrow: 1,
+      p: 5,
+      
+      Width: "960px",
+      mx: "auto",
+    }}
+  >
+    {/* Consistent Header */}
+    <Typography
+      variant="h4"
+      sx={{
+        textAlign: "center",
+        
+        p: 2,
+        borderRadius: 2,
+        
+      }}
+    >
+      Booking with {proUser?.username || "..."}
+    </Typography>
 
-      {/* Conditional View */}
-      {isDayView ? (
-        <BookingDayCalendar />
-      ) : (
-        <BookingMonthlyCalendar proId={proId} />
-      )}
-    </Box>
+    {/* Conditional View */}
+    {isDayView ? (
+      <BookingDayCalendar />
+    ) : (
+      <BookingMonthlyCalendar proId={proId} />
+    )}
+  </Box>
+</Box>
   );
 };
 

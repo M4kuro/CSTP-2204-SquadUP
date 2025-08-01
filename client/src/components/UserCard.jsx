@@ -12,8 +12,8 @@ import {
 import { baseUrl } from "../constant";
 
 export const UserCard = (props) => {
-  const { user, type } = props;
-  const { fetchUsers } = useContext(AppContext);
+  const { user, type, onRemove, refreshRequests, updateRequestCount, onViewUser, onStartChat, } = props;
+  const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
   const [sentRequests, setSentRequests] = useState([]);
   const token = localStorage.getItem("token");
   const currentUserId = localStorage.getItem("userId");
@@ -47,10 +47,14 @@ export const UserCard = (props) => {
           alert("🤔 S+UP request sent. Waiting for a match.");
         }
 
-        // Refresh views
+        // removes the user from local request view after clicking accept.
+        onRemove?.(requestingUserId);
+
+        // refreshes the views
         await fetchCurrentUser();
         await fetchUsers();
-        // await fetchRequests();
+        refreshRequests?.();
+        updateRequestCount?.();
       } else {
         alert(data.message || "Something went wrong.");
       }
@@ -76,17 +80,20 @@ export const UserCard = (props) => {
         body: JSON.stringify({ requesterId }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Decline failed");
+      console.log("🔍 Full decline response:", res);
+      if (!res.ok) {
+        const errorText = await res.text(); // fallback if not JSON
+        throw new Error(errorText || "Decline failed");
+      }
 
       console.log("✅ Declined request from:", requesterId);
 
-      // 🔁 Refresh the UI to reflect the updated requests list
-      // fetchRequests();
+      onRemove?.(requesterId);
       fetchUsers();
+      updateRequestCount?.();
     } catch (err) {
-      console.error("Decline error:", err);
-      alert("Error declining request.");
+      console.error("Decline error:", err?.message || err);
+      alert(`Error declining request: ${err?.message || "Unknown error"}`);
     }
   };
 
@@ -211,7 +218,7 @@ export const UserCard = (props) => {
                 fontFamily: "Michroma, sans-serif",
                 fontSize: "12px",
               }}
-              onClick={() => handleStartChat(user._id)}
+              onClick={() => onStartChat?.(user._id)}
             >
               Chat
             </Button>
@@ -226,7 +233,7 @@ export const UserCard = (props) => {
                 fontSize: "12px",
                 width: "100px",
               }}
-              onClick={() => handleViewUser(user._id)}
+              onClick={() => onViewUser?.(user._id)}
             >
               More
             </Button>
@@ -280,15 +287,16 @@ export const UserCard = (props) => {
           </Button>
 
           <Button
-            variant="contained"
+            variant="Outlined"
             sx={{
-              backgroundColor: "#000000ff",
-              color: "white",
+              backgroundColor: "#e4e4e4ff",
+              color: "Black",
+              borderColor: "#000000ff",
               "&:hover": { backgroundColor: "#585858ff" },
               fontFamily: "Michroma, sans-serif",
               fontSize: "12px",
             }}
-            onClick={() => handleViewUser(user._id)}
+            onClick={() => onViewUser?.(user._id)}
             fullWidth
           >
             More
@@ -322,16 +330,21 @@ export const UserCard = (props) => {
       }}
     >
       <Box sx={{ position: "relative" }}>
-        <CardMedia
+        {/* <CardMedia
           component="div"
           sx={{ height: 300 }}
           image={
             user.profileImageUrl
-              ? `${import.meta.env.VITE_API_URL}/uploads/${
-                  user.profileImageUrl
-                }`
+              ? `${import.meta.env.VITE_API_URL}/uploads/${user.profileImageUrl
+              }`
               : "/placeholder-profile.png"
           }
+        /> */}
+        {/* adding this to handle showing the profileimage on usercards from cloudinaryURLS */}
+        <CardMedia
+          component="div"
+          sx={{ height: 300 }}
+          image={user.profileImageUrl || "/noPhoto.png"}
         />
         {user.isPro && (
           <Box

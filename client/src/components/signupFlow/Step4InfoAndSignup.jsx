@@ -4,6 +4,9 @@ import { TextField, Button, Typography, Box } from "@mui/material";
 
 const Step4InfoAndSignup = ({ formData, setFormData, onBack }) => {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState([]);
+
   const navigate = useNavigate();
 
   const isPasswordStrong = (password) => {
@@ -18,7 +21,20 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack }) => {
     - 8 char length
     
     */
+    
   };
+
+  const validatePassword = (password) => {
+    const errors = [];
+    if (password.length < 8) errors.push("At least 8 characters");
+    if (!/[a-z]/.test(password)) errors.push("One lowercase letter");
+    if (!/[A-Z]/.test(password)) errors.push("One uppercase letter");
+    if (!/\d/.test(password)) errors.push("One number");
+    if (!/[\W_]/.test(password)) errors.push("One special character");
+    return errors;
+  };
+
+
 
   const isValidEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
@@ -88,9 +104,36 @@ const Step4InfoAndSignup = ({ formData, setFormData, onBack }) => {
         fullWidth
         label="Password"
         variant="filled"
-        type="password"
+        type={showPassword ? "text" : "password"}
         value={formData.password}
-        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+        onChange={(e) => {
+          const value = e.target.value;
+          setFormData({ ...formData, password: value });
+          setPasswordErrors(validatePassword(value));
+          {
+            passwordErrors.length > 0 && (
+              <Box sx={{ mb: 2, color: "red", fontSize: "0.875rem" }}>
+                <Typography>Password must include:</Typography>
+                <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                  {passwordErrors.map((err, i) => (
+                    <li key={i}>{err}</li>
+                  ))}
+                </ul>
+              </Box>
+            );
+          }
+        }}
+        
+        InputProps={{
+          endAdornment: (
+            <Button
+              onClick={() => setShowPassword((prev) => !prev)}
+              size="small"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </Button>
+          ),
+        }}
         sx={{
           backgroundColor: "white",
           mb: 2,

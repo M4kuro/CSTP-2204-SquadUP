@@ -38,6 +38,17 @@ module.exports = (io) => {
         .sort({ lastUpdated: -1 })
         .populate("participants", "username profileImageUrl");
 
+      // adds unread count per thread
+      for (const thread of threads) {
+        const count = await Message.countDocuments({
+          threadId: thread._id,
+          read: false,
+          sender: { $ne: req.params.userId }
+        });
+
+        thread._doc.unreadCount = count;
+      }
+
       console.log("📡 Populated Threads:", JSON.stringify(threads, null, 2));
       res.json(threads);
     } catch (err) {
@@ -99,6 +110,21 @@ module.exports = (io) => {
     } catch (err) {
       console.error("❌ Error marking messages read:", err);
       res.status(500).json({ error: "Failed to mark messages read" });
+    }
+  });
+
+  // === marks the specific threads are read (clicking on the usertiles themselves)
+
+  router.post("/mark-thread-read/:threadId", async (req, res) => {
+    const { userId } = req.body;
+    try {
+      await Thread.findByIdAndUpdate(req.params.threadId, {
+        $unset: { unreadFor: "" },
+      });
+      res.json({ success: true });
+    } catch (err) {
+      console.error("❌ Error marking thread as read:", err);
+      res.status(500).json({ error: "Failed to mark thread as read" });
     }
   });
 

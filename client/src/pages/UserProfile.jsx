@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom"; // REMOVED PARAMS BECAUSE WERE N
 import MonthlyCalendar from "../components/calendar/MonthlyCalendar"; // importing the calendar components (this is for monthly)
 import WeeklyCalendar from "../components/calendar/WeeklyCalendar"; // this is the weekly component import
 import DailyCalendar from "../components/calendar/DailyCalendar"; // this is the daily component import
+import { useContext } from "react"; // trying to get the sidebar picture to autoupdate on save click
+import AppContext from "../context/AppContext"; // trying to get the sidebar picture to autoupdate on save click
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/api/users`;
 
@@ -31,8 +33,28 @@ const UserProfile = () => {
   const [showCalendar, setShowCalendar] = useState(false); // for the calendar
   const [calendarView, setCalendarView] = useState("month"); // for the calendar view.. or 'week', 'day'
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { setCurrentUser } = useContext(AppContext);  // trying to get the sidebar picture to autoupdate on save click
 
   const [bookingMap, setBookingMap] = useState({});
+
+  // cloudinary code to upload images to cloudinary:
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("folder", "squadup"); // Optional: keeps assets organized
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+    return data.secure_url;
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,17 +69,11 @@ const UserProfile = () => {
         setFormData(data);
 
         if (data.profileImageUrl) {
-          setMainImage(
-            `${import.meta.env.VITE_API_URL}/uploads/${data.profileImageUrl}`,
-          );
+          setMainImage(data.profileImageUrl);
         }
 
         if (data.otherImages && data.otherImages.length > 0) {
-          const imageUrls = data.otherImages.map((filename) =>
-            filename
-              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
-              : null,
-          );
+          const imageUrls = data.otherImages.map((url) => url || null);
           setOtherImages(imageUrls);
         }
 
@@ -128,37 +144,28 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     try {
-      let updatedFields = { ...formData };
-      const imageForm = new FormData();
-      if (mainImageFile) imageForm.append("main", mainImageFile);
-      otherImageFiles.forEach((file, i) => {
-        if (file) imageForm.append(`other${i}`, file);
-      });
+      const updatedFields = { ...formData };
 
-      if (mainImageFile || otherImageFiles.some((f) => f)) {
-        const imgRes = await fetch(`${baseUrl}/me/upload`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: imageForm,
-        });
-        const imgData = await imgRes.json();
-        if (imgData.profileImageUrl) {
-          updatedFields.profileImageUrl = imgData.profileImageUrl;
-          setMainImage(
-            `${import.meta.env.VITE_API_URL}/uploads/${imgData.profileImageUrl}`,
-          );
-        }
-        if (imgData.otherImages) {
-          updatedFields.otherImages = imgData.otherImages;
-          const updatedPreviews = imgData.otherImages.map((filename) =>
-            filename
-              ? `${import.meta.env.VITE_API_URL}/uploads/${filename}`
-              : null,
-          );
-          setOtherImages(updatedPreviews);
-        }
+      // 🔼 Upload main image to Cloudinary
+      if (mainImageFile) {
+        const url = await uploadToCloudinary(mainImageFile);
+        updatedFields.profileImageUrl = url;
+        setMainImage(url); // Update preview
       }
 
+      // 🔼 Upload other images to Cloudinary
+      const uploadedOther = [];
+      for (let i = 0; i < otherImageFiles.length; i++) {
+        if (otherImageFiles[i]) {
+          const url = await uploadToCloudinary(otherImageFiles[i]);
+          uploadedOther[i] = url;
+        } else {
+          uploadedOther[i] = otherImages[i]; // Keep existing image if not changed
+        }
+      }
+      updatedFields.otherImages = uploadedOther;
+
+      // 📤 Send updated profile to backend
       const res = await fetch(`${baseUrl}/me`, {
         method: "PUT",
         headers: {
@@ -169,8 +176,10 @@ const UserProfile = () => {
       });
 
       if (!res.ok) throw new Error("Failed to update profile");
+
       const updatedUser = await res.json();
       setUser(updatedUser);
+      setCurrentUser(updatedUser); // update the global user so sidebar refreshes too
       setIsEditing(false);
       alert("Profile updated successfully!");
     } catch (err) {
@@ -178,6 +187,7 @@ const UserProfile = () => {
       alert("Failed to update profile.");
     }
   };
+
 
   const sectionStyle = {
     backgroundColor: "#b0b0b0",
@@ -223,7 +233,6 @@ const UserProfile = () => {
         display: "flex",
         flexDirection: "row",
         backgroundColor: "#ffffffff",
-        minHeight: "100vh",
         minWidth: "100vw",
         padding: 1,
         gap: 1,
@@ -236,6 +245,7 @@ const UserProfile = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          overflow: "hidden",
           gap: 2,
           mt: 5,
           ml: 30,
@@ -407,8 +417,28 @@ const UserProfile = () => {
             value={formData.birthdate ? formData.birthdate.split("T")[0] : ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff", // green border on focus
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff", // hover border
+                },
+              },
+            }}
+            // This is red but works, dont worry
+            InputLabelProps={{
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff", // green label on focus
+                },
+              },
+            }}
           />
+
           {/* BIO */}
           <Typography
             sx={{
@@ -449,6 +479,12 @@ const UserProfile = () => {
                   <Checkbox
                     checked={formData.interests.includes(interest)}
                     onChange={() => handleInterestToggle(interest)}
+                    sx={{
+                      color: "#000",
+                      "&.Mui-checked": {
+                        color: "#000000ff",
+                      },
+                    }}
                   />
                 }
                 label={interest}
@@ -507,6 +543,12 @@ const UserProfile = () => {
                   setFormData({ ...formData, isPro: e.target.checked })
                 }
                 onFocus={handleFocus}
+                sx={{
+                  color: "#000",
+                  "&.Mui-checked": {
+                    color: "#000000ff",
+                  },
+                }}
               />
             }
             label="I'm a Pro who can teach or coach"
@@ -517,7 +559,13 @@ const UserProfile = () => {
               <Button
                 variant="outlined"
                 onClick={() => setShowCalendar((prev) => !prev)}
-                sx={{ mt: 2 }}
+                sx={{
+                  color: "#000000ff",
+                  "&:hover": { backgroundColor: "#585858ff" },
+                  borderColor: "#000000ff",
+                  fontFamily: "Michroma, sans-serif",
+                  fontSize: "12px",
+                }}
               >
                 {showCalendar ? "Hide Calendar" : "My Calendar / Schedule"}
               </Button>

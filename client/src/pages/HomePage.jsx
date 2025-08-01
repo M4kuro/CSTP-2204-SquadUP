@@ -66,7 +66,7 @@ const HomePage = () => {
         recipientId,
       });
 
-      navigate(`/messages/${res.data.threadId}`);
+      navigate(`/messages?userId=${recipientId}`);
     } catch (err) {
       console.error("Error starting chat:", err);
     }
@@ -98,6 +98,11 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    // this should clear selected profile when switching tabs
+    setSelectedUser(null);
+  }, [tabValue]);
+
+  useEffect(() => {
     fetchUsers();
   }, [tabValue]);
 
@@ -113,14 +118,13 @@ const HomePage = () => {
   }, [tabValue]);
 
   const renderDiscoverUsers = () => {
-    // return (
-    //  {selectedUser ? (
-    //       <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
-    //         <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
-    //       </Box>
-    //     ) : (
-
-    // )
+    if (selectedUser) {
+      return (
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+          <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
+        </Box>
+      );
+    }
 
     return (
       <Box
@@ -138,18 +142,30 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          mx: "auto",
+
           ml: 45,
         }}
       >
-        {users.map((user) => (
-          <UserCard key={user._id} user={user} type="discover" />  // added user._id here due to error in console log for type
-        ))}
+        {users
+          .filter((user) => user._id !== currentUser?._id) // exclude yourself from discover
+          .map((user) => (
+            <UserCard key={user._id} user={user} type="discover" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} />  // added user._id here due to error in console log for type
+          ))}
       </Box>
     );
   };
 
   const renderMatchesUsers = () => {
+    if (selectedUser) {
+      return (
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+          <UserProfileCard
+            user={selectedUser}
+            onBack={() => setSelectedUser(null)}
+          />
+        </Box>
+      );
+    }
     return (
       <Box
         sx={{
@@ -166,44 +182,42 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          mx: "auto",
           ml: 45,
         }}
       >
         {users.map((user) => (
-          <UserCard user={user} type="matches" />
+          <UserCard key={user._id} user={user} type="matches" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} onStartChat={handleStartChat} />
         ))}
       </Box>
     );
   };
 
-  const renderNearbyUsers = () => {
-    return (
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          p: 2,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
-            xl: "repeat(5, 1fr)",
-          },
-          gap: 2,
-          justifyContent: "center",
-          mx: "auto",
-          ml: 45,
-        }}
-      >
-        {users.map((user) => (
-          <UserCard user={user} type="nearby" />
-        ))}
-      </Box>
-    );
-  };
+  // const renderNearbyUsers = () => {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         flexGrow: 1,
+  //         overflowY: "auto",
+  //         p: 2,
+  //         display: "grid",
+  //         gridTemplateColumns: {
+  //           xs: "1fr",
+  //           sm: "repeat(2, 1fr)",
+  //           md: "repeat(3, 1fr)",
+  //           lg: "repeat(4, 1fr)",
+  //           xl: "repeat(5, 1fr)",
+  //         },
+  //         gap: 2,
+  //         justifyContent: "center",
+  //         ml: 45,
+  //       }}
+  //     >
+  //       {users.map((user) => (
+  //         <UserCard user={user} type="nearby" />
+  //       ))}
+  //     </Box>
+  //   );
+  // };
 
   console.log(tabValue, "tabValue");
 
@@ -216,7 +230,8 @@ const HomePage = () => {
       case 2:
         return renderMatchesUsers();
       default:
-        return renderNearbyUsers();
+        return renderDiscoverUsers(); //renderNearbyUsers();
+
     }
   };
 
@@ -230,8 +245,6 @@ const HomePage = () => {
         overflow: "hidden",
       }}
     >
-      {" "}
-      {/* Main Container / Whole screen content Container ===========================\  */}
       {/* Header ============================================================================ */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Logo + Tabs (always centered) */}

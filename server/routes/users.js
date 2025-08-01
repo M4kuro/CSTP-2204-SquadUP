@@ -1,66 +1,68 @@
 console.log("✅ users.js loaded");
-const multer = require("multer");
-const path = require("path");
+// const multer = require("multer");  // testing cloudinary
+// const path = require("path");  // testing cloudinary
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const { authenticateToken } = require("../middleware/auth"); // Had to move it.
+const Thread = require("../models/Thread");  // wanting to remove threads and messages on unsquad
+const Message = require("../models/Message"); // wanting to remove threads and messages on unsquad
 
-// Storage settings ==============================================
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
-  },
-});
+// Storage settings ==============================================  testing cloudinary so commening this out.
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/");
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueName = `${Date.now()}-${file.originalname}`;
+//     cb(null, uniqueName);
+//   },
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
-// Upload route (for uploading images) ========================================================
-router.post(
-  "/me/upload",
-  authenticateToken,
-  upload.fields([
-    { name: "main", maxCount: 1 },
-    { name: "other0", maxCount: 1 },
-    { name: "other1", maxCount: 1 },
-    { name: "other2", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ error: "User not found" });
+// Upload route (for uploading images) ========================================================testing cloudinary so commening this out.
+// router.post(
+//   "/me/upload",
+//   authenticateToken,
+//   upload.fields([
+//     { name: "main", maxCount: 1 },
+//     { name: "other0", maxCount: 1 },
+//     { name: "other1", maxCount: 1 },
+//     { name: "other2", maxCount: 1 },
+//   ]),
+//   async (req, res) => {
+//     try {
+//       const user = await User.findById(req.user.id);
+//       if (!user) return res.status(404).json({ error: "User not found" });
 
-      if (req.files["main"]) {
-        user.profileImageUrl = req.files["main"][0].filename;
-      }
+//       if (req.files["main"]) {
+//         user.profileImageUrl = req.files["main"][0].filename;
+//       }
 
-      const others = [];
-      ["other0", "other1", "other2"].forEach((key) => {
-        if (req.files[key]) {
-          others.push(req.files[key][0].filename);
-        } else {
-          others.push(null);
-        }
-      });
+//       const others = [];
+//       ["other0", "other1", "other2"].forEach((key) => {
+//         if (req.files[key]) {
+//           others.push(req.files[key][0].filename);
+//         } else {
+//           others.push(null);
+//         }
+//       });
 
-      user.otherImages = others;
-      await user.save();
+//       user.otherImages = others;
+//       await user.save();
 
-      res.json({
-        profileImageUrl: user.profileImageUrl,
-        otherImages: user.otherImages,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Image upload failed" });
-    }
-  },
-);
+//       res.json({
+//         profileImageUrl: user.profileImageUrl,
+//         otherImages: user.otherImages,
+//       });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ error: "Image upload failed" });
+//     }
+//   },
+// );
 
 // GET /api/users/discover  =========================================================
 router.get("/discover", async (req, res) => {
@@ -87,7 +89,13 @@ router.get("/matches/:userId", authenticateToken, async (req, res) => {
     );
     if (!currentUser) return res.status(404).json({ error: "User not found" });
 
-    res.json(currentUser.matches);
+    // deduplicate matches based on _id  ** incase of duplicates this prevents it.
+    const uniqueMatches = currentUser.matches.filter(
+      (user, index, self) =>
+        index === self.findIndex((u) => u._id.toString() === user._id.toString())
+    );
+
+    res.json(uniqueMatches);
   } catch (err) {
     console.error("Error fetching matches:", err);
     res.status(500).json({ error: "Server error" });
@@ -175,9 +183,15 @@ router.post("/:id/squadup", authenticateToken, async (req, res) => {
     const isMutual = currentUser.squadRequests.includes(targetUserId);
 
     if (isMutual) {
-      // removes request, add both to matches
-      currentUser.matches.push(targetUserId);
-      targetUser.matches.push(currentUserId);
+      // only add if not already matched
+      if (!currentUser.matches.includes(targetUserId)) {
+        currentUser.matches.push(targetUserId);
+      }
+
+      if (!targetUser.matches.includes(currentUserId)) {
+        targetUser.matches.push(currentUserId);
+      }
+      // always remove the pending request
       currentUser.squadRequests = currentUser.squadRequests.filter(
         (id) => id.toString() !== targetUserId,
       );
@@ -248,18 +262,28 @@ router.post("/:id/unsquad", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // remove each other from matches
+    // removes matches
     currentUser.matches = currentUser.matches.filter(
-      (id) => id.toString() !== targetUserId,
+      (id) => id.toString() !== targetUserId
     );
     targetUser.matches = targetUser.matches.filter(
-      (id) => id.toString() !== currentUserId,
+      (id) => id.toString() !== currentUserId
     );
 
     await currentUser.save();
     await targetUser.save();
 
-    return res.status(200).json({ message: "You have unsquaded." });
+    // deletes threads and messages on unsquadding.
+    const thread = await Thread.findOne({
+      participants: { $all: [currentUserId, targetUserId] },
+    });
+
+    if (thread) {
+      await Message.deleteMany({ threadId: thread._id });
+      await Thread.deleteOne({ _id: thread._id });
+    }
+
+    return res.status(200).json({ message: "You have unsquaded and chat was deleted." });
   } catch (err) {
     console.error("❌ Unsquad error:", err);
     res.status(500).json({ error: "Failed to unsquad." });

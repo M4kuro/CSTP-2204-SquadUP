@@ -7,14 +7,6 @@ const TabControl = ({ setCurrentUser, setIncomingRequests }) => {
   const { tabValue, setTabValue } = useContext(AppContext);
 
   const handleTabClick = async (tab) => {
-    // if (tabValue === index) {
-    //   await refreshTabData(index);
-    // } else {
-    //   setTabValue(index);
-    //   // if (index === 0) setView('nearby');
-    //   // if (index === 1) setView('discover');
-    //   // if (index === 2) setView('matches');
-    // }
     setTabValue(tab);
   };
 
@@ -36,7 +28,7 @@ const TabControl = ({ setCurrentUser, setIncomingRequests }) => {
       );
       setIncomingRequests(filtered);
 
-      let endpoint = "";
+      let endpoint = "Discover";
       if (tabIndex === 0) {
         endpoint = `${baseUrl}/requests/${data._id}`;
       } else if (tabIndex === 2) {
@@ -71,10 +63,10 @@ const TabControl = ({ setCurrentUser, setIncomingRequests }) => {
       }}
     >
       <Tab
-        label="Nearby"
+        label=""
         sx={{ fontFamily: "Michroma, sans-serif" }}
-        onClick={() => handleTabClick(TabValue.Nearby)}
-      />
+        //onClick={() => handleTabClick(TabValue.Nearby)}
+      /> 
       <Tab
         label="Discover"
         sx={{ fontFamily: "Michroma, sans-serif" }}

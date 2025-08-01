@@ -4,14 +4,13 @@ import AppContext from "../context/AppContext";
 import { UserCard } from "../components/UserCard";
 
 const RequestsPage = () => {
-  const { fetchUsers, fetchCurrentUser } = useContext(AppContext);
+  const { fetchUsers, fetchCurrentUser, fetchRequestCount } = useContext(AppContext);
   const [allUsers, setAllUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const userId = localStorage.getItem("userId");
 
 
-  useEffect(() => {
-    const loadRequestsData = async () => {
+  const loadRequestsData = async () => {
       try {
         const token = localStorage.getItem("token");
 
@@ -36,8 +35,18 @@ const RequestsPage = () => {
       }
     };
 
+  useEffect(() => {
     loadRequestsData();
   }, []);
+
+  // adding a small bit of code to help with auto removing users from requests page on decline (otherwise you have to manually refresh)
+  const handleRemoveUserFromRequests = (userIdToRemove) => {
+  setAllUsers((prevUsers) =>
+    prevUsers.filter((user) => user._id !== userIdToRemove)
+  );
+};
+
+
 
   if (!currentUser) {
     return (
@@ -75,13 +84,17 @@ const RequestsPage = () => {
       {/* Content area with sidebar offset */}
       <Box
         sx={{
-          ml: "260px", // Sidebar offset
+          ml: "290px", // Sidebar offset
           flexGrow: 1,
-          p: 4,
+          p: 3,
           overflowY: "auto",
         }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography sx={{
+          fontFamily: "Michroma",
+          fontSize: "25px",
+          ml:"40px"
+        }}>
           Incoming Requests
         </Typography>
 
@@ -103,7 +116,7 @@ const RequestsPage = () => {
             }}
           >
             {incomingRequestUsers.map((user) => (
-              <UserCard key={user._id} user={user} type="request" />
+              <UserCard key={user._id} user={user} type="request" onRemove={handleRemoveUserFromRequests} refreshRequests={loadRequestsData} updateRequestCount={fetchRequestCount}/>
             ))}
           </Box>
         )}

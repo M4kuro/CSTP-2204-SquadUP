@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Box, TextField, Button, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const navigate = useNavigate();
@@ -46,35 +49,35 @@ const LoginPage = () => {
   };
 
   // Google Login ---------------------------------------------------------------\
-  const handleGoogleLogin = async (credentialResponse) => {
-    try {
-      setLoading(true);
+  // const handleGoogleLogin = async (credentialResponse) => {
+  //   try {
+  //     setLoading(true);
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: credentialResponse.credential }), // 🔥 this is the Google token
-        },
-      );
+  //     const res = await fetch(
+  //       `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ token: credentialResponse.credential }), // 🔥 this is the Google token
+  //       },
+  //     );
 
-      setLoading(false);
+  //     setLoading(false);
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Google login failed");
+  //     const data = await res.json();
+  //     if (!res.ok) throw new Error(data.message || "Google login failed");
 
-      // Save JWT and user data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user._id);
+  //     // Save JWT and user data
+  //     localStorage.setItem("token", data.token);
+  //     localStorage.setItem("userId", data.user._id);
 
-      alert("Login successful!");
-      navigate("/home");
-    } catch (err) {
-      console.error("Google login error:", err);
-      alert("Google login failed");
-    }
-  };
+  //     alert("Login successful!");
+  //     navigate("/home");
+  //   } catch (err) {
+  //     console.error("Google login error:", err);
+  //     alert("Google login failed");
+  //   }
+  // };
 
   // --------------------------- RENDER CONTENT FROM HERE DOWN -----------------------------------------------\
   return (
@@ -158,7 +161,7 @@ const LoginPage = () => {
           <TextField
             label="Password"
             fullWidth
-            type="password"
+            type={showPassword ? "text" : "password"}
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -173,6 +176,18 @@ const LoginPage = () => {
               "& label.Mui-focused": {
                 color: "#000000ff  ", // label color on focus
               },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
           <Button
@@ -193,7 +208,7 @@ const LoginPage = () => {
           <Box my={2}>
             <hr />
           </Box>{" "}
-          {/* Line between login and google button */}
+          {/* Line between login and google button 
           <GoogleOAuthProvider clientId={clientId} locale="en">
             <GoogleLogin
               onSuccess={handleGoogleLogin}
@@ -205,6 +220,7 @@ const LoginPage = () => {
               text="signin_with"
             />
           </GoogleOAuthProvider>
+          */}
           <Typography
             variant="body2"
             align="center"
