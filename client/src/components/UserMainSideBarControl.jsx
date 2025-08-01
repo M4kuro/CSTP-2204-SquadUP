@@ -102,16 +102,25 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
       {/* Navigation Buttons */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3 }}>
-        <Typography
-          sx={{
-            color: "white",
-            textAlign: "center",
-            fontFamily: "Michroma, sans-serif",
-            fontSize: "20px",
-          }}
-        >
-          {currentUser?.username || "Unknown"}
-        </Typography>
+
+        {/* Username with ellipsis + tooltip */}
+        <Tooltip title={currentUser?.username || "Unknown"}>
+          <Typography
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "20px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: 200,
+              mx: "auto",
+            }}
+          >
+            {currentUser?.username || "Unknown"}
+          </Typography>
+        </Tooltip>
 
         {/* Email with ellipsis + tooltip */}
         <Tooltip title={currentUser?.email || ""}>
