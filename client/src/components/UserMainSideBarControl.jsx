@@ -102,7 +102,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
       {/* Navigation Buttons */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3 }}>
-        {/* <Typography
+        <Typography
           sx={{
             color: "white",
             textAlign: "center",
@@ -112,16 +112,8 @@ const UserSidebar = ({ incomingRequests = [] }) => {
         >
           {currentUser?.username || "Unknown"}
         </Typography>
-        <Typography
-          sx={{
-            color: "white",
-            textAlign: "center",
-            fontFamily: "Michroma, sans-serif",
-            fontSize: "15px",
-          }}
-        >
-          {currentUser?.email || ""}
-        </Typography> */}
+
+        {/* Email with ellipsis + tooltip */}
         <Tooltip title={currentUser?.email || ""}>
           <Typography
             sx={{
@@ -132,7 +124,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              maxWidth: 200, // You can tweak this width to match your sidebar layout
+              maxWidth: 200,
               mx: "auto",
             }}
           >
