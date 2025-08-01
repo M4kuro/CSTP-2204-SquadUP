@@ -344,7 +344,7 @@ export const UserCard = (props) => {
         <CardMedia
           component="div"
           sx={{ height: 300 }}
-          image={user.profileImageUrl || "/placeholder-profile.png"}
+          image={user.profileImageUrl || "/noPhoto.png"}
         />
         {user.isPro && (
           <Box
