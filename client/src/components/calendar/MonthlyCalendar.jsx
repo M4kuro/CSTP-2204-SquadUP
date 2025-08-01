@@ -16,7 +16,7 @@ const generateMonthDays = (year, month) => {
 
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const MonthlyCalendar = ({ onSelectDay }) => {
+const MonthlyCalendar = ({ onSelectDay, bookingsByDate = [] }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1),
@@ -47,6 +47,30 @@ const MonthlyCalendar = ({ onSelectDay }) => {
     month: "long",
     year: "numeric",
   });
+
+  // collects all booked dates in this month (formatted like this "2025-07-31")
+  // const bookedDatesSet = new Set(
+  //   bookings
+  //     .filter((b) => {
+  //       const d = new Date(b.date);
+  //       return d.getFullYear() === year && d.getMonth() === month;
+  //     })
+  //     .map((b) => new Date(b.date).toDateString())
+  // );
+  const rawBookingDates = Object.keys(bookingsByDate);
+  console.log("📦 Raw booking dates:", rawBookingDates);
+
+  const bookedDatesSet = new Set(
+    rawBookingDates.filter((dateStr) => {
+      const d = new Date(dateStr);
+      return d.getFullYear() === year && d.getMonth() === month;
+    }).map(dateStr => {
+      const d = new Date(dateStr);
+      return d.toISOString().split("T")[0]; // ✅ returns "YYYY-MM-DD"
+    })
+  );
+
+  console.log("✅ Booking matches this month:", [...bookedDatesSet]);
 
   return (
     <Box>
@@ -121,6 +145,7 @@ const MonthlyCalendar = ({ onSelectDay }) => {
         {paddedDays.map((day, idx) => {
           const isWeekday = day && day.getDay() >= 1 && day.getDay() <= 5; // M–F
           const isClickable = Boolean(day);
+          console.log("📆 Rendering calendar day:", day?.toDateString());
 
           return (
             <Box
@@ -131,6 +156,7 @@ const MonthlyCalendar = ({ onSelectDay }) => {
                 }
               }}
               sx={{
+                position: "relative",
                 border: "1px solid #ccc",
                 minHeight: 70,
                 backgroundColor: isClickable
@@ -152,6 +178,21 @@ const MonthlyCalendar = ({ onSelectDay }) => {
               <Typography variant="caption">
                 {day ? day.getDate() : ""}
               </Typography>
+              {/* red dot if this day has bookings */}
+              {day && bookedDatesSet.has(day.toISOString().split("T")[0]) && (
+
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: "red",
+                    position: "absolute",
+                    top: 6,
+                    right: 6,
+                  }}
+                />
+              )}
             </Box>
           );
         })}

@@ -98,9 +98,9 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-  // this should clear selected profile when switching tabs
-  setSelectedUser(null);
-}, [tabValue]);
+    // this should clear selected profile when switching tabs
+    setSelectedUser(null);
+  }, [tabValue]);
 
   useEffect(() => {
     fetchUsers();
@@ -118,13 +118,13 @@ const HomePage = () => {
   }, [tabValue]);
 
   const renderDiscoverUsers = () => {
-   if (selectedUser) {
-    return (
-      <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
-        <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
-      </Box>
-    );
-  }
+    if (selectedUser) {
+      return (
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+          <UserProfileCard user={selectedUser} onBack={() => setSelectedUser(null)} />
+        </Box>
+      );
+    }
 
     return (
       <Box
@@ -142,28 +142,30 @@ const HomePage = () => {
           },
           gap: 2,
           justifyContent: "center",
-          
+
           ml: 45,
         }}
       >
-        {users.map((user) => (
-          <UserCard key={user._id} user={user} type="discover" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} />  // added user._id here due to error in console log for type
-        ))}
+        {users
+          .filter((user) => user._id !== currentUser?._id) // exclude yourself from discover
+          .map((user) => (
+            <UserCard key={user._id} user={user} type="discover" onViewUser={(userId) => setSelectedUser(users.find((u) => u._id === userId))} />  // added user._id here due to error in console log for type
+          ))}
       </Box>
     );
   };
 
   const renderMatchesUsers = () => {
     if (selectedUser) {
-    return (
-      <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
-        <UserProfileCard
-          user={selectedUser}
-          onBack={() => setSelectedUser(null)}
-        />
-      </Box>
-    );
-  }
+      return (
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+          <UserProfileCard
+            user={selectedUser}
+            onBack={() => setSelectedUser(null)}
+          />
+        </Box>
+      );
+    }
     return (
       <Box
         sx={{
@@ -227,8 +229,9 @@ const HomePage = () => {
       // Matches
       case 2:
         return renderMatchesUsers();
-      //default:
-       // return renderNearbyUsers();
+      default:
+        return renderDiscoverUsers(); //renderNearbyUsers();
+
     }
   };
 
@@ -270,6 +273,8 @@ const HomePage = () => {
           />
         </Box>
         {/* Header ================================================================================================= */}
+
+        {/* User GRID ============================================================================================== */}
 
         {renderTabUsers(tabValue)}
       </Box>
