@@ -50,7 +50,9 @@ router.post("/create-checkout-session", authenticateToken, async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.CLIENT_URL}/booking-success?proId=${proId}&yearMonth=${yearMonth}&day=${justDay}`,
+      // success_url: `${process.env.CLIENT_URL}/booking-success?proId=${proId}&yearMonth=${yearMonth}&day=${justDay}`,
+      // ^^ old way of handling success:
+      success_url: `${process.env.CLIENT_URL}/booking/${proId}/${yearMonth}/${justDay}`,
       cancel_url: `${process.env.CLIENT_URL}/booking-cancel`,
       // this is for the checkout.session.completed event
       metadata: {
