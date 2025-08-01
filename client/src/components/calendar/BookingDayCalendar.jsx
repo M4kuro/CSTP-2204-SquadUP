@@ -101,10 +101,9 @@ const BookingDayCalendar = () => {
         width: "100%",
         maxWidth: "960px",
         mx: "auto",
-        mt: 4,
-        p: 3,
+        p: 2,
         borderRadius: 3,
-        backgroundColor: "#f1faff",
+        backgroundColor: "#000000ff",
         boxShadow: "0 0 12px rgba(0, 0, 0, 0.1)",
         height: "fit-content",
       }}
@@ -117,23 +116,34 @@ const BookingDayCalendar = () => {
           mb: 2,
         }}
       >
-        <Typography variant="h6">🕒 Book a Time Slot on {day}</Typography>
+        <Typography
+          sx={{
+            fontFamily: "Michroma",
+            fontSize: "20px",
+            color: "white",
+          }}
+        >
+          Book a Time Slot on day {day}
+        </Typography>
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => navigate(`/booking/${proId}`)}
           sx={{
-            backgroundColor: "#e0f7fa",
+            backgroundColor: "#ffffffff",
             borderRadius: 2,
             px: 2,
             py: 1,
             boxShadow: 1,
             fontWeight: "bold",
             "&:hover": {
-              backgroundColor: "#b2ebf2",
+              backgroundColor: "#696969ff",
             },
+            fontFamily: "Michroma",
+            fontSize: "13px",
+            color:"Black"
           }}
         >
-          ⬅️ Back to Monthly View
+          Back to Monthly View
         </Button>
       </Box>
 
@@ -146,14 +156,14 @@ const BookingDayCalendar = () => {
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2 }}>
         {hours.map((hour) => {
           console.log(
-            "🔍 Comparing:",
+            "Comparing:",
             hour,
             "against booked slots:",
-            bookedSlots,
+            bookedSlots
           );
           const normalize = (h) => h.toLowerCase().replace(/\s/g, "");
           const isBooked = bookedSlots.some(
-            (booked) => normalize(booked) === normalize(hour),
+            (booked) => normalize(booked) === normalize(hour)
           );
           return (
             <Paper
@@ -163,17 +173,30 @@ const BookingDayCalendar = () => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 p: 2,
-                backgroundColor: isBooked ? "#ddd" : "#e0f7fa",
+                backgroundColor: isBooked ? "#ddd" : "#ffffffff",
                 opacity: isBooked ? 0.5 : 1,
                 borderRadius: 2,
                 boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
               }}
             >
-              <Typography>{hour}</Typography>
+              <Typography
+                sx={{
+                  fontFamily: "Michroma",
+                  fontSize: "13px",
+                }}
+              >
+                {hour}
+              </Typography>
               <Button
                 variant="contained"
                 disabled={isBooked}
                 onClick={() => handleBook(hour)}
+                sx={{
+                  fontFamily: "Michroma",
+                  fontSize: "13px",
+                  color: "White",
+                  backgroundColor: "Black",
+                }}
               >
                 {isBooked ? "Booked" : "Book"}
               </Button>

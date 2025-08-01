@@ -45,12 +45,12 @@ const BookingPage = () => {
   >
     {/* Consistent Header */}
     <Typography
-      variant="h4"
       sx={{
         textAlign: "center",
-        
         p: 2,
         borderRadius: 2,
+        fontFamily: "Michroma",
+        fontSize:"30px"
         
       }}
     >

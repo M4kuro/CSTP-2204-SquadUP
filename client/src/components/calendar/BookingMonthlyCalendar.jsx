@@ -31,7 +31,6 @@ const BookingMonthlyCalendar = ({ proId }) => {
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        
         mx: "auto",
         
       }}
@@ -41,7 +40,7 @@ const BookingMonthlyCalendar = ({ proId }) => {
           width: "100%",
           maxWidth: "960px",
           p: 3,
-          backgroundColor: "#f0f4f8",
+          backgroundColor: "#000000ff",
           borderRadius: 4,
           boxShadow: 4,
         }}
@@ -61,7 +60,7 @@ const BookingMonthlyCalendar = ({ proId }) => {
               key={day}
               align="center"
               fontWeight="bold"
-              sx={{ fontSize: "1rem" }}
+              sx={{ fontSize: "20px", color:"White", fontFamily:"Michroma" }}
             >
               {day}
             </Typography>
@@ -88,8 +87,8 @@ const BookingMonthlyCalendar = ({ proId }) => {
                   minHeight: 100,
                   backgroundColor: day
                     ? isWeekend
-                      ? "#f8d7da" // light red for weekend
-                      : "#e0f7fa"
+                      ? "#6f6f6fff" // light red for weekend
+                      : "#ffffffff"
                     : "transparent",
                   borderRadius: 2,
                   display: "flex",
@@ -98,7 +97,7 @@ const BookingMonthlyCalendar = ({ proId }) => {
                   p: 1.5,
                   cursor: day && !isWeekend ? "pointer" : "not-allowed",
                   "&:hover": {
-                    backgroundColor: day && !isWeekend ? "#b2ebf2" : undefined,
+                    backgroundColor: day && !isWeekend ? "#008d09ff" : undefined,
                   },
                   opacity: isWeekend ? 0.5 : 1,
                 }}
