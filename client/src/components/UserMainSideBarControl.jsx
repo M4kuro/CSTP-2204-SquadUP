@@ -9,6 +9,7 @@ import { getUserIdFromToken } from "../utils/auth";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 import AppContext from "../context/AppContext";
+import { Tooltip } from "@mui/material";
 
 const UserSidebar = ({ incomingRequests = [] }) => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const UserSidebar = ({ incomingRequests = [] }) => {
 
       {/* Navigation Buttons */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3 }}>
-        <Typography
+        {/* <Typography
           sx={{
             color: "white",
             textAlign: "center",
@@ -120,7 +121,24 @@ const UserSidebar = ({ incomingRequests = [] }) => {
           }}
         >
           {currentUser?.email || ""}
-        </Typography>
+        </Typography> */}
+        <Tooltip title={currentUser?.email || ""}>
+          <Typography
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontFamily: "Michroma, sans-serif",
+              fontSize: "15px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: 200, // You can tweak this width to match your sidebar layout
+              mx: "auto",
+            }}
+          >
+            {currentUser?.email || ""}
+          </Typography>
+        </Tooltip>
 
         {/* Homepage Button */}
         <Button
