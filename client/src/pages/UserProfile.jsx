@@ -413,27 +413,27 @@ const UserProfile = () => {
             label="Birthdate"
             name="birthdate"
             type="date"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
             value={formData.birthdate ? formData.birthdate.split("T")[0] : ""}
             onChange={handleChange}
             onFocus={handleFocus}
             InputProps={{
               readOnly: !isEditing,
+              shrink: true,
               sx: {
                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#000000ff", // green border on focus
                 },
                 "&:hover .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#000000ff", // hover border
-                },
-              },
-            }}
-            // This is red but works, dont worry
-            InputLabelProps={{
-              sx: {
-                color: "black",
-                "&.Mui-focused": {
-                  color: "#000000ff", // green label on focus
                 },
               },
             }}
@@ -458,7 +458,26 @@ const UserProfile = () => {
             value={formData.bio || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+              },
+            }}
+            InputLabelProps={{
+              
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
           />
           <Typography
             sx={{
@@ -576,8 +595,27 @@ const UserProfile = () => {
                 value={formData.hourlyRate || ""}
                 onChange={handleChange}
                 onFocus={handleFocus}
-                InputProps={{ readOnly: !isEditing }}
                 sx={{ mt: 2 }}
+                InputProps={{
+                  readOnly: !isEditing,
+                  sx: {
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#000000ff",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#000000ff",
+                    },
+                  },
+                }}
+                InputLabelProps={{
+                  
+                  sx: {
+                    color: "black",
+                    "&.Mui-focused": {
+                      color: "#000000ff",
+                    },
+                  },
+                }}
               />
               <Box
                 sx={{
@@ -599,8 +637,27 @@ const UserProfile = () => {
                 value={formData.proDescription || ""}
                 onChange={handleChange}
                 onFocus={handleFocus}
-                InputProps={{ readOnly: !isEditing }}
                 sx={{ mt: 2 }}
+                InputProps={{
+                  readOnly: !isEditing,
+                  sx: {
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#000000ff",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#000000ff",
+                    },
+                  },
+                }}
+                InputLabelProps={{
+                  
+                  sx: {
+                    color: "black",
+                    "&.Mui-focused": {
+                      color: "#000000ff",
+                    },
+                  },
+                }}
               />
             </>
           )}
@@ -624,7 +681,26 @@ const UserProfile = () => {
             value={formData.instagram || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+              },
+            }}
+            InputLabelProps={{
+              
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
           />
 
           <TextField
@@ -633,7 +709,26 @@ const UserProfile = () => {
             value={formData.facebook || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+              },
+            }}
+            InputLabelProps={{
+              
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
           />
 
           <TextField
@@ -642,7 +737,26 @@ const UserProfile = () => {
             value={formData.x || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+              },
+            }}
+            InputLabelProps={{
+              
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
           />
 
           <TextField
@@ -651,7 +765,26 @@ const UserProfile = () => {
             value={formData.bluesky || ""}
             onChange={handleChange}
             onFocus={handleFocus}
-            InputProps={{ readOnly: !isEditing }}
+            InputProps={{
+              readOnly: !isEditing,
+              sx: {
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#000000ff",
+                },
+              },
+            }}
+            InputLabelProps={{
+              
+              sx: {
+                color: "black",
+                "&.Mui-focused": {
+                  color: "#000000ff",
+                },
+              },
+            }}
           />
         </Paper>
 
