@@ -16,7 +16,12 @@ const userSchema = new mongoose.Schema({
   height: { type: String },
   weight: { type: String },
   isPro: { type: Boolean, default: false },
-  hourlyRate: { type: Number },
+  hourlyRate: {
+    type: Number, required: function () {
+      return this.isPro;
+    },
+    min: [1, "Hourly rate must be at least $1"]
+  },
   ratings: [
     {
       userId: String,

@@ -143,6 +143,10 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
+    if (formData.isPro && (!formData.hourlyRate || formData.hourlyRate <= 0)) {
+      alert("Please enter a valid hourly rate if you're a Pro user.");
+      return;
+    }
     try {
       const updatedFields = { ...formData };
 
@@ -470,7 +474,7 @@ const UserProfile = () => {
               },
             }}
             InputLabelProps={{
-              
+
               sx: {
                 color: "black",
                 "&.Mui-focused": {
@@ -608,7 +612,7 @@ const UserProfile = () => {
                   },
                 }}
                 InputLabelProps={{
-                  
+
                   sx: {
                     color: "black",
                     "&.Mui-focused": {
@@ -650,7 +654,7 @@ const UserProfile = () => {
                   },
                 }}
                 InputLabelProps={{
-                  
+
                   sx: {
                     color: "black",
                     "&.Mui-focused": {
@@ -693,7 +697,7 @@ const UserProfile = () => {
               },
             }}
             InputLabelProps={{
-              
+
               sx: {
                 color: "black",
                 "&.Mui-focused": {
@@ -721,7 +725,7 @@ const UserProfile = () => {
               },
             }}
             InputLabelProps={{
-              
+
               sx: {
                 color: "black",
                 "&.Mui-focused": {
@@ -749,7 +753,7 @@ const UserProfile = () => {
               },
             }}
             InputLabelProps={{
-              
+
               sx: {
                 color: "black",
                 "&.Mui-focused": {
@@ -777,7 +781,7 @@ const UserProfile = () => {
               },
             }}
             InputLabelProps={{
-              
+
               sx: {
                 color: "black",
                 "&.Mui-focused": {
